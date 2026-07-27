@@ -1,0 +1,40 @@
+.indent {
+    text-indent: 2em;
+}
+
+.right-align {
+    text-align: right;
+}
+
+del {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.md-source {
+    display: none;
+}
+
+.md-header__source {
+    display: none;
+}
+
+strong {
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+    font-weight: bold !important;
+}
+
+.md-typeset table:not([class]) {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.md-typeset table:not([class]) th {
+    white-space: nowrap;
+}
+
+.md-typeset table:not([class]) td {
+    white-space: nowrap;
+}

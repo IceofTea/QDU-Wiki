@@ -3,7 +3,6 @@ function getCurrentSeason() {
   var year = now.getFullYear();
   var date = now.getTime();
 
-  // 节气近似日期（阳历）
   var seasons = [
     { name: 'spring', start: new Date(year, 2, 20).getTime(), end: new Date(year, 5, 20).getTime() },
     { name: 'summer', start: new Date(year, 5, 21).getTime(), end: new Date(year, 8, 22).getTime() },
@@ -17,20 +16,21 @@ function getCurrentSeason() {
   return 'spring';
 }
 
-// 替换带 data-seasonal 属性的图片
-document.querySelectorAll('img[data-seasonal]').forEach(function(img) {
+document.addEventListener('DOMContentLoaded', function() {
   var season = getCurrentSeason();
   var names = { spring: '春', summer: '夏', autumn: '秋', winter: '冬' };
-  img.src = 'assets/' + season + '.png';
-  img.alt = '校园' + names[season] + '景';
-});
 
-// 替换带 data-seasonal-logo 属性的导航栏校徽
-function switchLogo() {
-  var season = getCurrentSeason();
+  // 首页横幅（从图片原路径推断文件夹位置，保证子页面也别路径）
+  document.querySelectorAll('img[data-seasonal]').forEach(function(img) {
+    var dir = img.src.substring(0, img.src.lastIndexOf('/') + 1);
+    img.src = dir + season + '.png';
+    img.alt = '校园' + names[season] + '景';
+  });
+
+  // 导航栏校徽
   var logo = document.querySelector('.md-logo img, .md-header__button img');
   if (logo) {
-    logo.src = 'assets/logo-' + season + '.png';
+    var dir = logo.src.substring(0, logo.src.lastIndexOf('/') + 1);
+    logo.src = dir + 'logo-' + season + '.png';
   }
-}
-window.addEventListener('load', switchLogo);
+});

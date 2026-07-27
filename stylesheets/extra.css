@@ -17,23 +17,17 @@
   margin-top: 8px;
 }
 
-/* 首页卡片网格 */
-.grid-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-  margin: 16px 0;
-}
-.grid-cards .card {
+/* Material 原生 grid cards 美化 */
+.md-typeset .grid.cards > ul > li {
   border-radius: 12px;
-  padding: 20px;
-  background: var(--md-default-bg-color);
-  border: 1px solid var(--md-default-fg-color--lightest);
   transition: transform 0.2s, box-shadow 0.2s;
 }
-.grid-cards .card:hover {
+.md-typeset .grid.cards > ul > li:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+}
+.md-typeset .grid.cards > ul > li > p:last-child {
+  text-align: right;
 }
 
 /* 文章区域 */

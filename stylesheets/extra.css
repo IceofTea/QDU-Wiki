@@ -1,40 +1,107 @@
-.indent {
-    text-indent: 2em;
+/* 首页渐变标题 */
+.home-hero {
+  text-align: center;
+  padding: 60px 0 20px;
+}
+.home-hero h1 {
+  font-size: 2.8em;
+  font-weight: 800;
+  background: linear-gradient(135deg, #3949ab, #00897b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.home-hero .subtitle {
+  font-size: 1.1em;
+  color: var(--md-default-fg-color--light);
+  margin-top: 8px;
 }
 
+/* 首页卡片网格 */
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+.grid-cards .card {
+  border-radius: 12px;
+  padding: 20px;
+  background: var(--md-default-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.grid-cards .card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+}
+
+/* 文章区域 */
+.md-main__inner {
+  padding: 8px 24px;
+}
+
+/* 代码块美化 */
+.md-typeset code {
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+/* 表格圆角 */
+.md-typeset table:not([class]) {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+  width: 100%;
+}
+.md-typeset table:not([class]) th {
+  white-space: nowrap;
+}
+.md-typeset table:not([class]) td {
+  white-space: nowrap;
+}
+
+/* 标题装饰 */
+.md-typeset h1 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.md-typeset h2 {
+  font-weight: 600;
+  border-bottom: 2px solid var(--md-primary-fg-color);
+  padding-bottom: 8px;
+  margin-top: 32px;
+}
+
+/* 右对齐 */
 .right-align {
-    text-align: right;
+  text-align: right;
 }
 
+/* 删除线 */
 del {
   text-decoration: line-through;
   color: #999;
 }
 
+/* 隐藏仓库按钮 */
 .md-source {
-    display: none;
+  display: none;
 }
-
 .md-header__source {
-    display: none;
+  display: none;
 }
 
+/* 加粗字体修复 */
 strong {
-    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
-    font-weight: bold !important;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+  font-weight: bold !important;
 }
 
-.md-typeset table:not([class]) {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-    width: 100%;
-}
-
-.md-typeset table:not([class]) th {
-    white-space: nowrap;
-}
-
-.md-typeset table:not([class]) td {
-    white-space: nowrap;
+/* 段落间距 */
+.md-typeset p {
+  line-height: 1.7;
 }

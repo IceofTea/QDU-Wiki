@@ -105,3 +105,17 @@ strong {
 .md-typeset p {
   line-height: 1.7;
 }
+
+/* 自定义主题色 #3F337B */
+:root {
+  --md-primary-fg-color: #3F337B;
+  --md-primary-fg-color--dark: #2D2560;
+  --md-primary-fg-color--light: #6B5F9E;
+  --md-primary-bg-color: #FFFFFF;
+  --md-primary-bg-color--light: #FFFFFF;
+}
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #3F337B;
+  --md-primary-fg-color--dark: #2D2560;
+  --md-primary-fg-color--light: #6B5F9E;
+}

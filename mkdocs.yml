@@ -1,0 +1,113 @@
+site_name: 青岛大学 Wiki
+site_url: https://iceoftea.github.io/QDU-Wiki/
+repo_url: https://github.com/IceofTea/QDU-Wiki
+edit_uri: edit/main/docs/
+theme:
+  favicon: assets/favicon.ico
+  name: material
+  font: false
+  features:
+    - navigation.tabs
+    - navigation.top
+    - navigation.footer
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.sections
+    - navigation.indexes
+    - toc.follow
+    - search.highlight
+    - search.suggest
+    - content.action.edit
+    - content.action.view
+    - content.tabs.link
+    - header.autohide
+  logo: assets/logo-spring.png
+  language: zh
+  palette:
+    - scheme: default
+      primary: custom
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: 切换暗黑模式
+    - scheme: slate
+      primary: custom
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: 切换亮色模式
+nav:
+  - 主页: index.md
+  - 新生手册:
+    - 入学准备: new/preparation.md
+    - 防诈骗指南: new/anti-fraud.md
+    - 军训指南: new/military_training.md
+    - 联系方式: new/contact.md
+  - 生活指南:
+    - 餐饮: live/eat.md
+    - 住宿: live/dorm.md
+    - 交通: live/traffic.md
+    - 医疗: live/hospital.md
+    - 校园设施: live/facilities.md
+    - 购物与商店: live/shopping.md
+  - 学习学业:
+    - 学习制度: study/system.md
+    - 考试与成绩: study/exam.md
+    - 官方文件:
+      - 考试管理规定: study/exam_rules.md
+      - 学业预警: study/academic_warning.md
+      - 创新实践学分: study/innovation_credit.md
+      - 选课操作指南: study/course_selection.md
+      - 综合测评: study/comprehensive_assessment.md
+  - 校园服务:
+    - 网络服务: service/network.md
+    - 校园卡与证件: service/card.md
+  - 学院详情:
+    - college/index.md
+    - 计算机科学技术学院: college/computer_science_and_technology.md
+  - 学生组织:
+    - 社团与学生组织: organization/index.md
+  - 文件共享: share/index.md
+  - 有话送你:
+    - words/index.md
+    - 说明: words/guide.md
+  - 关于Wiki:
+    - about/index.md
+    - 维护说明: about/guide.md
+extra_css:
+  - stylesheets/extra.css
+extra_javascript:
+  - javascripts/season-switcher.js
+  - javascripts/home-hero.js
+markdown_extensions:
+  - md_in_html
+  - pymdownx.tilde
+  - pymdownx.details
+  - attr_list
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: false
+      slugify: !!python/object/apply:pymdownx.slugs.slugify {}
+plugins:
+  - search
+  - git-revision-date-localized:
+      enable_creation_date: false
+      enabled: !ENV [CI, false]
+  - git-committers:
+      repository: IceofTea/QDU-Wiki
+      branch: main
+      enabled: !ENV [CI, false]
+      exclude_committers:
+        - web-flow
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/IceofTea/QDU-Wiki
+    - icon: fontawesome/brands/zhihu
+      link: https://www.zhihu.com/
+    - icon: fontawesome/solid/comments
+      link: https://tieba.baidu.com/f?kw=青岛大学
+      name: 青岛大学吧
+copyright: 'Copyright &copy; 2026 QDU-Wiki.'

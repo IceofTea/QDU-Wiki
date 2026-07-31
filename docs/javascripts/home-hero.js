@@ -203,4 +203,25 @@
   document.addEventListener('DOMContentLoaded', setup);
   document.addEventListener('DOMContentSwitch', setup);
   document.addEventListener('components:updated', setup);
+
+  // Material 9.x 的 instant navigation 用 XHR 替换 DOM 且不派发任何事件，
+  // 需监听 hero-book 重新插入，确保翻页/快速入口按钮在返回主页后依然可用
+  var observer = null;
+  function watchHeroBook() {
+    if (observer) return;
+    observer = new MutationObserver(function (mutations) {
+      for (var i = 0; i < mutations.length; i++) {
+        var added = mutations[i].addedNodes;
+        for (var j = 0; j < added.length; j++) {
+          var node = added[j];
+          if (node.nodeType === 1 && (node.id === 'hero-book' || (node.querySelector && node.querySelector('#hero-book')))) {
+            setup();
+            return;
+          }
+        }
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+  watchHeroBook();
 })();

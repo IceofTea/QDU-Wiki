@@ -25,10 +25,6 @@
           <span class="stat-num" data-target="39">39</span>
           <span class="stat-label">国家一流专业建设点</span>
         </div>
-        <div class="stat">
-          <span class="stat-num" data-target="41000">41,000</span>
-          <span class="stat-label">在校生（余人）</span>
-        </div>
       </div>
       <button type="button" class="hero-cta">开始探索 →</button>
     </div>

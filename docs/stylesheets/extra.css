@@ -235,10 +235,12 @@ strong {
   align-items: center;
   justify-content: center;
   flex: 1;
+  margin: auto 0;
+  min-height: 0;
+  overflow-y: auto;
   text-align: center;
   padding: 32px 24px;
   max-width: 900px;
-  margin: 0 auto;
   color: #fff;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
 }
@@ -294,9 +296,10 @@ strong {
 
 /* 统计卡片 */
 .hero-stats {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  width: 100%;
+  max-width: 760px;
   gap: 14px;
   margin-bottom: 30px;
   animation: hero-rise 0.8s 0.55s both;
@@ -377,7 +380,7 @@ strong {
     margin: 4px -16px 8px;
   }
   .stat {
-    min-width: 130px;
+    min-width: 0;
     padding: 12px 14px;
   }
   .stat-num {
@@ -414,7 +417,7 @@ strong {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   opacity: 1;
   transform: translateX(0);
   visibility: visible;
@@ -742,6 +745,49 @@ body.pop-open {
   .hero-book {
     height: clamp(480px, 78vh, 620px);
   }
+  /* 统计卡片 2 列网格，避免 flex 在窄屏退化成 1 列导致内容超高被裁切 */
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 420px;
+    margin-bottom: 18px;
+  }
+  .stat {
+    width: auto;
+    padding: 10px 12px;
+  }
+  .stat-num {
+    font-size: 1.35rem;
+  }
+  .stat-label {
+    font-size: 0.72rem;
+    margin-top: 4px;
+  }
+  .hero-inner {
+    padding: 18px 16px;
+  }
+  .hero-eyebrow {
+    margin-bottom: 6px;
+    font-size: 0.72rem;
+  }
+  .hero-title {
+    margin-bottom: 6px;
+    font-size: clamp(1.8rem, 9vw, 2.4rem);
+  }
+  .hero-subtitle {
+    letter-spacing: 0.3em;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+  }
+  .hero-type {
+    margin-bottom: 14px;
+  }
+  .hero-cta {
+    padding: 10px 26px;
+    font-size: 0.95rem;
+  }
   .hero-quick {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
@@ -768,5 +814,47 @@ body.pop-open {
     padding: 8px 10px;
     font-size: 0.8rem;
     line-height: 1.45;
+  }
+}
+
+/* 超小屏（≤360px）：进一步压缩，确保首屏标题与底部 CTA 不被裁切 */
+@media screen and (max-width: 360px) {
+  .hero-inner {
+    padding: 12px 12px;
+  }
+  .hero-eyebrow {
+    font-size: 0.65rem;
+    margin-bottom: 4px;
+  }
+  .hero-title {
+    font-size: clamp(1.6rem, 8.5vw, 2rem);
+    margin-bottom: 4px;
+  }
+  .hero-subtitle {
+    font-size: 0.82rem;
+    letter-spacing: 0.25em;
+    margin-bottom: 6px;
+  }
+  .hero-type {
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    min-height: 1.5em;
+  }
+  .hero-stats {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .stat {
+    padding: 8px 10px;
+  }
+  .stat-num {
+    font-size: 1.2rem;
+  }
+  .stat-label {
+    font-size: 0.68rem;
+  }
+  .hero-cta {
+    padding: 9px 22px;
+    font-size: 0.9rem;
   }
 }

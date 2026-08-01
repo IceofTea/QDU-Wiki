@@ -765,6 +765,12 @@ body.pop-open {
     font-size: 0.72rem;
     margin-top: 4px;
   }
+  /* 三张统计卡片中，第 3 张居中跨整行，避免 2 列网格下落在左列而显得不对称 */
+  .stat:last-child {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc(50% - 5px);
+  }
   .hero-inner {
     padding: 18px 16px;
   }
@@ -852,6 +858,9 @@ body.pop-open {
   }
   .stat-label {
     font-size: 0.68rem;
+  }
+  .stat:last-child {
+    width: calc(50% - 4px);
   }
   .hero-cta {
     padding: 9px 22px;

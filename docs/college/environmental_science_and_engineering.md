@@ -1,4 +1,4 @@
-# 环境科学与工程学院
+# 环境与地理科学学院
 
 !!! quote "提示"
     本文为预留页面，内容持续建设中，欢迎各位学长学姐通过 [GitHub 仓库](https://github.com/IceofTea/QDU-Wiki) 提交补充。
@@ -39,4 +39,4 @@
 
 ## 贡献
 
-如果你对 环境科学与工程学院 了解更多，欢迎通过 [GitHub 仓库](https://github.com/IceofTea/QDU-Wiki) 提交补充或发起 Pull Request。
+如果你对 环境与地理科学学院 了解更多，欢迎通过 [GitHub 仓库](https://github.com/IceofTea/QDU-Wiki) 提交补充或发起 Pull Request。

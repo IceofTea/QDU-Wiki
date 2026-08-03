@@ -2073,21 +2073,6 @@
   
 
 
-<div class="visit-bar" id="visit-bar">
-  <div class="visit-bar__track">
-    <div class="visit-bar__group">
-      <span class="visit-bar__msg">👋 欢迎来到青岛大学 Wiki，已有 <b data-counter="uv">···</b> 位同学来过这里，累计被浏览 <b data-counter="pv">···</b> 次</span>
-      <span class="visit-bar__msg">📖 新生手册 · 生活指南 · 学习学业 · 校园服务，过来人的真心话，都在这里</span>
-    </div>
-    <div class="visit-bar__group">
-      <span class="visit-bar__msg">👋 欢迎来到青岛大学 Wiki，已有 <b data-counter="uv">···</b> 位同学来过这里，累计被浏览 <b data-counter="pv">···</b> 次</span>
-      <span class="visit-bar__msg">📖 新生手册 · 生活指南 · 学习学业 · 校园服务，过来人的真心话，都在这里</span>
-    </div>
-  </div>
-  <span id="busuanzi_value_site_uv" hidden></span>
-  <span id="busuanzi_value_site_pv" hidden></span>
-</div>
-
 <div class="hero">
 
 <img class="hero-bg" src="assets/spring.webp" data-seasonal alt="校园四季" />
@@ -2103,18 +2088,18 @@
       <p class="hero-subtitle">明德 · 博学 · 守正 · 出奇</p>
       <p class="hero-type" id="hero-type"></p>
       <div class="hero-stats">
-        <div class="stat">
+        <button type="button" class="stat" data-stat="permille">
           <span class="stat-num" data-target="4">4</span>
           <span class="stat-label">ESI 全球前 1‰ 学科</span>
-        </div>
-        <div class="stat">
+        </button>
+        <button type="button" class="stat" data-stat="percent">
           <span class="stat-num" data-target="17">17</span>
           <span class="stat-label">ESI 全球前 1% 学科</span>
-        </div>
-        <div class="stat">
+        </button>
+        <button type="button" class="stat" data-stat="majors">
           <span class="stat-num" data-target="39">39</span>
           <span class="stat-label">国家一流专业建设点</span>
-        </div>
+        </button>
       </div>
       <button type="button" class="hero-cta">开始探索 →</button>
     </div>
@@ -2201,6 +2186,36 @@
 
 </div>
 
+<div class="visit-stats" id="visit-stats">
+  <p class="visit-stats__title">👋 欢迎来到青岛大学 Wiki，这是我们的热度</p>
+  <div class="visit-stats__cards">
+    <div class="visit-stats__card visit-stats__card--uv">
+      <span class="visit-stats__icon">👥</span>
+      <span class="visit-stats__num" data-count="uv">···</span>
+      <span class="visit-stats__label">独立访客</span>
+    </div>
+    <div class="visit-stats__card visit-stats__card--pv">
+      <span class="visit-stats__icon">📈</span>
+      <span class="visit-stats__num" data-count="pv">···</span>
+      <span class="visit-stats__label">累计访问</span>
+    </div>
+  </div>
+  <span id="busuanzi_value_site_uv" hidden></span>
+  <span id="busuanzi_value_site_pv" hidden></span>
+</div>
+
+<div class="stats-modal" id="stats-modal" hidden>
+  <div class="stats-modal__backdrop" data-close></div>
+  <div class="stats-modal__card" role="dialog" aria-modal="true" aria-labelledby="stats-modal-title">
+    <button type="button" class="stats-modal__close" data-close aria-label="关闭">✕</button>
+    <span class="stats-modal__icon"></span>
+    <h3 class="stats-modal__title" id="stats-modal-title"></h3>
+    <p class="stats-modal__sub"></p>
+    <ul class="stats-modal__list"></ul>
+    <p class="stats-modal__note"></p>
+  </div>
+</div>
+
 <hr />
 <h2 id="_1">学校概况</h2>
 <p><strong>青岛大学</strong> 是山东省属重点综合大学、山东省高水平大学"冲一流"建设高校，办学历史可追溯至 <strong>1909 年</strong>创办的青岛特别高等专门学堂，1993 年由原青岛大学、山东纺织工学院、青岛医学院、青岛师范专科学校四校合并组建。学校现有 <strong>28 个学院及青岛医学院</strong>、本科备案专业 <strong>90 个</strong>，涵盖 <strong>11 个学科门类</strong>，在校生 <strong>41000 余人</strong>，走出优秀校友 <strong>50 余万</strong>。</p>
@@ -2259,7 +2274,7 @@
     <span class="md-icon" title="最后更新">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2026年8月3日 13:20:21 UTC">2026年8月3日</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2026年8月3日 14:09:12 UTC">2026年8月3日</span>
   </span>
 
     
@@ -2414,9 +2429,9 @@
       
         <script src="javascripts/home-hero.js"></script>
       
-        <script src="javascripts/visit-counter.js"></script>
+        <script src="javascripts/stats-modal.js"></script>
       
-        <script src="https://vercount.one/js"></script>
+        <script src="javascripts/visit-counter.js"></script>
       
     
   </body>

@@ -1,19 +1,4 @@
-﻿<div class="visit-bar" id="visit-bar">
-  <div class="visit-bar__track">
-    <div class="visit-bar__group">
-      <span class="visit-bar__msg">👋 欢迎来到青岛大学 Wiki，已有 <b data-counter="uv">···</b> 位同学来过这里，累计被浏览 <b data-counter="pv">···</b> 次</span>
-      <span class="visit-bar__msg">📖 新生手册 · 生活指南 · 学习学业 · 校园服务，过来人的真心话，都在这里</span>
-    </div>
-    <div class="visit-bar__group">
-      <span class="visit-bar__msg">👋 欢迎来到青岛大学 Wiki，已有 <b data-counter="uv">···</b> 位同学来过这里，累计被浏览 <b data-counter="pv">···</b> 次</span>
-      <span class="visit-bar__msg">📖 新生手册 · 生活指南 · 学习学业 · 校园服务，过来人的真心话，都在这里</span>
-    </div>
-  </div>
-  <span id="busuanzi_value_site_uv" hidden></span>
-  <span id="busuanzi_value_site_pv" hidden></span>
-</div>
-
-<div class="hero">
+﻿<div class="hero">
 
 <img class="hero-bg" src="assets/spring.webp" data-seasonal alt="校园四季" />
 
@@ -28,18 +13,18 @@
       <p class="hero-subtitle">明德 · 博学 · 守正 · 出奇</p>
       <p class="hero-type" id="hero-type"></p>
       <div class="hero-stats">
-        <div class="stat">
+        <button type="button" class="stat" data-stat="permille">
           <span class="stat-num" data-target="4">4</span>
           <span class="stat-label">ESI 全球前 1‰ 学科</span>
-        </div>
-        <div class="stat">
+        </button>
+        <button type="button" class="stat" data-stat="percent">
           <span class="stat-num" data-target="17">17</span>
           <span class="stat-label">ESI 全球前 1% 学科</span>
-        </div>
-        <div class="stat">
+        </button>
+        <button type="button" class="stat" data-stat="majors">
           <span class="stat-num" data-target="39">39</span>
           <span class="stat-label">国家一流专业建设点</span>
-        </div>
+        </button>
       </div>
       <button type="button" class="hero-cta">开始探索 →</button>
     </div>
@@ -124,6 +109,36 @@
   <button type="button" class="hero-book__next" aria-label="下一页">›</button>
 </div>
 
+</div>
+
+<div class="visit-stats" id="visit-stats">
+  <p class="visit-stats__title">👋 欢迎来到青岛大学 Wiki，这是我们的热度</p>
+  <div class="visit-stats__cards">
+    <div class="visit-stats__card visit-stats__card--uv">
+      <span class="visit-stats__icon">👥</span>
+      <span class="visit-stats__num" data-count="uv">···</span>
+      <span class="visit-stats__label">独立访客</span>
+    </div>
+    <div class="visit-stats__card visit-stats__card--pv">
+      <span class="visit-stats__icon">📈</span>
+      <span class="visit-stats__num" data-count="pv">···</span>
+      <span class="visit-stats__label">累计访问</span>
+    </div>
+  </div>
+  <span id="busuanzi_value_site_uv" hidden></span>
+  <span id="busuanzi_value_site_pv" hidden></span>
+</div>
+
+<div class="stats-modal" id="stats-modal" hidden>
+  <div class="stats-modal__backdrop" data-close></div>
+  <div class="stats-modal__card" role="dialog" aria-modal="true" aria-labelledby="stats-modal-title">
+    <button type="button" class="stats-modal__close" data-close aria-label="关闭">✕</button>
+    <span class="stats-modal__icon"></span>
+    <h3 class="stats-modal__title" id="stats-modal-title"></h3>
+    <p class="stats-modal__sub"></p>
+    <ul class="stats-modal__list"></ul>
+    <p class="stats-modal__note"></p>
+  </div>
 </div>
 
 ---

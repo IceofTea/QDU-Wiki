@@ -323,6 +323,30 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-08-03：访问统计展示改版（跑马灯 → 炫酷数字卡片）
+
+- **任务**：维护者对滚动栏方案不满意，改为「一眼看清统计」的炫酷卡片式展示，并兼顾手机端窄屏适配。
+- **改动**：
+  - 修改：`docs/index.md`（移除 `visit-bar` 跑马灯；改为 `visit-stats` 统计卡片：标题行 + 独立访客/累计访问两张卡片）
+  - 修改：`docs/stylesheets/extra.css`（移除 `visit-bar` 滚动样式；新增 `visit-stats` 玻璃拟态卡片、金色渐变数字、顶部霓虹高光、hover 微升，及 720px 以下小屏 grid 自适应）
+  - 修改：`docs/javascripts/visit-counter.js`（读取改用 `data-count`；数字新增 count-up 滚动动画与千分位格式化）
+- **说明**：数据链路不变（仍由 Vercount 填充 `busuanzi_value_*`）。展示改为固定横排双卡片、不再滚动，桌面手机均一目了然；数字加载时从 0 滚动到目标值增加炫酷感。隐藏统计锚点保留。
+
+---
+
+### 2026-08-03：主页统计卡片移入 Hero 下方 + 学科/专业详情弹窗 + 首屏缓冲优化
+
+- **任务**：将访问统计卡片从 Hero 上方移到大卡片下方，优先呈现大卡片；把 Hero 内 3 个统计数字（ESI 1‰ / 1% / 国家一流专业）做成可点击卡片，点击弹出各名单详情；并缓解「数字和图片加载慢」的缓冲问题。
+- **改动**：
+  - 修改：`docs/index.md`（`visit-stats` 从 Hero 上方移到 Hero 闭合标签之后；Hero 内 3 个 `.stat` 由 `<div>` 改为可点击 `<button data-stat>` + 新增 `hero-stats__hint` 提示；Hero 下方新增 `stats-modal` 弹窗骨架）
+  - 新增：`docs/javascripts/stats-modal.js`（点击统计卡片弹出名单；ESI 1‰ 4 个、ESI 1% 17 个、39 个国家一流专业的名单以 JS 数组维护，减少 HTML 体积；兼容 `navigation.instant`）
+  - 修改：`docs/stylesheets/extra.css`（新增 `stats-modal` 玻璃拟态弹窗样式与 720px 小屏 2 列适配；`.stat` 补充 button 默认样式重置：cursor/字体/颜色/高亮）
+  - 修改：`mkdocs.yml`（`extra_javascript` 移除阻塞首屏的 `https://vercount.one/js` 直引，改由本地脚本异步注入）
+  - 修改：`docs/javascripts/visit-counter.js`（`injectVercount()` 用 `async` 动态注入 Vercount，避免阻塞首屏；轮询上限 12s→30s 以覆盖异步加载延迟）
+- **说明**：名单数据严格按官方口径（ESI 1‰ 截至 2026-05 四个学科、1% 截至 2025-11 十七个学科、39 个国家一流专业为 2019/2020/2021 三年度共 39 个）。Vercount 改为异步注入不阻塞首屏渲染，数字经 sessionStorage 缓存并在脚本就绪后由轮询更快回填。构建 `python -m mkdocs build --strict` 通过。
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

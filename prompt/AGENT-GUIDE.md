@@ -299,7 +299,17 @@ python -m mkdocs build --strict
 
 ---
 
-## 八、写给 Agent 的话
+### 2026-08-03：首页首屏加载性能优化（四季背景图 WebP 化）
+
+- **任务**：刚进主页较卡、主页大卡片背景图加载时间长、首次进入需长缓冲，定位为背景图体积过大 + 四季切换导致的「首屏双下载」。
+- **改动**：
+  - 修改：`docs/assets/spring.webp`、`summer.webp`、`autumn.webp`、`winter.webp`（由同名 PNG 转码：缩至 1600px 宽 + WebP q74，4 张合计约 1.55MB → 483KB，-67%）；删除同名 `.png`
+  - 修改：`docs/index.md`（hero-bg 背景图 `src="assets/spring.png"` → `.webp`）
+  - 修改：`docs/javascripts/season-switcher.js`（`img[data-seasonal]` 背景图扩展名 `.png` → `.webp`；页眉 logo 仍用 `logo-*.png` 不变）
+  - 未改动：`mkdocs.yml`（`logo: assets/logo-spring.png` 保持不变）
+- **说明**：入口 `index.md` 写死初始 `spring.png`，而季节脚本以 `defer` 方式在 DOM 解析后才执行，非春季访客首屏会同时下载默认图与目标季节图两张背景大图，加上图片本就偏大，故首屏卡。转 WebP 后单张降至约 100–147KB，即使用户切换季节最多也只多一次轻量请求，首次进入体验显著改善；所有改动仅涉及图片编码与引用扩展名，未改变任何展示内容与页面结构。
+
+---
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：
 

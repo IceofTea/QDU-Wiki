@@ -1,6 +1,6 @@
 ﻿<div class="hero">
 
-<img class="hero-bg" src="assets/spring.png" data-seasonal alt="校园四季" />
+<img class="hero-bg" src="assets/spring.webp" data-seasonal alt="校园四季" />
 
 <div class="hero-overlay"></div>
 

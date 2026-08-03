@@ -82,6 +82,8 @@ extra_css:
 extra_javascript:
   - javascripts/season-switcher.js
   - javascripts/home-hero.js
+  - javascripts/visit-counter.js
+  - https://vercount.one/js
 markdown_extensions:
   - md_in_html
   - pymdownx.tilde

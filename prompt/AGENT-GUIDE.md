@@ -311,6 +311,20 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-08-03：新增主页访问统计滚动栏（vercount）
+
+- **任务**：新增访问记录功能——记录全站访问量与独立访客数，并在主页顶部做一条横向滚动的统计栏动画展示。
+- **改动**：
+  - 修改：`mkdocs.yml`（`extra_javascript` 新增本地 `javascripts/visit-counter.js` 与第三方统计脚本 `https://vercount.one/js`，全站引入）
+  - 新增：`docs/javascripts/visit-counter.js`（轮询读取统计值、填充滚动栏数字、sessionStorage 缓存以兼容 `navigation.instant` 返回主页回填、统计服务不可用时降级为占位符）
+  - 修改：`docs/index.md`（主页 Hero 上方新增 `visit-bar` 横向跑马灯 + 隐藏的 `busuanzi_value_site_pv/uv` 统计锚点）
+  - 修改：`docs/stylesheets/extra.css`（新增 `visit-bar` 滚动动画样式与 720px 以下小屏适配）
+- **说明**：GitHub Pages 为纯静态托管，无法自行获取访问者 IP，维护者选择「免注册现成静态站计数器」路线。官方不蒜子（busuanzi.ibruce.info）近年多次 502/挂服且 Referrer 统计法在移动端不准，故采用社区广泛推荐、无缝兼容不蒜子标签的 Vercount（vercount.one）：UV 按 IP + UserAgent 去重、PV 按页面计数，速度快且稳定。该服务只有累计维度（无「今日」字段），滚动栏展示「累计独立访客 + 累计访问量」；统计不可用时仅显示占位符，不影响页面布局与既有功能。
+
+---
+
+## 八、写给 Agent 的话
+
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：
 
 - 新生关心的是：去哪个校区报到、宿舍什么样、食堂哪家好吃、怎么选课、考试怎么考、电话打给谁——把信息写到他们最容易找到的地方。

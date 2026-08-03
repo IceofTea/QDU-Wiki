@@ -51,7 +51,7 @@
     document.querySelectorAll('img[data-seasonal]').forEach(function (img) {
       var src = img.getAttribute('src') || '';
       var dir = src.substring(0, src.lastIndexOf('/') + 1);
-      var target = dir + season + '.png';
+      var target = dir + season + '.webp';
       if (src !== target) {
         img.setAttribute('src', target);
         img.setAttribute('alt', '校园' + SEASONS[season] + '景');

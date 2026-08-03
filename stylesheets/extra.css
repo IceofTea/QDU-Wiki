@@ -193,6 +193,43 @@ strong {
   }
 }
 
+/* ========== 主页访问统计滚动栏 ========== */
+.visit-bar {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  margin: 4px 0 12px;
+  color: #fff;
+  background: linear-gradient(90deg, #3F337B, #5B4B96 50%, #3F337B);
+  box-shadow: 0 2px 10px rgba(63, 51, 123, 0.25);
+}
+.visit-bar__track {
+  display: flex;
+  width: max-content;
+  animation: visit-scroll 26s linear infinite;
+}
+.visit-bar:hover .visit-bar__track {
+  animation-play-state: paused;
+}
+.visit-bar__group {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.visit-bar__msg {
+  padding: 9px 0;
+  margin-right: 80px;
+  font-size: 0.92rem;
+}
+.visit-bar__msg b {
+  color: #ffd9a0;
+  font-weight: 800;
+}
+@keyframes visit-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
 /* ========== 主页 Hero ========== */
 .hero {
   position: relative;
@@ -373,6 +410,13 @@ strong {
 
 /* 小屏适配 */
 @media screen and (max-width: 720px) {
+  .visit-bar {
+    margin: 4px 0 10px;
+  }
+  .visit-bar__msg {
+    font-size: 0.84rem;
+    margin-right: 48px;
+  }
   .hero {
     min-height: 68vh;
     border-radius: 12px;

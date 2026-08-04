@@ -52,14 +52,15 @@ nav:
     - 校园设施: live/facilities.md
     - 购物与商店: live/shopping.md
   - 学习学业:
-    - 学习制度: study/system.md
+    - 学业制度: study/system.md
+    - 第二课堂: study/second_classroom.md
+    - 创新实践学分: study/innovation_credit.md
     - 校历: study/calendar.md
     - 入党知识: study/party.md
     - 考试与成绩: study/exam.md
     - 官方文件:
       - 考试管理规定: study/exam_rules.md
       - 学业预警: study/academic_warning.md
-      - 创新实践学分: study/innovation_credit.md
       - 选课操作指南: study/course_selection.md
       - 综合测评: study/comprehensive_assessment.md
   - 校园服务:

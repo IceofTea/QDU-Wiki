@@ -571,24 +571,26 @@ strong {
 
 /* 小屏适配 */
 @media screen and (max-width: 720px) {
+  /* 压缩访问统计卡片，让 Hero 第一页在多数手机上单屏完整显示 */
   .hero-visits {
-    gap: 10px;
-    margin-top: 16px;
+    gap: 8px;
+    margin-top: 6px;
   }
   .hero-visits__item {
-    min-width: 118px;
-    padding: 12px 8px 10px;
-    border-radius: 12px;
+    min-width: 104px;
+    gap: 2px;
+    padding: 7px 6px 6px;
+    border-radius: 10px;
   }
   .hero-visits__icon {
-    font-size: 1rem;
+    font-size: 0.8rem;
   }
   .hero-visits__num {
-    font-size: 1.35rem;
+    font-size: 1.1rem;
   }
   .hero-visits__label {
-    font-size: 0.7rem;
-    letter-spacing: 0.07em;
+    font-size: 0.6rem;
+    letter-spacing: 0.04em;
   }
   .hero {
     min-height: 68vh;
@@ -973,7 +975,7 @@ body.pop-open {
     gap: 10px;
     width: 100%;
     max-width: 420px;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
   }
   .stat {
     width: auto;
@@ -993,7 +995,7 @@ body.pop-open {
     width: calc(50% - 5px);
   }
   .hero-inner {
-    padding: 18px 16px;
+    padding: 14px 16px;
   }
   .hero-eyebrow {
     margin-bottom: 6px;
@@ -1005,11 +1007,11 @@ body.pop-open {
   }
   .hero-subtitle {
     letter-spacing: 0.3em;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-size: 0.9rem;
   }
   .hero-type {
-    margin-bottom: 14px;
+    margin-bottom: 10px;
   }
   .hero-cta {
     padding: 10px 26px;

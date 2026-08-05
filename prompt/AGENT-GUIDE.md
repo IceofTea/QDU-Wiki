@@ -359,6 +359,22 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-08-05：首页首屏加载进一步优化 + 「站点热度」栏视觉改版（并评估放弃「在线人数」功能）
+
+- **任务**：主页进入仍有卡顿；「这是我们的热度」统计栏样式不佳；同时评估能否新增「同时在线人数」功能。
+- **改动**：
+  - 修改：`docs/index.md`（`hero-bg` 由 `<img src="assets/spring.webp">` 改为 `<div data-seasonal>` 动态背景；访问统计由底部独立区块移入 **Hero 主视觉页 CTA 下方**（`hero-visits`：独立访客 `data-count="uv"` 与累计访问 `data-count="pv"` **左右两列并排，每列自上而下 图标→金色数字→浅色释义**，Vercount 隐藏统计锚点一并移入 Hero 内；删除原 `visit-stats` 区块）
+  - 修改：`docs/javascripts/season-switcher.js`（`[data-seasonal]` 由「替换 img src」改为「设置 CSS background-image」，并新增脚本执行后立即调用一次 `scheduleApply()`）
+  - 修改：`docs/stylesheets/extra.css`（`.hero-bg` 由 img 样式改为背景图样式：`background-size: cover` + 深紫兜底色 `#241d4d`；`hero-zoom` 动画 12s→8s、起幅 scale 1.12→1.08；新增 `.hero-visits` 与改造 `.stat` 为**透明毛玻璃卡片**（半透明 `rgba(255,255,255,0.08)` + `backdrop-filter: blur(10px)` + 细白边框 + 顶边微光 + 柔和阴影，无底色），含 720px 小屏紧凑版与触屏 hover 禁用；删除 `.visit-stats` 全部旧样式）
+  - 未改动：`mkdocs.yml`、`visit-counter.js`（数据链路不变，`data-count` / 隐藏锚点结构未动）
+- **说明**：
+  - **在线人数功能**：调研确认 GitHub Pages 纯静态站无法自研实时在线统计，现有 Vercount 亦只有累计 PV/UV 维度；市面可用的第三方实时服务（Common Ninja、LiveTrafficFeed 等）均需注册、为境外服务、样式不可控且可能拖慢国内访问，与本站「免注册、轻量、国内可访问」原则相悖。经与维护者确认，**放弃该功能**。
+  - **卡顿根因**：`index.md` 写死默认 `spring.webp`，而季节脚本会把背景换成当前季节图（8 月即同时下载 spring+summer 两张约 243KB），属「首屏双下载」；且 `hero-zoom` 长达 12s。改为 CSS 背景图后首屏**仅下载目标季节一张图**，动画缩短至 8s，配合深紫兜底色无图也美观。
+  - **热度栏改版**：维护者多轮反馈后的最终形态——访问统计从页面底部独立区块**移入 Hero 大卡片主视觉页**（CTA 按钮正下方），保留「独立访客 + 累计访问」双指标（对接 Vercount `site_uv` / `site_pv`），采用**左右两列「透明毛玻璃屏幕卡片」**，每列自上而下「图标→金色数字→浅色释义」，数字小巧（`1.7rem` 等宽、小屏 `1.35rem`），毛玻璃质感通透、与 Hero 深紫背景自然融合；同时把 Hero 上方三个学科卡（`.stat`：ESI 1‰ / 1% / 一流专业）统一为相同的透明毛玻璃样式（去除原紫色渐变底色）。曾尝试的底部独立区块、水平一行并排、上下胶囊行、单数字、带底色卡片等方案均因突兀、单调或不直观被否决。
+  - 构建 `python -m mkdocs build --strict` 通过。
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

@@ -1,6 +1,6 @@
 ﻿<div class="hero">
 
-<img class="hero-bg" src="assets/spring.webp" data-seasonal alt="校园四季" />
+<div class="hero-bg" data-seasonal role="img" aria-label="校园四季"></div>
 
 <div class="hero-overlay"></div>
 
@@ -27,6 +27,20 @@
         </button>
       </div>
       <button type="button" class="hero-cta">开始探索 →</button>
+      <div class="hero-visits">
+        <div class="hero-visits__item">
+          <span class="hero-visits__icon" aria-hidden="true">👥</span>
+          <span class="hero-visits__num" data-count="uv">···</span>
+          <span class="hero-visits__label">独立访客</span>
+        </div>
+        <div class="hero-visits__item">
+          <span class="hero-visits__icon" aria-hidden="true">📈</span>
+          <span class="hero-visits__num" data-count="pv">···</span>
+          <span class="hero-visits__label">累计访问</span>
+        </div>
+        <span id="busuanzi_value_site_uv" hidden></span>
+        <span id="busuanzi_value_site_pv" hidden></span>
+      </div>
     </div>
   </section>
 
@@ -109,24 +123,6 @@
   <button type="button" class="hero-book__next" aria-label="下一页">›</button>
 </div>
 
-</div>
-
-<div class="visit-stats" id="visit-stats">
-  <p class="visit-stats__title">👋 欢迎来到青岛大学 Wiki，这是我们的热度</p>
-  <div class="visit-stats__cards">
-    <div class="visit-stats__card visit-stats__card--uv">
-      <span class="visit-stats__icon">👥</span>
-      <span class="visit-stats__num" data-count="uv">···</span>
-      <span class="visit-stats__label">独立访客</span>
-    </div>
-    <div class="visit-stats__card visit-stats__card--pv">
-      <span class="visit-stats__icon">📈</span>
-      <span class="visit-stats__num" data-count="pv">···</span>
-      <span class="visit-stats__label">累计访问</span>
-    </div>
-  </div>
-  <span id="busuanzi_value_site_uv" hidden></span>
-  <span id="busuanzi_value_site_pv" hidden></span>
 </div>
 
 <div class="stats-modal" id="stats-modal" hidden>

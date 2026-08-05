@@ -44,17 +44,17 @@
     return mode === 'auto' ? getSeasonByDate() : mode;
   }
 
-  // 把页面中的四季图片替换为指定季节
+  // 把页面中的四季背景替换为指定季节。
+  // 背景图用 CSS background-image 动态设置（而非 <img src>），
+  // 避免 HTML 里写死默认季节图导致首屏「默认图 + 目标季节图」双下载。
   function applySeason() {
     var season = getSeason();
 
-    document.querySelectorAll('img[data-seasonal]').forEach(function (img) {
-      var src = img.getAttribute('src') || '';
-      var dir = src.substring(0, src.lastIndexOf('/') + 1);
-      var target = dir + season + '.webp';
-      if (src !== target) {
-        img.setAttribute('src', target);
-        img.setAttribute('alt', '校园' + SEASONS[season] + '景');
+    document.querySelectorAll('[data-seasonal]').forEach(function (el) {
+      var url = 'url(assets/' + season + '.webp)';
+      if ((el.style.backgroundImage || '').indexOf(season + '.webp') === -1) {
+        el.style.backgroundImage = url;
+        el.setAttribute('aria-label', '校园' + SEASONS[season] + '景');
       }
     });
 
@@ -169,6 +169,10 @@
   // 首次进入
   document.addEventListener('DOMContentLoaded', scheduleApply);
   window.addEventListener('load', scheduleApply);
+
+  // 立即应用一次：defer 脚本执行时 DOM 已解析，尽早设置背景图可让目标季节图
+  // 第一时间开始下载，避免等待 DOMContentLoaded 造成首屏空白。
+  scheduleApply();
 
   // 启用 navigation.instant 后，页面切换不触发 load，需监听其重渲染事件
   document.addEventListener('DOMContentSwitch', scheduleApply);

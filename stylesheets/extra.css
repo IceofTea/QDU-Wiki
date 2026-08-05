@@ -193,81 +193,6 @@ strong {
   }
 }
 
-/* ========== 主页访问统计（炫酷卡片） ========== */
-.visit-stats {
-  margin: 8px 0 14px;
-  text-align: center;
-}
-.visit-stats__title {
-  margin: 0 0 12px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--md-default-fg-color--light);
-}
-.visit-stats__cards {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-  max-width: 560px;
-  margin: 0 auto;
-}
-.visit-stats__card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  padding: 18px 12px 16px;
-  border-radius: 16px;
-  overflow: hidden;
-  color: #fff;
-  background:
-    radial-gradient(120% 140% at 50% 0%, rgba(255, 255, 255, 0.16), transparent 55%),
-    linear-gradient(160deg, #463a8f 0%, #332a68 60%, #241d4d 100%);
-  border: 1px solid rgba(255, 217, 160, 0.35);
-  box-shadow: 0 8px 24px rgba(63, 51, 123, 0.35);
-  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
-}
-.visit-stats__card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 70%;
-  height: 1px;
-  transform: translateX(-50%);
-  background: linear-gradient(90deg, transparent, #ffd9a0, transparent);
-  opacity: 0.85;
-}
-.visit-stats__card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(255, 217, 160, 0.7);
-  box-shadow: 0 14px 32px rgba(63, 51, 123, 0.5);
-}
-.visit-stats__icon {
-  font-size: 1.5rem;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.visit-stats__num {
-  font-size: 2.3rem;
-  font-weight: 800;
-  line-height: 1.15;
-  background: linear-gradient(135deg, #ffd9a0, #ffffff);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 2px 18px rgba(255, 217, 160, 0.35);
-}
-.visit-stats__label {
-  margin-top: 4px;
-  font-size: 0.82rem;
-  letter-spacing: 0.14em;
-  opacity: 0.88;
-}
-
 /* ========== 统计名单弹窗（ESI / 一流专业详情） ========== */
 .stats-modal {
   position: fixed;
@@ -405,16 +330,15 @@ strong {
 .hero-bg {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100% !important;
-  min-height: 100%;
-  object-fit: cover;
-  object-position: center;
   z-index: 0;
-  animation: hero-zoom 12s ease-out forwards;
+  background-color: #241d4d; /* JS 未就绪/无图时兜底深紫，避免空白 */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  animation: hero-zoom 8s ease-out forwards;
 }
 @keyframes hero-zoom {
-  from { transform: scale(1.12); }
+  from { transform: scale(1.08); }
   to   { transform: scale(1); }
 }
 .hero-overlay {
@@ -504,17 +428,30 @@ strong {
   animation: hero-rise 0.8s 0.55s both;
 }
 .stat {
+  position: relative;
   min-width: 150px;
   padding: 16px 20px;
   border-radius: 14px;
-  background: linear-gradient(160deg, rgba(59, 49, 128, 0.55), rgba(26, 21, 62, 0.55));
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
   transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
   cursor: pointer;
   color: inherit;
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
+}
+.stat::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 18%;
+  right: 18%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
 }
 .stat:hover {
   transform: translateY(-4px);
@@ -560,6 +497,66 @@ strong {
   text-decoration: none;
 }
 
+/* Hero 内访问统计（独立访客 / 累计访问）：左右两列毛玻璃卡片，每列自上而下 图标→数字→释义 */
+.hero-visits {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 20px;
+  animation: hero-rise 0.8s 0.85s both;
+}
+.hero-visits__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-width: 132px;
+  padding: 16px 20px 14px;
+  border-radius: 16px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+.hero-visits__item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 18%;
+  right: 18%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+}
+.hero-visits__item:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 217, 160, 0.5);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+}
+.hero-visits__icon {
+  font-size: 1.2rem;
+  line-height: 1;
+  opacity: 0.95;
+}
+.hero-visits__num {
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  color: #ffd9a0;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.35);
+}
+.hero-visits__label {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  opacity: 0.85;
+}
+
 /* 校区卡片 */
 .campus .md-typeset__table, .campus ul {
   margin: 0;
@@ -574,30 +571,24 @@ strong {
 
 /* 小屏适配 */
 @media screen and (max-width: 720px) {
-  .visit-stats {
-    margin: 6px 0 12px;
-  }
-  .visit-stats__title {
-    font-size: 0.85rem;
-    margin-bottom: 10px;
-  }
-  .visit-stats__cards {
+  .hero-visits {
     gap: 10px;
-    max-width: 380px;
+    margin-top: 16px;
   }
-  .visit-stats__card {
-    padding: 14px 8px 12px;
-    border-radius: 14px;
+  .hero-visits__item {
+    min-width: 118px;
+    padding: 12px 8px 10px;
+    border-radius: 12px;
   }
-  .visit-stats__num {
-    font-size: 1.8rem;
+  .hero-visits__icon {
+    font-size: 1rem;
   }
-  .visit-stats__icon {
-    font-size: 1.2rem;
+  .hero-visits__num {
+    font-size: 1.35rem;
   }
-  .visit-stats__label {
-    font-size: 0.74rem;
-    letter-spacing: 0.1em;
+  .hero-visits__label {
+    font-size: 0.7rem;
+    letter-spacing: 0.07em;
   }
   .hero {
     min-height: 68vh;
@@ -1110,9 +1101,10 @@ body.pop-open {
     transform: none;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
   }
-  .visit-stats__card:hover {
+  .hero-visits__item:hover {
     transform: none;
-    box-shadow: 0 8px 24px rgba(63, 51, 123, 0.35);
+    border-color: rgba(255, 255, 255, 0.16);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
   }
   .md-typeset .grid.cards > ul > li:hover {
     transform: none;

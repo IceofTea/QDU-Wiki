@@ -828,7 +828,7 @@ strong {
 }
 .hero-book__dots {
   display: flex;
-  gap: 9px;
+  gap: 8px;
 }
 .hero-book__dot {
   width: 10px;
@@ -1118,5 +1118,45 @@ body.pop-open {
   .quick-pop__close:hover,
   .quick-pop__go:hover {
     transform: none;
+  }
+}
+
+/* ===== 首页 hero 大卡片滚动弹幕 ===== */
+.hero-danmaku {
+  position: absolute;
+  top: 12px;
+  left: 24px;
+  right: 24px;
+  z-index: 5;
+  height: 28px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.hero-danmaku__item {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  white-space: nowrap;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65);
+  opacity: 0.95;
+  animation: danmaku-move linear forwards;
+}
+@keyframes danmaku-move {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(-100vw - 100%)); }
+}
+@media (max-width: 720px) {
+  .hero-danmaku {
+    top: 8px;
+    left: 12px;
+    right: 12px;
+    height: 24px;
+  }
+  .hero-danmaku__item {
+    font-size: 0.8rem;
   }
 }

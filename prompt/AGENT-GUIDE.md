@@ -359,6 +359,26 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-08-06：首页 hero 大卡片新增「随机滚动弹幕」
+
+- **任务**：给首页大卡片加一条横向滚动的社区梗句弹幕，话术采用随机而非顺序播放，并确保随机下不会有某句一直刷不出来。
+- **改动**：
+  - 新增：`docs/javascripts/bullet-danmaku.js`（洗牌池轮播逻辑：把 21 条话术随机打乱后逐条播放，播完一轮重新洗牌；`DOMContentLoaded`/`DOMContentSwitch`/MutationObserver 三重绑定以兼容 `navigation.instant`）
+  - 修改：`docs/index.md`（`hero-book` 内新增 `hero-danmaku` 弹幕容器）
+  - 修改：`docs/stylesheets/extra.css`（`hero-danmaku` 绝对定位幕布、`danmaku-move` 从右向左滚动 keyframes、时长随文案长度浮动、720px 小屏适配）
+  - 修改：`mkdocs.yml`（`extra_javascript` 引入 `bullet-danmaku.js`）
+- **说明**：采用「洗牌池」策略——将全部话术随机打乱后依次轮播，一轮播完再重新洗牌，既保证顺序随机，又保证每轮内每句话至少出现一次，天然规避「纯随机导致某句长期刷不出」。滚动为纯 CSS 动画 + 原生 DOM，无任何外部依赖、不阻塞首屏。经浏览器实测：首进与返回主页后弹幕均正常轮播、8 条采样去重后全部不重复、统计卡片数据在返回主页后仍正常刷新。
+
+---
+
+### 2026-08-06（补）：返回主页统计再次空白——补 MutationObserver 兜底
+
+- **任务**：上一轮修复后用户反馈生产环境返回主页统计仍不显示。本地 Material 9.7.7 会派发 `DOMContentSwitch` 事件，但 CI 使用最新版 Material，其 instant navigation 改用 fetch 替换 DOM 且**不再派发**该事件（`home-hero.js` 早已为此加了 MutationObserver），导致生产环境 `refresh()` 从未触发。
+- **改动**：修改 `docs/javascripts/visit-counter.js`——新增 `watchHome()` 的 MutationObserver，监听 `#busuanzi_value_site_pv` 锚点重新插入即调用 `refresh()`；保留原有 `DOMContentSwitch` 监听以兼容旧版。
+- **说明**：与 `home-hero.js` 相同的兼容策略：事件监听 + MutationObserver 双保险，确保无论 Material 版本是否派发切换事件，返回主页后统计卡片都能刷新填充。浏览器本地回归通过（返回主页 uv/pv 正常显示并随访问递增）。
+
+---
+
 ### 2026-08-06：修复「返回主页统计卡片空白」问题（instant 导航下数据加载兜底）
 
 - **任务**：用户反馈在其他页面停留后再返回主页，独立访客/累计访问两张卡片无法加载显示。定位为 `navigation.instant` 切换下统计数据获取链路无兜底。

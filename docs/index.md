@@ -6,6 +6,8 @@
 
 <div class="hero-book" id="hero-book">
 
+  <div class="hero-danmaku" id="hero-danmaku" aria-hidden="true"></div>
+
   <section class="hero-book__page active" data-index="0">
     <div class="hero-inner">
       <p class="hero-eyebrow">QINGDAO UNIVERSITY WIKI</p>

@@ -359,15 +359,13 @@ python -m mkdocs build --strict
 
 ---
 
-### 2026-08-06：首页 hero 大卡片新增「随机滚动弹幕」
+### 2026-08-06：首页 Hero 打字机话术池扩充（随机轮播） + 换句残留字修复
 
-- **任务**：给首页大卡片加一条横向滚动的社区梗句弹幕，话术采用随机而非顺序播放，并确保随机下不会有某句一直刷不出来。
+- **任务**：维护者澄清需求——不是新增滚动弹幕，而是复用 Hero 顶部「在这里，读懂你的校园生活」这一循环打字机，把社区梗句加进话术池；要求随机播放且不遗漏，并修复换句时「卡在第一个字」的问题。
 - **改动**：
-  - 新增：`docs/javascripts/bullet-danmaku.js`（洗牌池轮播逻辑：把 21 条话术随机打乱后逐条播放，播完一轮重新洗牌；`DOMContentLoaded`/`DOMContentSwitch`/MutationObserver 三重绑定以兼容 `navigation.instant`）
-  - 修改：`docs/index.md`（`hero-book` 内新增 `hero-danmaku` 弹幕容器）
-  - 修改：`docs/stylesheets/extra.css`（`hero-danmaku` 绝对定位幕布、`danmaku-move` 从右向左滚动 keyframes、时长随文案长度浮动、720px 小屏适配）
-  - 修改：`mkdocs.yml`（`extra_javascript` 引入 `bullet-danmaku.js`）
-- **说明**：采用「洗牌池」策略——将全部话术随机打乱后依次轮播，一轮播完再重新洗牌，既保证顺序随机，又保证每轮内每句话至少出现一次，天然规避「纯随机导致某句长期刷不出」。滚动为纯 CSS 动画 + 原生 DOM，无任何外部依赖、不阻塞首屏。经浏览器实测：首进与返回主页后弹幕均正常轮播、8 条采样去重后全部不重复、统计卡片数据在返回主页后仍正常刷新。
+  - 修改：`docs/javascripts/home-hero.js`（`PHRASES` 扩充为 24 条，新增 21 条社区梗句；引入「洗牌池」`shuffle`/`nextPhrase`，顺序随机且每轮内每条必现；`typeLoop` 重构为按当前短语轮播，并在删除完成分支先清空 `nodeValue` 再切下一条，修复最后一个字残留）
+  - 撤销：上一条「随机滚动弹幕」方案的 `bullet-danmaku.js`（删除文件）、`index.md` 的 `hero-danmaku` 容器、`extra.css` 弹幕样式、`mkdocs.yml` 脚本引入
+- **说明**：采用「洗牌池」策略——全部话术随机打乱后逐条播放，一轮播完重新洗牌，既随机又不遗漏。原 bug 根因：删除循环里 `charIndex` 递减到 0 时分支直接 `return`，未更新 `nodeValue`，导致删除到只剩第一个字时该字残留。修复后删除完毕即清空，再停顿换句。浏览器实测：换句出现空窗（清空生效）、50 秒内轮播 10 条完整句全部来自话术池且互不重复、含梗句与原有引导语，无运行错误。
 
 ---
 

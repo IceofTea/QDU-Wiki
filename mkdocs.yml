@@ -85,7 +85,6 @@ extra_javascript:
   - javascripts/home-hero.js
   - javascripts/stats-modal.js
   - javascripts/visit-counter.js
-  - javascripts/bullet-danmaku.js
 markdown_extensions:
   - md_in_html
   - pymdownx.tilde

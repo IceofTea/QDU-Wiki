@@ -5,7 +5,28 @@
   var PHRASES = [
     '在这里，读懂你的校园生活',
     '从新生小白到青大通，只差这一步',
-    '浮山 · 金家岭 · 松山，三校区全攻略'
+    '浮山 · 金家岭 · 松山，三校区全攻略',
+    '夏🐭🐭在莘园吃午饭',
+    '下水道鬻锅 again',
+    '魏🐭🐭批空调经费中',
+    '拷打文工团大海的女儿',
+    '为青大之崛起而读书',
+    '开始推销校园卡',
+    '游戏本五黑跳闸',
+    '在醉爱很内向，吃饱了也不说，一直吃',
+    '在双子楼连上客机 Wi-Fi',
+    '胡🐭🐭赶上延迟退休 6 个月',
+    '闪击青科食堂',
+    '围攻海洋大学',
+    '我放宿舍充电的电瓶呢？',
+    '入镜青大国国宣传视频',
+    '导员，我已经在回校的火车上了',
+    '去西伯利亚挖教务服务器',
+    '骑上我心爱的校易行',
+    '胡🐭🐭早上在西院操场跑步',
+    '偷偷你的外卖',
+    '金焱 +3，告辞',
+    '距早八还剩一小时：9 点了'
   ];
   var TYPE_SPEED = 90;
   var DELETE_SPEED = 55;
@@ -13,21 +34,38 @@
 
   var typeEl = null;
   var timer = null;
+  var currentPhrase = '';
+  var pool = [];
+
+  // 洗牌池：顺序随机，且每轮内每条话术至少出现一次，避免个别句一直刷不出来
+  function shuffle(a) {
+    var i = a.length, j, t;
+    while (i > 1) {
+      j = Math.floor(Math.random() * i);
+      i--;
+      t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function nextPhrase() {
+    if (pool.length === 0) pool = shuffle(PHRASES.slice());
+    return pool.shift();
+  }
 
   function clearTimer() {
     if (timer) { clearTimeout(timer); timer = null; }
   }
 
-  // 打字机主循环
-  function typeLoop(phraseIndex, charIndex, deleting, pendingPause) {
+  // 打字机主循环：typing -> hold -> deleting -> 清空后换下一条（洗牌池随机）
+  function typeLoop(phrase, charIndex, deleting, pendingPause) {
     if (!typeEl) return;
-    var phrase = PHRASES[phraseIndex % PHRASES.length];
     var cursor = document.querySelector('#hero-type .cursor');
 
     if (pendingPause) {
       // 上一句刚删完，稍作停顿再打下一句
       timer = setTimeout(function () {
-        typeLoop(phraseIndex, 0, false, false);
+        typeLoop(currentPhrase, 0, false, false);
       }, 420);
       return;
     }
@@ -35,12 +73,14 @@
     if (deleting) {
       charIndex--;
       if (charIndex <= 0) {
+        // 全部删除完毕：先把残留的第一个字也清空，再换下一条
+        typeEl.childNodes[0].nodeValue = '';
         deleting = false;
-        phraseIndex++;
         charIndex = 0;
+        currentPhrase = nextPhrase();
         // 切换到下一句前停顿一下
         timer = setTimeout(function () {
-          typeLoop(phraseIndex, 0, false, true);
+          typeLoop(currentPhrase, 0, false, true);
         }, 260);
         return;
       }
@@ -60,7 +100,7 @@
     }
 
     timer = setTimeout(function () {
-      typeLoop(phraseIndex, charIndex, deleting, false);
+      typeLoop(phrase, charIndex, deleting, false);
     }, delay);
   }
 
@@ -73,7 +113,8 @@
     cursor.textContent = '';
     typeEl.appendChild(cursor);
     clearTimer();
-    timer = setTimeout(function () { typeLoop(0, 0, false); }, 300);
+    currentPhrase = nextPhrase();
+    timer = setTimeout(function () { typeLoop(currentPhrase, 0, false, false); }, 300);
   }
 
   // 数字展示：直接填充最终值，避免从 0 滚动造成"数据为 0"的错觉

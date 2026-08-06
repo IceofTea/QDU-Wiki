@@ -162,4 +162,32 @@
       restore(); apply();
     }
   });
+
+  // MutationObserver 兜底：Material 9.x 高版本的 instant navigation 用 fetch 替换
+  // DOM 且不再派发 DOMContentSwitch 事件（home-hero.js 同款问题），需监听主页锚点
+  // 重新插入来触发刷新，确保返回主页后统计卡片一定能回填。
+  function watchHome() {
+    if (document.body && document.body.dataset.visitWatch) return;
+    if (!document.body) return;
+    document.body.dataset.visitWatch = '1';
+    var mo = new MutationObserver(function (mutations) {
+      for (var i = 0; i < mutations.length; i++) {
+        var added = mutations[i].addedNodes;
+        for (var j = 0; j < added.length; j++) {
+          var node = added[j];
+          if (node.nodeType === 1 && node.querySelector && node.querySelector('#busuanzi_value_site_pv')) {
+            refresh();
+            return;
+          }
+        }
+      }
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.body) {
+    watchHome();
+  } else {
+    document.addEventListener('DOMContentLoaded', watchHome);
+  }
 })();

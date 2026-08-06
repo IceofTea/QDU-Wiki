@@ -1,14 +1,22 @@
 // 主页访问统计卡片：读取 Vercount（兼容不蒜子标签）统计值，填充卡片数字并做滚动动画，
 // 兼容 navigation.instant 返回主页时回填，外部统计服务不可用时优雅降级为占位符。
+// 数据来源有两路：
+//   1) 首次整页加载：异步注入 Vercount 脚本，脚本回填隐藏锚点后，本地轮询读取回填卡片（不额外发请求，避免首屏缓冲）。
+//   2) instant 返回主页：新 DOM 的隐藏锚点是空的，Vercount 脚本不会重跑，故直接直连其 API 拉取最新值并回填，
+//      同时用 sessionStorage 缓存先行回填，避免空白闪烁；同一时刻也只发一次请求并加节流，避免连发。
 (function () {
   'use strict';
 
   var STORAGE_KEY = 'qdu-wiki-visit-v1';
   var VERC0UNT_SRC = 'https://vercount.one/js';
-  var MAX_TRIES = 60; // 轮询上限约 30s，等待 Vercount 首次返回
+  var API_URL = 'https://events.vercount.one/api/v2/log';
+  var UV_COOKIE_PREFIX = 'vercount_uv_';
+  var MAX_TRIES = 60; // 锚点轮询上限约 30s，等待 Vercount 首次返回
+  var REFRESH_MS = 5000; // 返回主页时 API 刷新的节流窗口，防止快速往返连发
   var DURATION = 1000; // 数字滚动动画时长 ms
 
   var last = null;
+  var lastRefresh = 0;
 
   function restore() {
     try {
@@ -68,6 +76,61 @@
     fillCards();
   }
 
+  // ---- Vercount API 直连（返回主页刷新用），与官方脚本保持同一套 UV cookie 去重逻辑 ----
+  function hostKey() {
+    return (window.location.host || 'unknown-host').replace(/[^a-zA-Z0-9_-]/g, '_');
+  }
+
+  function hasUvCookie() {
+    var name = UV_COOKIE_PREFIX + hostKey() + '=1';
+    return document.cookie.split('; ').indexOf(name) !== -1;
+  }
+
+  function setUvCookie() {
+    document.cookie = UV_COOKIE_PREFIX + hostKey() + '=1; path=/; max-age=31536000; samesite=lax';
+  }
+
+  // 异步拉取最新 site_pv / site_uv；永不抛错，失败返回 null 由调用方降级
+  function fetchVisit() {
+    var url = window.location.href;
+    if (!url || url.indexOf('http') !== 0) return Promise.resolve(null);
+
+    var isNewUv = !hasUvCookie();
+    if (isNewUv) setUvCookie();
+
+    return fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: url, isNewUv: isNewUv })
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function (res) {
+      var data = (res && res.data) || res;
+      if (!data || data.site_pv === undefined) return null;
+      return { pv: String(data.site_pv), uv: String(data.site_uv) };
+    }).catch(function () {
+      return null;
+    });
+  }
+
+  // 返回主页时刷新：先用缓存立即回填（避免空白闪烁），再直连 API 拉最新值，节流防连发
+  function refresh() {
+    restore();
+    if (last) fillCards();
+
+    var now = Date.now();
+    if (now - lastRefresh < REFRESH_MS) return;
+    lastRefresh = now;
+
+    fetchVisit().then(function (d) {
+      if (!d) return;
+      last = d;
+      try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch (e) {}
+      fillCards();
+    });
+  }
+
   // 异步注入 Vercount 脚本，避免阻塞首屏渲染；脚本就绪后其回调会填充隐藏锚点，随后轮询读取。
   function injectVercount() {
     if (document.querySelector('script[src="' + VERC0UNT_SRC + '"]')) return;
@@ -89,7 +152,14 @@
       if (++tries >= MAX_TRIES) clearInterval(timer);
     }, 500);
   }
+
   restore();
   document.addEventListener('DOMContentLoaded', start);
-  document.addEventListener('DOMContentSwitch', function () { restore(); apply(); });
+  document.addEventListener('DOMContentSwitch', function () {
+    if (document.getElementById('busuanzi_value_site_pv')) {
+      refresh();
+    } else {
+      restore(); apply();
+    }
+  });
 })();

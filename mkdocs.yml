@@ -43,6 +43,7 @@ nav:
     - 报到校区与联系方式: new/campus_registration.md
     - 防诈骗指南: new/anti-fraud.md
     - 军训指南: new/military_training.md
+    - 本科生手册: new/undergraduate_handbook.md
     - 联系方式: new/contact.md
   - 生活指南:
     - 餐饮: live/eat.md
@@ -51,21 +52,23 @@ nav:
     - 医疗: live/hospital.md
     - 校园设施: live/facilities.md
     - 购物与商店: live/shopping.md
+    - 校园活动: live/campus_activities.md
   - 学习学业:
     - 学业制度: study/system.md
     - 第二课堂: study/second_classroom.md
     - 创新实践学分: study/innovation_credit.md
+    - 转专业: study/transfer_major.md
     - 校历: study/calendar.md
     - 入党知识: study/party.md
     - 考试与成绩: study/exam.md
-    - 官方文件:
-      - 考试管理规定: study/exam_rules.md
-      - 学业预警: study/academic_warning.md
-      - 选课操作指南: study/course_selection.md
-      - 综合测评: study/comprehensive_assessment.md
+    - 考试管理规定: study/exam_rules.md
+    - 学业预警: study/academic_warning.md
+    - 选课操作指南: study/course_selection.md
+    - 综合测评: study/comprehensive_assessment.md
   - 校园服务:
     - 网络服务: service/network.md
     - 校园卡与证件: service/card.md
+    - 预算情况: service/budget.md
   - 学院详情:
     - college/index.md
     - 计算机科学技术学院: college/computer_science_and_technology.md

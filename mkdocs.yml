@@ -108,6 +108,7 @@ plugins:
       repository: IceofTea/QDU-Wiki
       branch: main
       enabled: !ENV [CI, false]
+      token: !ENV [GITHUB_TOKEN]
       exclude_committers:
         - web-flow
 extra:

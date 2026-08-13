@@ -424,6 +424,18 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-08-13：PR #1 合并内容的格式规范化
+
+- **任务**：审查社区贡献者（BandieraRosa）经 PR #1 合并进仓库的四个文件（计科院详情、购物页、社团与学生组织、有话送你），对不合规范的排版做纯格式修正。
+- **改动**：
+  - 修改：`docs/college/computer_science_and_technology.md`（中英文间空格：`C.S`/`token`/`Agent`/`Torch`；半角括号「(图灵班)」改为全角「（图灵班）」）
+  - 修改：`docs/organization/index.md`（链接与中文间空格；`../college` 改为 `../college/index.md` 消除构建提示的不可识别链接；「面试 + 一年培训考核」加号两侧空格、去掉表格内孤立句号以统一列表）
+  - 修改：`docs/words/index.md`（玉环寄语硬换行合并为一段，与既有段落格式统一；`AI`/`408`/`BOSS 直聘` 等中英文与数字空格；句末省略号规范化「……」；补全句号）
+  - 未改动：`docs/live/shopping.md`（贡献者已按规范补充表格后空行，无需调整）
+- **说明**：仅做格式规范化，未改动任何文字内容与信息；构建 `python -m mkdocs build --strict` 通过。
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

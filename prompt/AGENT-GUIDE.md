@@ -436,6 +436,16 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-08-17：导航栏新增「前往Nav」外部跳转链接 + README 补充导航站入口
+
+- **任务**：在网站顶部导航栏增加一个指向 QDU-Nav 导航网站的入口，点击直接跳转、不渲染页面；并在仓库说明文档 README 顶部同步添加该导航站链接。
+- **改动**：
+  - 修改：`mkdocs.yml`（nav 中「关于 Wiki」前新增 `- 前往Nav: https://iceoftea.github.io/QDU-Nav`，纯外部 URL 顶层项，Material 渲染为 tab 链接，点击直接跳转）
+  - 修改：`README.md`（顶部项目地址旁新增「前往导航」链接）
+- **说明**：顶层 nav 项值为完整 URL 时 MkDocs 视为外部链接，Material 导航栏直接渲染为可点击链接、不会进入页面，符合「点击即跳转」需求。构建 `python -m mkdocs build --strict` 通过。
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

@@ -4,7 +4,7 @@
 
 这里是百度贴吧青岛大学吧牵头搭起来的校园指南站。不管你是刚拿到录取通知书的新生，还是已经在校园里混了好几年的老油条，希望这里的内容能帮上点忙。
 
-[项目地址](https://iceoftea.github.io/QDU-Wiki/)
+[项目地址](https://iceoftea.github.io/QDU-Wiki/) | [前往导航](https://iceoftea.github.io/QDU-Nav)
 
 欢迎 qduer们，欢迎把你踩过的坑、攒下来的经验写进来。先谢过各位了。
 

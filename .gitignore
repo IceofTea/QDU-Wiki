@@ -166,6 +166,8 @@ venv.bak/
 
 # mkdocs documentation
 /site
+# 检索知识库构建产物（由 scripts/build_kb.py 在 CI 生成）
+/docs/assets/kb.json
 
 # mypy
 .mypy_cache/

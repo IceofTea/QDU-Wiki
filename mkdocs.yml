@@ -46,6 +46,7 @@ nav:
     - 本科生手册: new/undergraduate_handbook.md
     - 联系方式: new/contact.md
   - 生活指南:
+    - 校区地图: live/map.md
     - 餐饮: live/eat.md
     - 住宿: live/dorm.md
     - 交通: live/traffic.md
@@ -72,6 +73,8 @@ nav:
   - 学院详情:
     - college/index.md
     - 计算机科学技术学院: college/computer_science_and_technology.md
+    - 机电工程学院: college/mechanical_and_electrical_engineering.md
+    - 化学化工学院: college/chemistry_and_chemical_engineering.md
   - 学生组织:
     - 社团与学生组织: organization/index.md
   - 文件共享: share/index.md
@@ -89,6 +92,7 @@ extra_javascript:
   - javascripts/home-hero.js
   - javascripts/stats-modal.js
   - javascripts/visit-counter.js
+  - javascripts/chat-widget.js
 markdown_extensions:
   - md_in_html
   - pymdownx.tilde

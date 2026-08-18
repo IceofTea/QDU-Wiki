@@ -13,7 +13,6 @@
   var UV_COOKIE_PREFIX = 'vercount_uv_';
   var MAX_TRIES = 60; // 锚点轮询上限约 30s，等待 Vercount 首次返回
   var REFRESH_MS = 5000; // 返回主页时 API 刷新的节流窗口，防止快速往返连发
-  var DURATION = 1000; // 数字滚动动画时长 ms
 
   var last = null;
   var lastRefresh = 0;
@@ -36,31 +35,12 @@
     return n.toLocaleString('en-US');
   }
 
-  // 从当前值滚动到目标值的数字动画（easeOutCubic）
-  function animateNum(el, target) {
-    var current = parseInt((el.textContent || '').replace(/[^\d]/g, ''), 10) || 0;
-    if (current === target) {
-      el.textContent = format(target);
-      return;
-    }
-    var start = current;
-    var startTs = null;
-    function step(ts) {
-      if (startTs === null) startTs = ts;
-      var p = Math.min((ts - startTs) / DURATION, 1);
-      var eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = format(Math.round(start + (target - start) * eased));
-      if (p < 1) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
-  }
-
   function fillCards() {
     document.querySelectorAll('[data-count="pv"]').forEach(function (el) {
-      animateNum(el, parseInt(last.pv, 10) || 0);
+      el.textContent = format(parseInt(last.pv, 10) || 0);
     });
     document.querySelectorAll('[data-count="uv"]').forEach(function (el) {
-      animateNum(el, parseInt(last.uv, 10) || 0);
+      el.textContent = format(parseInt(last.uv, 10) || 0);
     });
   }
 

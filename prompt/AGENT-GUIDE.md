@@ -138,7 +138,7 @@ QDU-Wiki/
 > **对 Agent 的要求**：新增学院页面时，先看看同目录已有页面的模板结构，保持一致。
 
 !!! warning "关于「未完成维护的学院页」"
-    若某学院页仅为后续维护预留（内容基本是模板/待更新），**只新建文件即可，不要加入 `mkdocs.yml` 的 nav**，也不要挂到 `college/index.md` 的列表里。已完整维护的学院才进入导航与索引展示。这样既能占位方便后续补充，又不会让访问者点进空白页。
+    未完成维护的学院**不保留占位文件**：不建 `.md`、不进 `mkdocs.yml` 的 nav、不进 `college/index.md` 列表。只有内容基本完整的学院才创建文件并加入导航与索引展示（参考计算机科学技术、机电工程、化学化工三学院）。空占位页会污染站内搜索与知识库索引、影响检索质量，一律不保留。
 
 ---
 
@@ -443,6 +443,180 @@ python -m mkdocs build --strict
   - 修改：`mkdocs.yml`（nav 中「关于 Wiki」前新增 `- 前往Nav: https://iceoftea.github.io/QDU-Nav`，纯外部 URL 顶层项，Material 渲染为 tab 链接，点击直接跳转）
   - 修改：`README.md`（顶部项目地址旁新增「前往导航」链接）
 - **说明**：顶层 nav 项值为完整 URL 时 MkDocs 视为外部链接，Material 导航栏直接渲染为可点击链接、不会进入页面，符合「点击即跳转」需求。构建 `python -m mkdocs build --strict` 通过。
+
+---
+
+### 2026-08-18：新增「青大智答」全站悬浮智能问答（纯本地 BM25 检索，新生客服）
+
+- **任务**：利用全站 md 文档构建知识库，实现适配手机端的「新生客服」智能问答；维护者选择零密钥零成本方案，需可部署在 GitHub Pages 这个 wiki 内。
+- **改动**：
+  - 新增：`scripts/build_kb.py`（解析 mkdocs.yml nav 中的正式页面 → 按 H2/H3 标题切块 → jieba 精确分词去停用词 → 构建 BM25 倒排索引，标题词加权 ×2 → 输出 `docs/assets/kb.json`；标题锚点用与 MkDocs 一致的 toc 算法生成 `#_n`，已实测与 site 渲染一致）
+  - 新增：`docs/javascripts/chat-widget.js`（右下角悬浮气泡 + 抽屉式对话面板；前端零外部依赖分词「词表 FMM + 单字兜底」→ BM25 打分 → 展示 top 3 相关片段卡片 + 原文锚点链接；kb.json 懒加载缓存；兼容 Material instant 导航）
+  - 修改：`docs/stylesheets/extra.css`（聊天组件样式：毛玻璃深紫 + 金色渐变，与 Hero 风格一致；720px 以下手机端全屏底部抽屉 + 安全区适配）
+  - 修改：`mkdocs.yml`（`extra_javascript` 追加 `javascripts/chat-widget.js`，纯追加）
+  - 修改：`.github/workflows/ci.yml`（`mkdocs gh-deploy` 前新增 `python scripts/build_kb.py` 步骤）
+  - 修改：`.gitignore`（忽略 `docs/assets/kb.json` 构建产物）
+  - 修改：`prompt/AGENT-GUIDE.md`（追加本记录）
+- **说明**：
+  - **架构**：GitHub Pages 纯静态即可承载「检索 + 原文片段」式问答，无需后端与密钥；维护者选定不做「大模型生成式回答」，未来升级仅需在 `ask()` 处加一层 Cloudflare Worker 代理接入 LLM，UI 与检索层无需改动。
+  - **知识库范围**：只索引 nav 中正式展示且非 `words/` `share/` `about/` 板块的页面（31 页 → 430 块 / 6423 词 / kb.json 约 388KB，懒加载）。
+  - **站点根推导**：前端从 `<base>`（若 Material 输出）或 `location.pathname` 第一段推导站点根，origin 取当前域名，本地调试不会误请求线上。
+  - **检索质量**：实测「宿舍晚上几点熄灯 / 怎么转专业 / 医保在哪报销 / 校园网怎么办理」等均命中正确板块与锚点。
+  - **维护注意**：内容更新后无需人工维护 kb.json，CI 部署时自动重建；本地预览前需先跑 `python scripts/build_kb.py`。
+  - **测试**：浏览器自动化 15/15 通过（桌面/手机端、instant 导航后组件存活、锚点跳转、chips 提问、无 JS 运行时错误）；`python -m mkdocs build --strict` 通过。
+
+---
+
+### 2026-08-18：爬取腾讯文档（在线版）并同步机电/化学化工两学院页
+
+- **任务**：用户在腾讯文档（docs.qq.com/aio/DVFJnbFR3TWdzbFVn，分享模式「只能查看」）里维护了一份与 wiki 同步的在线文档，社区在其中补充了新内容。需要爬取在线文档全部子页面，对比 wiki，并把社区新维护的实质内容同步回 wiki。
+- **改动**：
+  - 爬取：用 Playwright + 系统 Edge（游客可读，无需登录）遍历在线文档左侧目录树，抓取 65 个子页面正文（含列表/表格/删除线样式），存档于 `export/latest/children/`（不进入版本库依赖，供对比与复核）
+  - 新增内容同步（**原样搬运，未润色**）：
+    - `docs/college/mechanical_and_electrical_engineering.md`（机电工程学院）：专业设置 7 项、校区安排「大一至大四均在浮山住」（旧「大一金家岭」列表按原文用删除线保留）、学习与竞赛建议（三个竞赛协会）；贡献者标注「机电工程学院 2022 级机械工程 庄13（2026.8.16）」
+    - `docs/college/chemistry_and_chemical_engineering.md`（化学化工学院）：完整学院简介（ESI 前 1‰、师资、平台、党建）、专业设置 4 项（含「化学（？）查无此人」俏皮占位）、校区安排「2026 年新生大一到大四在浮山、学院在浮山西院博观楼」、2025 升学数据
+  - 修改：`docs/college/index.md`（两个学院状态「待更新」→「已维护」，顶部 success 提示同步更新）
+  - 未改动：`campus_registration.md`（在线文档仅机电/化工两学院确认 2026 级新生校区变化，其余学院仍按原表）
+- **说明**：
+  - 在线文档其余 58 页与 wiki 基本一致（此前已核对）；「校区地图」「检索汇总」为在线文档新增板块但内容 wiki 已覆盖/价值有限，按维护者决策不建；「心理咨询服务」「图书馆指南」为占位页，按「未完成不展示」原则不建。
+  - 关键事实：机电、化工 2026 级新生已确认**大一至大四均在浮山校区**（此前大一在金家岭），此变化已按原文记入两个学院页。
+  - 爬取经验：腾讯文档分享模式「只能查看」的文档**游客可读**（无需登录），左侧树节点为 `span.sc-page-item-rich-title`，正文在右侧主区域最长文本容器内；删除线为 CSS `line-through`（非 `<del>`），需按样式还原 `~~…~~`。
+  - 构建 `python -m mkdocs build --strict` 通过；已核对渲染产物（删除线 2 处、贡献者署名、校区信息均在）。
+
+---
+
+### 2026-08-18（补）：腾讯文档全量对比核实 + 文件共享资料同步
+
+- **任务**：对爬取的 65 个子页面与 wiki 做逐页规范化 diff，确认除机电/化工外是否还有其他实质差异；期间发现爬取过程存在 1 处「页面错位」（点击节点后正文未切换）。
+- **改动**：
+  - 重抓：`联系方式` 页（首次爬取错位，抓成了「报到校区与学院联系方式」内容；重抓后与 wiki `new/contact.md` 一致，确认无实质差异）
+  - 修改：`docs/share/index.md`（在线文档「文件共享」板块已上传「2022 学生手册 03.pdf」「期中期末试卷《高等数学Ⅰ》.zip」「青大之歌」，wiki 原只有「待上传」，现补充提示指向腾讯文档版查看/下载）
+- **说明**：
+  - 全量 diff 结论：除机电、化工、文件共享三处外，**在线文档无其他 wiki 缺失的实质内容**。多数页面差异为格式噪音（wiki 的 admonition/链接语法 vs 爬取纯文本），且所有页面内容量均 ≤ wiki（wiki 更全），方向正确无需回填。
+  - 已核实无需处理：教育科学学院（wiki 反而更全，含专业设置与学工办电话；在线文档为占位且贡献段误写「教师教育学院」，不采纳）、计算机科学技术学院（wiki 更长，wiki 为源）、校区地图/检索汇总（内容 wiki 已覆盖）、心理咨询/图书馆指南（占位，按「未完成不展示」不建）。
+  - 维护经验：腾讯文档 aio 树节点连续快速点击时，正文可能未及时切换导致抓取错位；爬取后应校验「正文标题 == 目标节点名」再落盘。
+
+---
+
+### 2026-08-18（补）：校区地图页上线 + 文件共享资料入库
+
+- **任务**：用户手动从腾讯文档下载了文件共享板块的 3 份资料（2022 学生手册 PDF、期中期末试卷《高等数学Ⅰ》ZIP、青大之歌 MP3）与校区地图 2 张平面图，要求移动到正确位置并在网站展示，把「校区地图」作为小分类加入生活指南板块。
+- **改动**：
+  - 移动图片：`docs/share/files/fsx.jpg`、`jjl.png` → `docs/pics/live/`，按站内命名规范重命名 `live-图1-浮山校区地图.jpg`、`live-图2-金家岭校区地图.png`
+  - 新增：`docs/live/map.md`（校区地图页，按腾讯文档版完整结构：三校区概览（含浮山/金家岭平面图）+ 学院报到校区一览（2026 级参考）+ 主要建筑与常用地点 + 快递收件地址 + 常用电话；页面含 `# 校区🗺` 正文标题）
+  - 修改：`mkdocs.yml`（生活指南板块下新增导航项「校区地图: live/map.md」，纯追加）
+  - 修改：`docs/share/index.md`（「资料下载」由「待上传」改为本地文件表格：2022 学生手册 PDF 1.31MB、期中期末试卷《高数Ⅰ》ZIP 6.65MB、青大之歌 MP3 8.4MB，相对路径链接）
+- **说明**：
+  - 校区地图两张平面图用**本地图片**（从腾讯文档下载）而非远程 docimg8 URL——远程图在 wiki 域名下存在防盗链 403 风险，本地化展示最稳。
+  - 文件放 `docs/share/files/`（对应站点 `/share/files/`），MkDocs 构建会原样复制，下载链接为 URL 编码的中文文件名，浏览器可正常访问。
+  - 构建 `python -m mkdocs build --strict` 通过；浏览器实测通过（校区地图页 2 图渲染、两个 H1、导航含校区地图、share 页三份资料链接、无 JS 错误）。
+
+---
+
+### 2026-08-18（补）：清理全部占位页 + 学院导航规范化
+
+- **任务**：维护者要求清除所有占位页/无内容/不展示的页面（尤其学院详情中未维护的占位 md），避免污染站内搜索索引与影响性能；并确认新增功能文件（AI 客服等）模块化、置于规范路径。
+- **改动**：
+  - 删除：`docs/college/` 下 27 个未维护学院占位页（art/automation/business/continuing_education/drake_college/economics/education_science/electrical_engineering/electronic_information/environmental_science_and_engineering/fine_arts/foreign_languages/history/international_education/law/life_science/literature_and_journalism/marxism/materials_science_and_engineering/mathematics_and_statistics/physical_education/physics_science/politics_and_public_administration/public_foreign_language_education/school_of_medicine/teacher_education/textile_and_clothing）
+  - 删除：`docs/live/drafts/information-sources-2026.md`（使命已完成的采集草稿，不展示）
+  - 重写：`docs/college/index.md`（学院列表只保留三个已维护学院：计算机科学技术、机电工程、化学化工；移除 27 个占位学院行与「快速定位」锚点）
+  - 修改：`mkdocs.yml`（学院详情导航新增机电工程学院、化学化工学院两项）
+  - 修改：`prompt/AGENT-GUIDE.md`（3.6 节「未完成维护的学院页」规则改为：不再保留占位文件，有实质内容才建页并入 nav/索引）
+- **说明**：
+  - 被删占位页均不在 nav 中，删除后 `python -m mkdocs build --strict` 通过，无残留引用（grep 验证）；知识库 kb.json 仅索引 nav 页面，块数 451。
+  - 新增功能文件路径确认规范：`docs/javascripts/chat-widget.js`（AI 客服模块）、样式统一在 `docs/stylesheets/extra.css`、构建脚本 `scripts/build_kb.py`、产物 `docs/assets/kb.json`（已 .gitignore）。
+  - 保留含「待更新」标注的生活/服务正式页面（dorm/eat/facilities 等）——它们有实质内容且在导航中，非占位。
+
+---
+
+### 2026-08-18（补）：学院索引恢复完整名录 + 机电/化工页去框架化并标注贡献者
+
+- **任务**：维护者调整清理策略——`college/index.md` 应**保留完整学院名录、学院简介与未维护说明**（而非粗暴删除列表），未维护学院不建占位页但仍展示在索引中；机电/化工两学院页**去掉无意义框架（「待更新」占位段）**，用社区贡献的实际信息组建页面，并在顶部仿计科学院标注贡献者。
+- **改动**：
+  - 重写：`docs/college/index.md`（按医学/理工/人文社科/经管/艺术/继续教育六类恢复全部学院名录，每学院保留简介；三个已维护学院（计算机/机电/化工）带「查看详情」链接，其余标「待补充」；底部附「关于未维护学院」说明）
+  - 重写：`docs/college/mechanical_and_electrical_engineering.md`（删除「学院简介/特色培养/保研与就业/常见问题」空框架，仅保留社区有实质内容的专业设置/校区安排/学习竞赛建议；顶部 `!!! quote "备注"` 标注「机电工程学院 2022 级机械工程 庄13」贡献）
+  - 重写：`docs/college/chemistry_and_chemical_engineering.md`（删除「学习与竞赛建议/常见问题」空框架，保留完整学院简介/专业设置/特色培养/校区安排/保研就业；顶部标注「鸢.」贡献；「特色培养」补一句说明避免裸条目）
+- **说明**：删除的空框架均为社区未填写的模板占位段；贡献者署名沿用计科院 `!!! quote "备注"` 格式（无 GitHub 链接者直接写名字）。构建 `python -m mkdocs build --strict` 通过；浏览器实测 13 项（索引名录/未维护说明/贡献者/删除线/无空框架/无 JS 错误）全部正常。
+
+---
+
+### 2026-08-18（补）：腾讯文档全量句级核查 + 学生手册下载入口
+
+- **任务**：维护者粘贴了腾讯文档 9 个页面（入学准备/军训/本科生手册/餐饮/住宿/交通/购物/网络/校园卡）要求逐字核对；随后要求对全部 65 页做句级反向核查（找出「腾讯文档有、wiki 没有」的句子），并为《青岛大学学生手册》提供下载入口。
+- **改动**：
+  - 修改：`docs/live/eat.md`（三餐补入腾讯文档独有信息「早餐有 3 元/个的洋葱牛肉包，性价比很高」）
+  - 修改：`docs/new/undergraduate_handbook.md`（顶部「内容基于 2022 年学生手册」admonition 增加「📥 点击下载：《青岛大学学生手册》PDF」链接 → `../share/files/2022学生手册03.pdf`）
+- **说明**：
+  - 句级核查方法：把 65 个爬取页面按句切分、去 markdown 符号后，与 wiki 规范化全文比对，输出「腾讯文档有而 wiki 没有」的句子。
+  - 核查结论：**实质差异仅 1 处**（餐饮三餐洋葱牛肉包，已补）；其余均为链接文案差异（wiki 双链 vs 纯文本）、已删除的 25 个学院占位页（爬取于删除前）、或 wiki 已有内容（选课登录/忘记密码、预算来源、计科「未来战队招新群」等均已存在于对应页面）。
+  - 学生手册 PDF 已在本站 `docs/share/files/`（1.31MB），本科生手册页可点击直接下载；文件共享页亦已提供下载表格。
+  - 构建 `python -m mkdocs build --strict` 通过；渲染产物核对（洋葱牛肉包、学生手册下载链接）均在。
+
+---
+
+### 2026-08-18（补）：AI 助手「青大智答」视觉升级（高级感体验）
+
+- **任务**：维护者反馈 AI 助手功能不错但不够美观，要求更有创新/质量/体验感，文字不要太大、清晰宜人、有对话的高级感。
+- **改动**：仅改样式（`docs/stylesheets/extra.css` 聊天组件整段重写，JS 与 DOM 结构不动）
+  - 整体质感：面板背景改为「顶部紫色光晕 + 深紫渐变」、`backdrop-filter` 毛玻璃、柔和阴影；气泡按钮增加呼吸光晕动画
+  - 高级细节：标题带**绿色在线脉冲状态点**（伪元素）、关闭按钮 hover 金色旋转；输入框聚焦金色描边 + 光晕；发送按钮金色渐变胶囊 + hover 微升
+  - 排版收敛（文字变小更清晰）：正文气泡 0.92→0.88rem、标题 1.1→1.02rem、chips 0.82→0.78rem、结果卡标题 0.98→0.92rem、摘要 0.86→0.82rem、行高统一约 1.62
+  - 交互创新：每条消息新增淡入上移动画（`chat-msg-in`）；结果卡片左侧金色渐变竖条 + hover 微升发光，「查看原文」hover 箭头间距拉开
+- **说明**：仅 CSS，零功能改动，兼容 instant 导航与手机端；构建 `python -m mkdocs build --strict` 通过；浏览器实测 7 项全过（渐变背景/字号收敛/状态点/卡片圆角/无 JS 错误），桌面与手机截图存档于临时目录。
+
+---
+
+### 2026-08-18（补）：首页 Hero 手册新增第四页「一站式导航站」
+
+- **任务**：维护者要求首页大卡片翻页手册加第四页，做成炫酷界面并能前往 QDU-Nav 导航站。
+- **改动**：
+  - 修改：`docs/index.md`（`hero-book` 新增 `data-index="3"` 第四页：标题「一站式导航站」+ 毛玻璃卡片 + 大按钮「前往 QDU-Nav」外链新标签打开；导航点新增第 4 个 `hero-book__dot`）
+  - 修改：`docs/stylesheets/extra.css`（新增 `.hero-navhub` 系列样式：紫色光晕渐变卡片、金色渐变标题、按钮 hover 上浮发光 + 箭头位移；720px 移动端紧凑适配）
+- **说明**：翻页 JS `home-hero.js` 的 `initHeroBook()` 用 `pages.length` 与 dots 遍历动态适配，新增页与导航点无需改 JS；第四页为最后一页，`next` 按钮自动禁用。构建 `python -m mkdocs build --strict` 通过；浏览器实测 9 项全过（4 页/4 点、切页、卡片渲染、外链新标签打开 QDU-Nav、回退冷知识页、无 JS 错误）。
+
+---
+
+### 2026-08-18（补）：AI 客服升级——首页检索 bug 修复 + 头像/清空对话/视觉强化
+
+- **任务**：修复「提问 Nav 命中首页但显示 index.md」的 bug；维护者反馈 AI 客服仍单调，要求界面更炫酷、功能更多、体验更丰富。
+- **改动**：
+  - 修复：`scripts/build_kb.py`（无 H1 页面的标题兜底：`index.md` → 「主页」；此前回退为文件名导致检索结果丑陋）+ `chat-widget.js`（结果卡片面包屑 `chunk.c === chunk.p` 时去重，避免「主页 › 主页」）
+  - 新增功能：`chat-widget.js`——消息加 **🤖/🙂 圆形头像**（bot/user 区分）；头部新增 **清空对话按钮**（`↺`，清空后自动重置欢迎语+快捷问题并聚焦输入框）；欢迎语改版更有引导性
+  - 视觉强化：`extra.css`——面板顶部金色渐变光带；`.chat-msg` 改头像+内容双栏布局（user 行反转）；`.chat-panel__actions`/`.chat-clear` 样式；chips/empty/answer 宽度适配新容器
+- **说明**：全部本地运算、零外部依赖；兼容 instant 导航与手机端。构建 `python -m mkdocs build --strict` 通过；浏览器实测 7 项全过（头像/清空重置/面包屑去重/手机端/无 JS 错误）。
+
+---
+
+### 2026-08-18（补）：腾讯文档维护入口 + 首页打字机光标闪烁修复
+
+- **任务**：在 wiki 合适位置加入腾讯文档《青岛大学Wiki校园指南》维护入口（说明 GitHub 有难度的可用此方式）；修复首页大卡片第一页「竖线一卡一卡」闪烁（累计访问上方的打字机光标）。
+- **改动**：
+  - 修改：`docs/about/index.md`（参与贡献新增「方式四：腾讯文档（零门槛，推荐）」；维护提示框补充腾讯文档方式）
+  - 修改：`docs/about/guide.md`（新增「## 腾讯文档维护」章节，说明零门槛维护方式与链接）
+  - 修复：`docs/javascripts/home-hero.js`（打字机光标在短语删除完毕后隐藏——`style.animation='none'+opacity=0`，开始输入第一个字时恢复；此前空句时竖线光标持续闪烁）+ `docs/stylesheets/extra.css`（光标由 `step-end` 硬切闪烁改为 `ease-in-out` 平滑淡入淡出 1.4s、渐变圆角、`transition`）
+- **说明**：
+  - 根因：`@keyframes blink` 在 opacity 上动画会覆盖内联 `style.opacity`，需同时暂停动画才能隐藏光标。
+  - 修复锚点警告：about/index.md 原链 `guide.md#腾讯文档维护` 锚点无效（Material 中文标题锚点为编号 `_n`），改为不带锚点链接。
+  - 构建 `python -m mkdocs build --strict` 通过；浏览器实测 7 项全过（光标平滑、删除完隐藏态出现、显示态正常、about/guide 腾讯文档入口与外链、无 JS 错误）。
+
+---
+
+### 2026-08-18（补）：AI 客服悬浮按钮图标改版
+
+- **任务**：维护者反馈 AI 客服按钮图标不好看，且纯色圆形上有突兀横杠。
+- **改动**：
+  - 修改：`docs/javascripts/chat-widget.js`（launcher 图标由纯描边气泡改为**渐变气泡**：SVG `linearGradient` 白→浅金→暖橙描边 + 半透明填充 + 内部三个同渐变圆点，更具对话语义）
+  - 修改：`docs/stylesheets/extra.css`（移除 `.chat-launcher::after` 顶部横杠，保留并微调 `::before` 呼吸光晕）
+- **说明**：SVG 渐变 `id="chatGrad"` 全站唯一实例不冲突；构建 `python -m mkdocs build --strict` 通过；浏览器实测 5 项全过（SVG 渐变/三点/横杠移除/无 JS 错误）。
+
+---
+
+### 2026-08-18（补）：首页统计数字「一闪一闪一卡一卡」根因修复
+
+- **任务**：维护者反馈第一页「累计访问」数字仍闪烁且更严重——定位根因非打字机光标，而是统计数字的 count-up 滚动动画。
+- **根因**：`visit-counter.js` 的 `animateNum()` 数字滚动动画（DURATION=1000ms）+ `start()` 每 500ms 轮询 30s：Vercount 锚点回填/更新期间，每次 `apply()` 读到新值就触发一次从低到高的数字翻滚（实测采样 `4→116→151→161→163→164`），造成「一卡一卡一闪一闪」。
+- **改动**：`docs/javascripts/visit-counter.js`——删除 `animateNum()` 及 `DURATION` 常量，`fillCards()` 改为直接 `textContent = format(值)`（千分位不变，一次到位）。
+- **说明**：数据链路（Vercount 注入/API 直连/sessionStorage 缓存/instant 兜底）完全不变，仅去掉动画；首次填充由占位符 `···` 一次性变为数值，视觉稳定。打字机光标已在上轮优化（平滑淡入淡出 + 删除完隐藏），本轮核实为正常柔和闪烁。构建 `python -m mkdocs build --strict` 通过；实测数字采样变化次数由 6 → 1（仅占位→数值一次跳变），无 JS 错误。
 
 ---
 

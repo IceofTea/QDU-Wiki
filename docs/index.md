@@ -111,6 +111,24 @@
     </div>
   </section>
 
+  <section class="hero-book__page" data-index="3">
+    <div class="hero-page-inner">
+      <p class="hero-eyebrow">QD NAVIGATION HUB</p>
+      <h2 class="hero-page-title">一站式导航站</h2>
+      <div class="hero-navhub">
+        <p class="hero-navhub__desc">新生办事入口、常用网站、学习平台……全部收进一个页面，点一下直达，省去到处找的麻烦。</p>
+        <a class="hero-navhub__go" href="https://iceoftea.github.io/QDU-Nav" target="_blank" rel="noopener">
+          <span class="hero-navhub__go-icon" aria-hidden="true">🧭</span>
+          <span class="hero-navhub__go-text">
+            <span class="hero-navhub__go-title">前往 QDU-Nav</span>
+            <span class="hero-navhub__go-sub">校园导航站 · 一键直达</span>
+          </span>
+          <span class="hero-navhub__go-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
 </div>
 
 <div class="hero-book__nav">
@@ -119,6 +137,7 @@
     <button type="button" class="hero-book__dot active" data-index="0" aria-label="第 1 页"></button>
     <button type="button" class="hero-book__dot" data-index="1" aria-label="第 2 页"></button>
     <button type="button" class="hero-book__dot" data-index="2" aria-label="第 3 页"></button>
+    <button type="button" class="hero-book__dot" data-index="3" aria-label="第 4 页"></button>
   </div>
   <button type="button" class="hero-book__next" aria-label="下一页">›</button>
 </div>

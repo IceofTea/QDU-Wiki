@@ -76,8 +76,9 @@
     if (deleting) {
       charIndex--;
       if (charIndex <= 0) {
-        // 全部删除完毕：先把残留的第一个字也清空，再换下一条
+        // 全部删除完毕：先把残留的第一个字也清空，并隐藏光标（避免空句时竖线一直闪）
         typeEl.childNodes[0].nodeValue = '';
+        if (cursor) { cursor.style.animation = 'none'; cursor.style.opacity = '0'; }
         deleting = false;
         charIndex = 0;
         currentPhrase = nextPhrase();
@@ -90,6 +91,9 @@
     } else {
       charIndex++;
     }
+
+    // 开始输入第一个字时恢复光标显示
+    if (charIndex === 1 && cursor) { cursor.style.animation = ''; cursor.style.opacity = ''; }
 
     typeEl.childNodes[0].nodeValue = phrase.substring(0, charIndex);
 

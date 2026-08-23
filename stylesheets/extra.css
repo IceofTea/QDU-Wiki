@@ -1677,3 +1677,135 @@ body.pop-open {
     transform: none;
   }
 }
+
+/* 友情链接卡片样式 */
+.friend-cards {
+  margin: 24px 0;
+}
+.friend-cards ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 24px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.friend-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--md-default-bg-color);
+  border: 1px solid var(--md-default-fg-color--lighter);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s, box-shadow 0.25s;
+  text-decoration: none;
+  color: inherit;
+}
+.friend-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(63, 51, 123, 0.18);
+  text-decoration: none;
+  color: inherit;
+}
+.friend-card img:first-child {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-bottom: 1px solid var(--md-default-fg-color--lighter);
+}
+.friend-card__body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  flex: 1;
+}
+.friend-card__logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: contain;
+  flex-shrink: 0;
+  background: var(--md-default-bg-color--light);
+  padding: 4px;
+  border: 2px solid var(--md-default-fg-color--lighter);
+}
+.friend-card__info {
+  flex: 1;
+  min-width: 0;
+}
+.friend-card__info h3 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--md-primary-fg-color);
+}
+.friend-card__info p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--md-default-fg-color--light);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.friend-card__btn {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 10px 24px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #3F337B, #5c4d9a);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.25s;
+}
+.friend-card:hover .friend-card__btn {
+  background: linear-gradient(135deg, #5c4d9a, #7b6bb5);
+  transform: scale(1.03);
+}
+
+/* 友链卡片暗黑模式适配 */
+[data-md-color-scheme="slate"] .friend-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+[data-md-color-scheme="slate"] .friend-card__logo {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+[data-md-color-scheme="slate"] .friend-card:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* 友链卡片小屏适配 */
+@media screen and (max-width: 720px) {
+  .friend-cards ul {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .friend-card img:first-child {
+    height: 140px;
+  }
+  .friend-card__body {
+    padding: 16px;
+    gap: 12px;
+  }
+  .friend-card__logo {
+    width: 52px;
+    height: 52px;
+  }
+  .friend-card__info h3 {
+    font-size: 1rem;
+  }
+  .friend-card__info p {
+    font-size: 0.82rem;
+  }
+  .friend-card__btn {
+    padding: 8px 18px;
+    font-size: 0.82rem;
+  }
+}

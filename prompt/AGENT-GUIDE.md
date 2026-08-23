@@ -632,11 +632,10 @@ python -m mkdocs build --strict
   - 修改：`prompt/AGENT-GUIDE.md`（追加本维护记录）
 - **说明**：
   - **卡片点击区设计**：整卡 `<div>`，内容区内放透明覆盖链接 `.friend-card__link-overlay`（absolute inset:0）——卡片内容可点跳转，边框/装饰条/头像区域不可点；不加额外按钮。
-  - **踩坑记录（重要）**：① MkDocs `md_in_html` 的 `markdown` 属性块会把空行处的裸标签包进幽灵 `<p>` 并给 span 套 p，产生多余间距与错位——友链卡这类结构化组件应写**纯 HTML**（不带 markdown 属性）；② Material 的 `.md-typeset h3/p` 默认外边距特异性 (0,1,1) 高于单类选择器 (0,1,0)，覆盖默认样式需写 `.md-typeset .friend-card__xxx`，且媒体查询内覆盖也要同步提升，否则小屏样式被主规则压制。
-  - 头像白边根因：logo 原图四周留白 + `contain` 缩放露出底色圈；改为容器圆形 + `cover` + 微放大裁边解决。
-  - 手机端无 hover：截图从 hover 展开改为**常显**预览条（`object-position: top center` 展示首屏），桌面手机一致。
-  - 后续新增友链：在 `index.md` 的 `.friend-cards` 内复制一个 `.friend-card` 纯 HTML 块改文字与图片即可。
-  - 构建 `python -m mkdocs build --strict` 通过；Playwright(Edge) 桌面 1280px/手机 390px 实测通过（头像对齐、无错位、简介完整、截图常显、overlay 只盖内容区）。
+  - **截图交互**：桌面端 hover 卡片展开完整比例大图（CSS `@media (hover:hover)` 限鼠标设备，避免触屏粘滞 hover）；触屏端点击预览条 toggle `.is-open` 展开/收起（`friend-cards.js` 事件委托，兼容 instant 导航）。
+  - **踩坑记录**：① MkDocs `md_in_html` 的 `markdown` 属性块会包进幽灵 `<p>` → 结构化组件应写**纯 HTML**；② Material `.md-typeset h3/p` 特异性 (0,1,1) 高于单类 (0,1,0)，覆盖需 `.md-typeset .friend-card__xxx`；③ 触屏 tap 的 `:hover` 粘滞会让 hover 规则持续生效导致不收缩 → 必须用 `@media (hover:hover)` 限制 hover 规则仅鼠标设备；④ 手机端负 margin 在 content 内无效（margin 不改变父级宽度）→ 手机端截图保持在 content 内（不用负 margin）。
+  - 头像：容器圆形 + `object-fit:cover` + 微放大裁白边。
+  - 构建 `python -m mkdocs build --strict` 通过；Playwright(Edge) 桌面/手机双端实测通过。
 
 ---
 

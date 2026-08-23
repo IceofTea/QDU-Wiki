@@ -1737,8 +1737,14 @@ body.pop-open {
 }
 /* 右侧：消息气泡内容 */
 .friend-card__content {
+  position: relative;
   flex: 1;
   min-width: 0;
+}
+.friend-card__link-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
 }
 .friend-card__header {
   display: flex;

@@ -6,8 +6,6 @@
 
 <div class="friend-card" markdown>
 
-<a href="https://wiki.quters.top" target="_blank" class="friend-card__link-overlay" markdown></a>
-
 <div class="friend-card__avatar" markdown>
 
 ![青岛理工大学 logo](../pics/friends/friends-图1-青岛理工大学logo.png){ loading=lazy }
@@ -15,6 +13,8 @@
 </div>
 
 <div class="friend-card__content" markdown>
+
+<a href="https://wiki.quters.top" target="_blank" class="friend-card__link-overlay" markdown></a>
 
 <div class="friend-card__header" markdown>
 

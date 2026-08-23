@@ -1,10 +1,12 @@
 # 友情链接
 
-本站与各高校 Wiki 站点互相守望，分享校园生活的点滴。以下是我们的好友站点，点击名称即可访问。
+本站与各高校 Wiki 站点互相守望，分享校园生活的点滴。以下是我们的好友站点，点击卡片即可访问。
 
 <div class="friend-cards" markdown>
 
-<a href="https://wiki.quters.top" target="_blank" class="friend-card" markdown>
+<div class="friend-card" markdown>
+
+<a href="https://wiki.quters.top" target="_blank" class="friend-card__link-overlay" markdown></a>
 
 <div class="friend-card__avatar" markdown>
 
@@ -32,7 +34,7 @@
 
 </div>
 
-</a>
+</div>
 
 </div>
 

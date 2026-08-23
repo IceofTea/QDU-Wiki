@@ -85,7 +85,9 @@ nav:
   - 关于Wiki:
     - about/index.md
     - 维护说明: about/guide.md
-  - 友情链接: friends/index.md
+  - 友情链接:
+    - friends/index.md
+    - 申请友链: friends/guide.md
 extra_css:
   - stylesheets/extra.css
 extra_javascript:

@@ -624,17 +624,19 @@ python -m mkdocs build --strict
 
 - **任务**：为网站新增友情链接板块，展示合作高校 Wiki 站点，放在「关于 Wiki」之后。
 - **改动**：
-  - 新增：`docs/friends/index.md`（友情链接页面：青岛理工大学生活指南卡片 + 申请友链说明 + 本站友链信息表）
-  - 新增：`docs/pics/friends/friends-图1-青岛理工大学logo.png`、`friends-图2-青岛理工大学网站截图.png`（本地化图片资源，确保稳定性）
-  - 修改：`docs/stylesheets/extra.css`（新增 `.friend-cards` / `.friend-card` 系列样式：毛玻璃卡片、hover 动效、金色渐变按钮、暗黑模式适配、720px 小屏响应式）
-  - 修改：`mkdocs.yml`（nav 末尾新增「友情链接: friends/index.md」）
+  - 新增：`docs/friends/index.md`（友情链接页面：青岛理工大学生活指南卡片，纯 HTML 结构化组件）
+  - 新增：`docs/friends/guide.md`（申请友链说明独立子页：申请条件 / Issues 提交方式与格式表 / 本站友链信息表 / 审核说明）
+  - 新增：`docs/pics/friends/friends-图1-青岛理工大学logo.png`、`friends-图2-青岛理工大学网站截图.png`（本地化图片资源，确保稳定性；远程图床实测可访问但为防失效仍本地化）
+  - 修改：`docs/stylesheets/extra.css`（`.friend-card` 聊天消息风格卡片：圆形头像容器承担底色与裁切 + logo `object-fit:cover; scale(1.14)` 消除原图白边、名称+域名 baseline 行、简介、常显截图预览条、hover 上浮与紫色装饰条、暗黑模式适配、720px 小屏 header 纵排 + 截图全宽贴底）
+  - 修改：`mkdocs.yml`（nav「友情链接」下两个子项：`friends/index.md` + 「申请友链: friends/guide.md」，置于「关于Wiki」之后）
   - 修改：`prompt/AGENT-GUIDE.md`（追加本维护记录）
 - **说明**：
-  - 友链卡片采用 Material grid cards 扩展布局，每张卡片包含网站截图横幅、圆形 logo、站点名称、描述和访问按钮，hover 上浮发光。
-  - 申请友链区使用 admonition，详细说明申请条件、方式和本站友链信息，方便其他站点站长复制添加。
-  - 所有图片均本地化存储（`docs/pics/friends/`），避免图床防盗链或失效风险。
-  - 页面设计预留扩展位置，后续新增友链只需在 `<ul>` 中追加 `<li>` 即可。
-  - 构建 `python -m mkdocs build --strict` 通过。
+  - **卡片点击区设计**：整卡 `<div>`，内容区内放透明覆盖链接 `.friend-card__link-overlay`（absolute inset:0）——卡片内容可点跳转，边框/装饰条/头像区域不可点；不加额外按钮。
+  - **踩坑记录（重要）**：① MkDocs `md_in_html` 的 `markdown` 属性块会把空行处的裸标签包进幽灵 `<p>` 并给 span 套 p，产生多余间距与错位——友链卡这类结构化组件应写**纯 HTML**（不带 markdown 属性）；② Material 的 `.md-typeset h3/p` 默认外边距特异性 (0,1,1) 高于单类选择器 (0,1,0)，覆盖默认样式需写 `.md-typeset .friend-card__xxx`，且媒体查询内覆盖也要同步提升，否则小屏样式被主规则压制。
+  - 头像白边根因：logo 原图四周留白 + `contain` 缩放露出底色圈；改为容器圆形 + `cover` + 微放大裁边解决。
+  - 手机端无 hover：截图从 hover 展开改为**常显**预览条（`object-position: top center` 展示首屏），桌面手机一致。
+  - 后续新增友链：在 `index.md` 的 `.friend-cards` 内复制一个 `.friend-card` 纯 HTML 块改文字与图片即可。
+  - 构建 `python -m mkdocs build --strict` 通过；Playwright(Edge) 桌面 1280px/手机 390px 实测通过（头像对齐、无错位、简介完整、截图常显、overlay 只盖内容区）。
 
 ---
 

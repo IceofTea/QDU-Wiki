@@ -1716,24 +1716,29 @@ body.pop-open {
   text-decoration: none;
   color: inherit;
 }
-/* 左侧：圆形头像 */
+/* 左侧：圆形头像（圆形与底色由容器承担，logo 微放大裁掉原图白边） */
 .friend-card__avatar {
   flex-shrink: 0;
-  width: 80px;
-  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(145deg, #f2effa, #e6e0f5);
+  box-shadow: inset 0 0 0 1px rgba(63, 51, 123, 0.14), 0 2px 8px rgba(63, 51, 123, 0.10);
+  transition: box-shadow 0.25s, transform 0.25s;
 }
 .friend-card__avatar img {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
-  object-fit: contain;
-  background: var(--md-default-bg-color--light);
-  padding: 4px;
-  border: 2px solid var(--md-default-fg-color--lighter);
-  transition: border-color 0.25s;
+  object-fit: cover;
+  transform: scale(1.14);
 }
-.friend-card:hover .friend-card__avatar img {
-  border-color: var(--md-primary-fg-color);
+.friend-card:hover .friend-card__avatar {
+  box-shadow: inset 0 0 0 1px rgba(63, 51, 123, 0.35), 0 4px 14px rgba(63, 51, 123, 0.22);
+  transform: scale(1.04);
 }
 /* 右侧：消息气泡内容 */
 .friend-card__content {
@@ -1748,11 +1753,13 @@ body.pop-open {
 }
 .friend-card__header {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
   margin-bottom: 8px;
 }
-.friend-card__name {
+/* 提升特异性以覆盖 Material 的 .md-typeset h3/p 默认外边距 */
+.md-typeset .friend-card__name {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--md-primary-fg-color);
@@ -1763,7 +1770,7 @@ body.pop-open {
   color: var(--md-default-fg-color--light);
   opacity: 0.8;
 }
-.friend-card__desc {
+.md-typeset .friend-card__desc {
   font-size: 0.92rem;
   line-height: 1.6;
   color: var(--md-default-fg-color);
@@ -1773,23 +1780,25 @@ body.pop-open {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+/* 站点截图：常显预览条，顶部对齐展示网页首屏 */
 .friend-card__screenshot {
-  margin-top: 12px;
-  border-radius: 8px;
+  margin-top: 14px;
+  border-radius: 10px;
   overflow: hidden;
-  max-height: 0;
-  opacity: 0;
-  transition: max-height 0.35s ease, opacity 0.35s ease;
-}
-.friend-card:hover .friend-card__screenshot {
-  max-height: 200px;
-  opacity: 1;
+  border: 1px solid var(--md-default-fg-color--lightest, rgba(0, 0, 0, 0.08));
 }
 .friend-card__screenshot img {
   width: 100%;
-  height: 160px;
+  height: 150px;
   object-fit: cover;
+  object-position: top center;
   display: block;
+}
+/* 防御 MkDocs md_in_html 在结构内插入的幽灵 <p>，消除多余间距 */
+.friend-card__header p,
+.friend-card__screenshot p {
+  margin: 0;
+  line-height: 0;
 }
 /* 卡片左侧紫色装饰条 */
 .friend-card::before {
@@ -1813,35 +1822,58 @@ body.pop-open {
   background: rgba(255, 255, 255, 0.04);
   border-color: rgba(255, 255, 255, 0.1);
 }
-[data-md-color-scheme="slate"] .friend-card__avatar img {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
+[data-md-color-scheme="slate"] .friend-card__avatar {
+  background: linear-gradient(145deg, #3a3160, #2c2450);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+[data-md-color-scheme="slate"] .friend-card:hover .friend-card__avatar {
+  box-shadow: inset 0 0 0 1px rgba(255, 217, 160, 0.5), 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 [data-md-color-scheme="slate"] .friend-card:hover {
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
 }
-[data-md-color-scheme="slate"] .friend-card:hover .friend-card__avatar img {
-  border-color: rgba(255, 217, 160, 0.6);
+[data-md-color-scheme="slate"] .friend-card__screenshot {
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 /* 友链卡片小屏适配 */
 @media screen and (max-width: 720px) {
   .friend-card {
-    padding: 16px;
+    padding: 14px;
     gap: 12px;
+    border-radius: 14px;
   }
   .friend-card__avatar {
-    width: 60px;
-    height: 60px;
+    width: 56px;
+    height: 56px;
   }
-  .friend-card__name {
+  /* 名称与域名上下排列，避免窄屏挤压错位 */
+  .friend-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    margin-bottom: 6px;
+  }
+  .md-typeset .friend-card__name {
     font-size: 1rem;
   }
-  .friend-card__desc {
+  .friend-card__link {
+    font-size: 0.72rem;
+  }
+  .md-typeset .friend-card__desc {
     font-size: 0.85rem;
-    -webkit-line-clamp: 2;
+    line-height: 1.55;
+    -webkit-line-clamp: unset;
+  }
+  .friend-card__screenshot {
+    /* 截图横跨卡片全宽并贴底，窄屏上更大气 */
+    margin: 12px -14px -14px;
+    border-radius: 0 0 13px 13px;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
   }
   .friend-card__screenshot img {
-    height: 120px;
+    height: 118px;
   }
 }

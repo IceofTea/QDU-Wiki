@@ -620,6 +620,24 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-08-23：新增「友情链接」板块
+
+- **任务**：为网站新增友情链接板块，展示合作高校 Wiki 站点，放在「关于 Wiki」之后。
+- **改动**：
+  - 新增：`docs/friends/index.md`（友情链接页面：青岛理工大学生活指南卡片 + 申请友链说明 + 本站友链信息表）
+  - 新增：`docs/pics/friends/friends-图1-青岛理工大学logo.png`、`friends-图2-青岛理工大学网站截图.png`（本地化图片资源，确保稳定性）
+  - 修改：`docs/stylesheets/extra.css`（新增 `.friend-cards` / `.friend-card` 系列样式：毛玻璃卡片、hover 动效、金色渐变按钮、暗黑模式适配、720px 小屏响应式）
+  - 修改：`mkdocs.yml`（nav 末尾新增「友情链接: friends/index.md」）
+  - 修改：`prompt/AGENT-GUIDE.md`（追加本维护记录）
+- **说明**：
+  - 友链卡片采用 Material grid cards 扩展布局，每张卡片包含网站截图横幅、圆形 logo、站点名称、描述和访问按钮，hover 上浮发光。
+  - 申请友链区使用 admonition，详细说明申请条件、方式和本站友链信息，方便其他站点站长复制添加。
+  - 所有图片均本地化存储（`docs/pics/friends/`），避免图床防盗链或失效风险。
+  - 页面设计预留扩展位置，后续新增友链只需在 `<ul>` 中追加 `<li>` 即可。
+  - 构建 `python -m mkdocs build --strict` 通过。
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

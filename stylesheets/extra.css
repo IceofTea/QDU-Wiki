@@ -1780,18 +1780,33 @@ body.pop-open {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-/* 站点截图：常显预览条，顶部对齐展示网页首屏 */
+/* 站点截图：默认矮预览条，展开为完整比例大图 */
 .friend-card__screenshot {
+  position: relative;
+  z-index: 6;
   margin-top: 14px;
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid var(--md-default-fg-color--lightest, rgba(0, 0, 0, 0.08));
+  max-height: 68px;
+  cursor: pointer;
+  transition: max-height 0.5s ease;
+}
+.friend-card__screenshot.is-open {
+  max-height: 500px;
+}
+/* 桌面端：负 margin 横跨 content 全宽 + hover 展开 */
+@media (hover: hover) and (pointer: fine) {
+  .friend-card__screenshot {
+    margin: 14px -20px 0;
+  }
+  .friend-card:hover .friend-card__screenshot {
+    max-height: 500px;
+  }
 }
 .friend-card__screenshot img {
   width: 100%;
-  height: 150px;
-  object-fit: cover;
-  object-position: top center;
+  height: auto;
   display: block;
 }
 /* 防御 MkDocs md_in_html 在结构内插入的幽灵 <p>，消除多余间距 */
@@ -1866,14 +1881,12 @@ body.pop-open {
     -webkit-line-clamp: unset;
   }
   .friend-card__screenshot {
-    /* 截图横跨卡片全宽并贴底，窄屏上更大气 */
-    margin: 12px -14px -14px;
-    border-radius: 0 0 13px 13px;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
+    /* 手机端不需要负 margin，截图在 content 内即可 */
+    margin-top: 12px;
+    border-radius: 10px;
+    max-height: 50px;
   }
-  .friend-card__screenshot img {
-    height: 118px;
+  .friend-card__screenshot.is-open {
+    max-height: 260px;
   }
 }

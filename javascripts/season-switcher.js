@@ -4,13 +4,14 @@
 
   var STORAGE_KEY = 'qdu-wiki-season';
   var SEASONS = { spring: '春', summer: '夏', autumn: '秋', winter: '冬' };
+  var SEASONS_EN = { spring: 'Spring', summer: 'Summer', autumn: 'Autumn', winter: 'Winter' };
   var SEASON_COLORS = { spring: '#66bb6a', summer: '#ff7043', autumn: '#ffa000', winter: '#42a5f5' };
   var OPTIONS = [
-    { key: 'auto', label: '自动' },
-    { key: 'spring', label: '春天' },
-    { key: 'summer', label: '夏天' },
-    { key: 'autumn', label: '秋天' },
-    { key: 'winter', label: '冬天' }
+    { key: 'auto', label: '自动', labelEn: 'Auto' },
+    { key: 'spring', label: '春天', labelEn: 'Spring' },
+    { key: 'summer', label: '夏天', labelEn: 'Summer' },
+    { key: 'autumn', label: '秋天', labelEn: 'Autumn' },
+    { key: 'winter', label: '冬天', labelEn: 'Winter' }
   ];
 
   // 按日期判断当前季节
@@ -44,17 +45,32 @@
     return mode === 'auto' ? getSeasonByDate() : mode;
   }
 
+  function isEN() {
+    return location.pathname.indexOf('/en/') !== -1;
+  }
+
+  function getSeasonLabel(season) {
+    return isEN() ? SEASONS_EN[season] : SEASONS[season];
+  }
+
+  function getOptionLabel(opt) {
+    return isEN() ? opt.labelEn : opt.label;
+  }
+
   // 把页面中的四季背景替换为指定季节。
   // 背景图用 CSS background-image 动态设置（而非 <img src>），
   // 避免 HTML 里写死默认季节图导致首屏「默认图 + 目标季节图」双下载。
   function applySeason() {
     var season = getSeason();
 
+    var isEN = location.pathname.indexOf('/en/') !== -1;
+    var assetsBase = isEN ? '../assets/' : 'assets/';
+
     document.querySelectorAll('[data-seasonal]').forEach(function (el) {
-      var url = 'url(assets/' + season + '.webp)';
+      var url = 'url(' + assetsBase + season + '.webp)';
       if ((el.style.backgroundImage || '').indexOf(season + '.webp') === -1) {
         el.style.backgroundImage = url;
-        el.setAttribute('aria-label', '校园' + SEASONS[season] + '景');
+        el.setAttribute('aria-label', 'Campus ' + getSeasonLabel(season));
       }
     });
 
@@ -76,7 +92,7 @@
     var icon = toggle.querySelector('.season-picker__icon');
     var label = toggle.querySelector('.season-picker__label');
     if (icon) icon.style.background = SEASON_COLORS[season];
-    if (label) label.textContent = SEASONS[season];
+    if (label) label.textContent = getSeasonLabel(season);
   }
 
   // 向页眉注入季节选择按钮（每次页面切换后若丢失则重建）
@@ -97,10 +113,10 @@
     toggle.className = 'season-picker__toggle';
     toggle.setAttribute('aria-haspopup', 'true');
     toggle.setAttribute('aria-expanded', 'false');
-    toggle.title = '切换季节';
+    toggle.title = isEN() ? 'Switch Season' : '切换季节';
     toggle.innerHTML =
       '<span class="season-picker__icon" style="background:' + SEASON_COLORS[season] + '"></span>' +
-      '<span class="season-picker__label">' + SEASONS[season] + '</span>' +
+      '<span class="season-picker__label">' + getSeasonLabel(season) + '</span>' +
       '<span class="season-picker__caret">▾</span>';
 
     var menu = document.createElement('ul');
@@ -109,7 +125,7 @@
       var li = document.createElement('li');
       li.className = 'season-picker__item' + (opt.key === mode ? ' active' : '');
       li.setAttribute('data-season', opt.key);
-      li.textContent = opt.label;
+      li.textContent = getOptionLabel(opt);
       menu.appendChild(li);
     });
 

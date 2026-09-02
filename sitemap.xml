@@ -2,166 +2,322 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/about/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/about/guide/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/college/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/college/chemistry_and_chemical_engineering/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/college/computer_science_and_technology/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/college/mechanical_and_electrical_engineering/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/about/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/about/guide/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/college/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/college/chemistry_and_chemical_engineering/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/college/computer_science_and_technology/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/college/mechanical_and_electrical_engineering/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/friends/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/live/campus_activities/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/live/dorm/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/live/eat/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/live/facilities/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/live/hospital/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/live/map/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/live/shopping/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/live/traffic/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/new/anti-fraud/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/new/campus_registration/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/new/contact/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/new/military_training/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/new/preparation/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/new/undergraduate_handbook/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/organization/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/service/budget/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/service/card/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/service/network/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/share/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/study/academic_warning/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/study/calendar/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/study/comprehensive_assessment/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/study/course_selection/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/study/exam/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/study/exam_rules/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/study/innovation_credit/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/study/party/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/study/second_classroom/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/study/system/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/study/transfer_major/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://iceoftea.github.io/QDU-Wiki/en/words/</loc>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/friends/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/friends/guide/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/live/campus_activities/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/live/dorm/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/live/eat/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/live/facilities/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/live/hospital/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/live/map/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/live/shopping/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/live/traffic/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/new/anti-fraud/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/new/campus_registration/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/new/contact/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/new/military_training/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/new/preparation/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/new/undergraduate_handbook/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/organization/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/service/budget/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/service/card/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/service/network/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/share/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/study/academic_warning/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/study/calendar/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/study/comprehensive_assessment/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/study/course_selection/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/study/exam/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/study/exam_rules/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/study/innovation_credit/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/study/party/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/study/second_classroom/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/study/system/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/study/transfer_major/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/words/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://iceoftea.github.io/QDU-Wiki/words/guide/</loc>
-         <lastmod>2026-08-23</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
 </urlset>

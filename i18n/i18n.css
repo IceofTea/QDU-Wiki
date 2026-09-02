@@ -1,0 +1,46 @@
+/* ── i18n 语言切换按钮 ─────────────────────────────────── */
+.i18n-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  height: 2rem;
+  padding: 0 .55rem;
+  margin-right: .35rem;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: .45rem;
+  background: transparent;
+  color: var(--md-primary-bg-color);
+  font-size: .82rem;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: .78;
+  transition: opacity .2s, background .2s, border-color .2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.i18n-toggle:hover { opacity: 1; background: rgba(255,255,255,.1); }
+.i18n-sep { opacity: .45; font-weight: 400; }
+.i18n-zh, .i18n-en { transition: color .2s, opacity .2s; }
+.i18n-toggle:not(.i18n-active-en) .i18n-zh { color: #ffd9a0; }
+.i18n-toggle.i18n-active-en .i18n-en { color: #ffd9a0; }
+
+[data-md-color-scheme="slate"] .i18n-toggle {
+  border-color: rgba(255,255,255,.15);
+}
+
+@media screen and (max-width: 720px) {
+  .i18n-toggle { height: 1.7rem; font-size: .72rem; padding: 0 .4rem; margin-right: .15rem; }
+}
+
+/* ── 英文模式排版微调 ─────────────────────────────────── */
+body.i18n--en .md-nav__link { font-size: .82rem; }
+body.i18n--en .md-tabs__link { font-size: .78rem; }
+
+/* ── 隐藏 "English" 顶部标签 ────────────────────────── */
+.md-tabs__item:last-child { display: none !important; }
+
+/* ── 隐藏侧边栏中的 "English" 分类（最后一个nested项） ── */
+body.i18n--en .md-nav--primary .md-nav__item--nested:last-of-type { display: none !important; }
+body.i18n--en .md-nav--primary .md-nav__item:last-child { display: none !important; }

@@ -10,8 +10,6 @@ theme:
     - navigation.tabs
     - navigation.top
     - navigation.footer
-    - navigation.instant
-    - navigation.instant.progress
     - navigation.sections
     - navigation.indexes
     - toc.follow
@@ -88,8 +86,58 @@ nav:
   - 友情链接:
     - friends/index.md
     - 申请友链: friends/guide.md
+  - English:
+    - Home: en/index.md
+    - New Student Guide:
+      - Enrollment Prep: en/new/preparation.md
+      - Campus & Contacts: en/new/campus_registration.md
+      - Anti-Fraud Guide: en/new/anti-fraud.md
+      - Military Training: en/new/military_training.md
+      - Undergraduate Handbook: en/new/undergraduate_handbook.md
+      - Contact Info: en/new/contact.md
+    - Campus Life:
+      - Campus Map: en/live/map.md
+      - Dining: en/live/eat.md
+      - Housing: en/live/dorm.md
+      - Transportation: en/live/traffic.md
+      - Healthcare: en/live/hospital.md
+      - Facilities: en/live/facilities.md
+      - Shopping: en/live/shopping.md
+      - Activities: en/live/campus_activities.md
+    - Academics:
+      - Academic System: en/study/system.md
+      - Extracurricular: en/study/second_classroom.md
+      - Innovation Credits: en/study/innovation_credit.md
+      - Major Transfer: en/study/transfer_major.md
+      - Academic Calendar: en/study/calendar.md
+      - Party Membership: en/study/party.md
+      - Exams & Grades: en/study/exam.md
+      - Exam Regulations: en/study/exam_rules.md
+      - Academic Warning: en/study/academic_warning.md
+      - Course Selection: en/study/course_selection.md
+      - Assessment: en/study/comprehensive_assessment.md
+    - Campus Services:
+      - Internet Services: en/service/network.md
+      - Campus Card & ID: en/service/card.md
+      - Budget: en/service/budget.md
+    - Colleges:
+      - en/college/index.md
+      - Computer Science: en/college/computer_science_and_technology.md
+      - Mechanical & Electrical: en/college/mechanical_and_electrical_engineering.md
+      - Chemistry: en/college/chemistry_and_chemical_engineering.md
+    - Student Orgs:
+      - Clubs & Organizations: en/organization/index.md
+    - File Sharing: en/share/index.md
+    - Messages:
+      - en/words/index.md
+    - About Wiki:
+      - en/about/index.md
+      - Maintenance: en/about/guide.md
+    - Links:
+      - en/friends/index.md
 extra_css:
   - stylesheets/extra.css
+  - i18n/i18n.css
 extra_javascript:
   - javascripts/season-switcher.js
   - javascripts/home-hero.js
@@ -97,6 +145,7 @@ extra_javascript:
   - javascripts/visit-counter.js
   - javascripts/chat-widget.js
   - javascripts/friend-cards.js
+  - i18n/i18n.js
 markdown_extensions:
   - md_in_html
   - pymdownx.tilde

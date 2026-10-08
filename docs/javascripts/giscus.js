@@ -1,0 +1,78 @@
+// Wiki 全网评论（Giscus · GitHub Discussions 当数据库，零自建后端）
+// ---------------------------------------------------------------------------
+// 启用（5 分钟）：仓库开 Discussions → 建一个分类（如"评论"）→
+//   打开 https://giscus.app 填仓库名取四件套 → 写进 mkdocs.yml 的 meta 插件
+//   或直接在下面 GISCUS_DEFAULT 填好（与 meta 二选一）。
+// 未配置时本文件静默无事（本地 comments.js 照常用，互不干扰）。
+// 有 GitHub 账号才能发言（天然防 spam）；手机直接可用。
+(function () {
+  'use strict';
+
+  var GISCUS_DEFAULT = { repo: '', repoId: '', category: '', categoryId: '' };
+
+  function meta(name) {
+    var m = document.querySelector('meta[name="' + name + '"]');
+    return (m && m.content || '').trim();
+  }
+  function cfg() {
+    return {
+      repo: meta('giscus-repo') || GISCUS_DEFAULT.repo,
+      repoId: meta('giscus-repo-id') || GISCUS_DEFAULT.repoId,
+      category: meta('giscus-category') || GISCUS_DEFAULT.category,
+      categoryId: meta('giscus-category-id') || GISCUS_DEFAULT.categoryId,
+      mapping: meta('giscus-mapping') || 'pathname'
+    };
+  }
+
+  function mount() {
+    var c = cfg();
+    if (!c.repo || !c.repoId || !c.categoryId) return; // 未配置：静默
+    if (document.querySelector('.giscus-frame')) return;
+    // 只在正文页挂载（与 comments.js 同策略：找正文容器）
+    var host = document.querySelector('.md-content__inner');
+    if (!host) return;
+    var sec = document.createElement('section');
+    sec.className = 'giscus-wrap';
+    sec.innerHTML =
+      '<div style="margin-top:26px;border-top:2px solid var(--md-primary-fg-color,#1b66c9);padding-top:12px">' +
+      '<div style="font-size:17px;font-weight:800;margin-bottom:4px">🌐 全网评论 <span style="font-size:11px;font-weight:400;color:#888">（GitHub 登录发言，全员可见）</span></div>' +
+      '<div class="giscus"></div></div>';
+    host.appendChild(sec);
+    var s = document.createElement('script');
+    s.src = 'https://giscus.app/client.js';
+    s.async = true;
+    s.crossOrigin = 'anonymous';
+    s.setAttribute('data-repo', c.repo);
+    s.setAttribute('data-repo-id', c.repoId);
+    s.setAttribute('data-category', c.category);
+    s.setAttribute('data-category-id', c.categoryId);
+    s.setAttribute('data-mapping', c.mapping);
+    s.setAttribute('data-strict', '0');
+    s.setAttribute('data-reactions-enabled', '1');
+    s.setAttribute('data-emit-metadata', '0');
+    s.setAttribute('data-input-position', 'top');
+    s.setAttribute('data-theme', 'preferred_color_scheme');
+    s.setAttribute('data-lang', 'zh-CN');
+    sec.querySelector('.giscus').appendChild(s);
+  }
+
+  function boot() {
+    mount();
+    // 兼容 instant 导航：DOM 大变时补挂载
+    if (window.MutationObserver) {
+      var fired = false;
+      var mo = new MutationObserver(function () {
+        if (fired) return;
+        fired = true;
+        setTimeout(function () { fired = false; mount(); }, 400);
+      });
+      mo.observe(document.body, { childList: true, subtree: true });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();

@@ -57,8 +57,39 @@
   }
 
   /** 准实时轮询（15s 拉取增量，新评论自动出现） */
+  var sse = null
+  function startSse() {
+    if (sse || mode !== 'api' || typeof EventSource === 'undefined') return
+    try {
+      sse = new EventSource(apiBase + '/api/events')
+      sse.onmessage = function (e) {
+        try {
+          var d = JSON.parse(e.data)
+          if (d.type === 'comment') refreshComments()
+        } catch (err) { /* noop */ }
+      }
+      sse.onerror = function () { /* 断开：轮询兜底仍在 */ }
+    } catch (err) { /* noop */ }
+  }
+  function refreshComments() {
+    fetchComments().then(function (list) {
+      var newest = 0
+      list.forEach(function (c) { if (c.ts > newest) newest = c.ts })
+      if (newest > lastTs) {
+        lastTs = newest
+        comments = list
+        renderList()
+        markAnnotated(comments)
+        var cnt = document.getElementById('qcCount')
+        if (cnt) cnt.textContent = comments.length + ' 条'
+        var badge = document.getElementById('qcBadge')
+        if (badge) badge.textContent = '\uD83D\uDCAC ' + comments.length
+      }
+    }).catch(function () { /* noop */ })
+  }
   function startPolling() {
     if (pollTimer || mode !== 'api') return;
+    startSse()
     pollTimer = setInterval(function () {
       if (document.hidden) return;
       fetchComments().then(function (list) {

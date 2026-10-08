@@ -281,22 +281,20 @@
       '<p class="chat-result__snip">' + topChunk.s + '</p>';
     var golink = document.createElement('div');
     golink.className = 'chat-golink';
-    var pv = document.createElement('button');
-    pv.className = 'chat-btn-main';
-    pv.textContent = '👁 同页预览此页';
-    pv.addEventListener('click', function () { toggleInlineFrame(golink, pageUrl(topChunk.u), '《' + topChunk.t + '》'); });
+    // 主操作：当前页面直接跳转
+    var goNow = document.createElement('a');
+    goNow.className = 'chat-btn-main';
+    goNow.href = pageUrl(topChunk.u);
+    goNow.target = '_self';
+    goNow.textContent = '🚀 立即前往（当前页跳转）';
     var ob = document.createElement('a');
     ob.className = 'chat-btn-ghost';
     ob.href = pageUrl(topChunk.u);
     ob.target = '_blank';
     ob.rel = 'noopener';
     ob.textContent = '↗ 新标签';
-    golink.appendChild(pv);
+    golink.appendChild(goNow);
     golink.appendChild(ob);
-    var fb = document.createElement('div');
-    fb.className = 'chat-inlineframe';
-    fb.hidden = true;
-    golink.appendChild(fb);
     go.appendChild(golink);
     box.appendChild(go);
 
@@ -423,48 +421,34 @@
 
     var wrap = document.createElement('div');
     wrap.className = 'chat-golink';
-    // 主操作：同页内嵌预览（不再单开标签堆页面）
-    var previewBtn = document.createElement('button');
-    previewBtn.className = 'chat-btn-main';
-    previewBtn.textContent = '👁 同页预览（不离开当前文章）';
-    previewBtn.addEventListener('click', function () { toggleInlineFrame(wrap, url, title); });
-    // 次操作：确需新标签时
+    // 主操作：当前页面直接跳转（不新开标签，避免越用越冗余）
+    var goNow = document.createElement('a');
+    goNow.className = 'chat-btn-main';
+    goNow.href = url;
+    goNow.target = '_self';
+    goNow.textContent = '🚀 立即前往（当前页跳转）';
+    // 次操作：确需保留当前页时新标签打开
     var openBtn = document.createElement('a');
     openBtn.className = 'chat-btn-ghost';
     openBtn.href = url;
     openBtn.target = '_blank';
     openBtn.rel = 'noopener';
     openBtn.textContent = '↗ 新标签打开';
-    wrap.appendChild(previewBtn);
+    wrap.appendChild(goNow);
     wrap.appendChild(openBtn);
-    var frameBox = document.createElement('div');
-    frameBox.className = 'chat-inlineframe';
-    frameBox.hidden = true;
-    wrap.appendChild(frameBox);
     box.appendChild(wrap);
 
     var note = document.createElement('div');
     note.className = 'chat-answer__note';
     note.textContent = intent.kind === 'agent'
-      ? '问答在 Wiki · 办事在 Nav：预览或跳转后由导航站智能体继续执行（原话已携带）。'
-      : '问答在 Wiki · 办事在 Nav —— 推荐同页预览，避免标签堆积。';
+      ? '问答在 Wiki · 办事在 Nav：当前页直接跳转执行，返回键即可回来（原话已携带）。'
+      : '问答在 Wiki · 办事在 Nav —— 当前页跳转，避免标签堆积。';
     box.appendChild(note);
     addMsg('bot', box);
     // 追问建议
     addFollowChips(['这篇文章还讲了什么', '换一种问法', '打开校园导航']);
   }
 
-  /* ── 同页内嵌预览（iframe）：解决"单开新页越用越冗余" ── */
-  function toggleInlineFrame(wrap, url, title) {
-    var boxEl = wrap.querySelector('.chat-inlineframe');
-    if (!boxEl) return;
-    if (!boxEl.hidden) { boxEl.hidden = true; boxEl.innerHTML = ''; return }
-    boxEl.hidden = false;
-    boxEl.innerHTML = '<div class="chat-frame-bar"><span>👁 ' + (title || '页面预览') + '（同页内嵌 · 点右上收起）</span>' +
-      '<button type="button" class="chat-frame-close" onclick="this.closest(\'.chat-inlineframe\').hidden=true;this.closest(\'.chat-inlineframe\').innerHTML=\'\'">收起 ✕</button></div>' +
-      '<iframe class="chat-frame" src="' + url + '" loading="lazy" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>' +
-      '<div class="chat-frame-tip">若目标站禁止内嵌，请点上方「↗ 新标签打开」</div>';
-  }
 
   /* ── 动态追问 chips ── */
   function addFollowChips(list) {

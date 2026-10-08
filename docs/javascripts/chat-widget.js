@@ -82,6 +82,7 @@
   function apiBaseKnown() { return _apiBase; }
   var kb = null;
   var kbPromise = null;
+  var lastCtx = null; // 上轮问答上下文 {q, results}（“还有呢/那X呢”追问用）
   var bodyEl = null;
   var panelEl = null;
   var msgListEl = null;
@@ -445,6 +446,7 @@
       : '问答在 Wiki · 办事在 Nav —— 当前页跳转，避免标签堆积。';
     box.appendChild(note);
     addMsg('bot', box);
+    lastCtx = { q: rawQ, results: null }; // 跳转类回答无更多，但保留 q 供“那X呢”转问
     // 追问建议
     addFollowChips(['这篇文章还讲了什么', '换一种问法', '打开校园导航']);
   }
@@ -472,9 +474,66 @@
     budget: '生活费计数器', officialSites: '学校官网与服务'
   };
 
+  /* ── 上下文追问（“还有呢”翻更多，“那X呢”转问X） ── */
+  function renderMore() {
+    if (!lastCtx || !lastCtx.results || !lastCtx.results.length) {
+      var hint = document.createElement('div');
+      hint.className = 'chat-empty';
+      hint.textContent = lastCtx && lastCtx.q ? '上条是跳转回答，没有更多条目——换个关键词问问，或说“今日简报”办事。' : '先问一个问题，再说“还有呢”看更多。';
+      addMsg('bot', hint);
+      return;
+    }
+    lastCtx.shown = lastCtx.shown || 3;
+    var next = lastCtx.results.slice(lastCtx.shown, lastCtx.shown + 3);
+    if (!next.length) {
+      var done = document.createElement('div');
+      done.className = 'chat-empty';
+      done.textContent = ' related 已全部列出（共 ' + lastCtx.results.length + ' 条），换个问法试试。';
+      addMsg('bot', done);
+      addFollowChips(['换一种问法', '今日简报']);
+      return;
+    }
+    lastCtx.shown += next.length;
+    var box = document.createElement('div');
+    box.className = 'chat-answer';
+    var head = document.createElement('div');
+    head.className = 'chat-answer__head';
+    head.textContent = '更多相关（' + next.length + '）：';
+    box.appendChild(head);
+    next.forEach(function (r) {
+      var chunk = r[1];
+      var card = document.createElement('a');
+      card.className = 'chat-result';
+      card.href = pageUrl(chunk.u);
+      card.target = '_blank';
+      card.rel = 'noopener';
+      card.innerHTML = '<div class="chat-result__title">' + chunk.t + '</div>' +
+        '<div class="chat-result__crumb">' + (chunk.c === chunk.p ? chunk.p : chunk.c + ' › ' + chunk.p) + '</div>' +
+        '<p class="chat-result__snip">' + chunk.s + '</p>' +
+        '<span class="chat-result__go">查看原文 →</span>';
+      box.appendChild(card);
+    });
+    addMsg('bot', box);
+    if (lastCtx.shown < lastCtx.results.length) addFollowChips(['还有呢', '换一种问法']);
+    else addFollowChips(['换一种问法', '今日简报']);
+  }
+
   function ask(q) {
     q = (q || '').trim();
     if (!q) return;
+    // 追问拦截（短输入优先不断上下文；强意图由后续流程自然处理）
+    if (/^(还有呢|还有吗|再来点|更多|还有什么)$/.test(q)) {
+      pushHistory(q);
+      addUserMsg(q);
+      inputEl.value = '';
+      renderMore();
+      return;
+    }
+    var inner = /^(那|那么)(.+?)(呢|吗)?$/.exec(q);
+    if (inner && inner[2] && inner[2].length >= 2 && lastCtx) {
+      ask(inner[2]); // 转问实质内容（如“那食堂呢”→搜“食堂”）
+      return;
+    }
     pushHistory(q);
     addUserMsg(q);
     inputEl.value = '';
@@ -491,7 +550,7 @@
     var typing = addTyping();
     loadKb().then(function (data) {
       var tokens = tokenizeQuery(q, data);
-      var top = bm25TopK(tokens, data, 3);
+      var top = bm25TopK(tokens, data, 8); // 取 8 条：前 3 主答，其余供“还有呢”翻页
       var results = [];
       for (var i = 0; i < top.length; i++) {
         var cid = top[i][0];
@@ -500,7 +559,8 @@
       }
       lastMs = (performance.now() - t0) / 1000;
       if (typing.parentNode) typing.remove();
-      renderAnswer(results, q);
+      lastCtx = { q: q, results: results, shown: 3 }; // 全量 8 条进上下文，首答只展前 3
+      renderAnswer(results.slice(0, 3), q);
     }).catch(function () {
       if (typing.parentNode) typing.remove();
       var err = document.createElement('div');

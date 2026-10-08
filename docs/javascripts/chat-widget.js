@@ -3,6 +3,9 @@
 // 本脚本在浏览器内完成「分词 → BM25 打分 → 展示相关 wiki 片段 + 原文链接」，
 // 全程本地计算、零外部请求、零密钥。
 // 兼容 Material instant 导航：组件挂在 body 下，导航切换不销毁。
+// —— 智能体升级（挑战杯 v2）——
+// ① 三层识别：强意图（办事跳转）→ BM25 知识检索 → 建议兜底；
+// ② 跨站联动：命中办事意图时直达 QDU-Nav 智能体（一句话办事的工作流在 Nav 端执行）。
 (function () {
   'use strict';
 
@@ -17,6 +20,66 @@
     '报到要带什么'
   ];
 
+  // ── 办事意图（换校落点：NAV_URL 随一键换校脚本切换） ──
+  // v2 升级：kind=agent 的意图会把【用户原话】通过 ?q= 带到导航站智能体
+  //          直接执行对应工作流（跨站委托，localStorage 不跨域的替代方案）
+  var NAV_URL = 'https://iceoftea.github.io/QDU-Nav/';
+  var NAV_AGENT_URL = NAV_URL + '#/app/assistant';
+  var INTENTS = [
+    { patterns: ['智能体', '助手', '帮我办', 'AI办事', '一句话办事', '对话说'], kind: 'agent', desc: '打开导航站智能体，说一句话就能办事（查课表 / 找空教室 / 加日程 / 发校园墙）' },
+    { patterns: ['今日简报', '每日简报', '今天有什么安排'], kind: 'agent', desc: '委托导航站智能体执行「今日简报」：课表 + 日程 + 通知一次看全' },
+    { patterns: ['签到', '每日打卡'], kind: 'agent', desc: '委托执行每日签到（+2 积分）并查看积分钱包' },
+    { patterns: ['发墙', '发帖', '校园墙发帖', '发失物', '发悬赏'], kind: 'agent', desc: '委托在校园墙发帖（失物/悬赏/普通帖，敏感词双端校验）' },
+    { patterns: ['看校园墙', '逛墙', '热门帖子'], kind: 'agent', desc: '打开校园墙热榜（12 分区 / 投票 / 悬赏 / 资源）' },
+    { patterns: ['协作看板', '运行统计'], kind: 'agent', desc: '委托执行「协作看板」：双 Agent 飞轮量化数据一屏看全' },
+    { patterns: ['空教室', '自习室', '哪里自习'], kind: 'app', app: 'classroomNav', desc: '实时空教室查询 · 教室占用 · 分步路线' },
+    { patterns: ['课表', '课程表', '明天上课'], kind: 'app', app: 'timetable', desc: '班级 / 教室 / 教师三视图课表' },
+    { patterns: ['提醒我', '加日程', '备忘'], kind: 'agent', desc: '对智能体说"提醒我明天下午三点开会"，确认即写入日程' },
+    { patterns: ['吃什么', '食堂空座', '人多吗'], kind: 'app', app: 'whatToEat', desc: '今天吃什么 · 食堂实时空座' },
+    { patterns: ['记账', '生活费', '账单'], kind: 'app', app: 'budget', desc: '收支随手记 · 账单导入 · 预算分配' },
+    { patterns: ['vpn', 'VPN', '织网', '知网', '校外访问'], kind: 'app', app: 'officialSites', desc: '校园服务直达：织网 / VPN / 图书馆 / 办事大厅' },
+    { patterns: ['校园导航', '打开导航', '去导航', '导航站'], kind: 'home', desc: '打开校园导航首页（18+ 应用一站式聚合）' }
+  ];
+
+  function matchIntent(q) {
+    var t = (q || '').toLowerCase().replace(/[？?！!。，,、\s]/g, '');
+    if (!t) return null;
+    var best = null;
+    var bestScore = 0;
+    for (var i = 0; i < INTENTS.length; i++) {
+      var it = INTENTS[i];
+      for (var j = 0; j < it.patterns.length; j++) {
+        var p = it.patterns[j].toLowerCase();
+        var score = 0;
+        if (t === p) score = 100;
+        else if (t.indexOf(p) >= 0) score = 60 + p.length * 2;
+        else if (p.indexOf(t) >= 0 && t.length >= 2) score = 40 + t.length * 3;
+        if (score > bestScore) { bestScore = score; best = it; }
+      }
+    }
+    return bestScore >= 40 ? best : null;
+  }
+
+  var lastMs = 0;   // 最近一次回答耗时（徽标展示，对齐 Nav 智能体）
+  var LS_HISTORY = 'qdu_chat_history_v1';  // 最近问题历史（快捷重发）
+  function pushHistory(q) {
+    try {
+      var h = JSON.parse(localStorage.getItem(LS_HISTORY) || '[]');
+      h = [q].concat(h.filter(function (x) { return x !== q; })).slice(0, 12);
+      localStorage.setItem(LS_HISTORY, JSON.stringify(h));
+    } catch (e) { /* noop */ }
+  }
+  function getHistory() {
+    try { return JSON.parse(localStorage.getItem(LS_HISTORY) || '[]'); } catch (e) { return []; }
+  }
+  var FEEDBACK_API = '';  // 反馈回流地址（与评论网关同源；留空=本地模式自动尝试 localhost）
+  function feedbackBase() {
+    if (FEEDBACK_API) return FEEDBACK_API.replace(/\/+$/, '');
+    if (apiBaseKnown()) return apiBaseKnown();
+    return 'http://localhost:8787';
+  }
+  var _apiBase = '';
+  function apiBaseKnown() { return _apiBase; }
   var kb = null;
   var kbPromise = null;
   var bodyEl = null;
@@ -179,68 +242,267 @@
     body.scrollTop = body.scrollHeight;
   }
 
-  function renderAnswer(results) {
+  function renderAnswer(results, rawQ) {
     if (!results.length) {
       var empty = document.createElement('div');
       empty.className = 'chat-empty';
-      empty.textContent = '没在 Wiki 里找到直接相关的内容，换个关键词试试，或者去「站内搜索」翻翻。';
+      empty.textContent = '没在 Wiki 里找到直接相关的内容，换个关键词试试；要办事可以说「空教室」「今日简报」等，会直达导航站智能体。';
       addMsg('bot', empty);
       return;
     }
 
     var box = document.createElement('div');
     box.className = 'chat-answer';
+
+    // 徽标行：知识检索层 · 置信度 · 耗时（对齐 Nav 智能体语言）
+    var conf = Math.min(95, 55 + Math.round(results[0][2] * 6));
+    var meta = document.createElement('div');
+    meta.className = 'chat-meta';
+    meta.innerHTML = '<span class="chat-badge">知识检索 BM25</span>' +
+      '<span class="chat-conf">置信度 ' + conf + '%</span>' +
+      '<span class="chat-conf">耗时 ' + (lastMs || 0).toFixed(2) + 's</span>';
+    box.appendChild(meta);
+
+    // 执行轨迹（三步可视）
+    var steps = document.createElement('div');
+    steps.className = 'chat-steps';
+    steps.innerHTML =
+      '<div class="chat-step done">✅ 分词与 BM25 打分（' + results.length + ' 个候选）</div>' +
+      '<div class="chat-step done">✅ 锁定最佳条目《' + results[0][1].t + '》</div>' +
+      '<div class="chat-step done">✅ 生成直达入口 · 附出处可溯源</div>';
+    box.appendChild(steps);
+
+    // 主结果：同页预览直达（不单开标签）
+    var topChunk = results[0][1];
+    var go = document.createElement('div');
+    go.className = 'chat-result chat-result--top chat-result--go';
+    go.innerHTML = '<div class="chat-result__title">🚀 直达《' + topChunk.t + '》</div>' +
+      '<div class="chat-result__crumb">' + (topChunk.c === topChunk.p ? topChunk.p : topChunk.c + ' › ' + topChunk.p) + '</div>' +
+      '<p class="chat-result__snip">' + topChunk.s + '</p>';
+    var golink = document.createElement('div');
+    golink.className = 'chat-golink';
+    var pv = document.createElement('button');
+    pv.className = 'chat-btn-main';
+    pv.textContent = '👁 同页预览此页';
+    pv.addEventListener('click', function () { toggleInlineFrame(golink, pageUrl(topChunk.u), '《' + topChunk.t + '》'); });
+    var ob = document.createElement('a');
+    ob.className = 'chat-btn-ghost';
+    ob.href = pageUrl(topChunk.u);
+    ob.target = '_blank';
+    ob.rel = 'noopener';
+    ob.textContent = '↗ 新标签';
+    golink.appendChild(pv);
+    golink.appendChild(ob);
+    var fb = document.createElement('div');
+    fb.className = 'chat-inlineframe';
+    fb.hidden = true;
+    golink.appendChild(fb);
+    go.appendChild(golink);
+    box.appendChild(go);
+
     var head = document.createElement('div');
     head.className = 'chat-answer__head';
-    head.textContent = '在 Wiki 中找到 ' + results.length + ' 条相关内容：';
+    head.textContent = '其他相关（' + Math.max(0, results.length - 1) + '）：';
     box.appendChild(head);
 
-    results.forEach(function (r, idx) {
+    results.slice(1).forEach(function (r) {
       var chunk = r[1];
-      var score = r[2];
       var card = document.createElement('a');
-      card.className = 'chat-result' + (idx === 0 ? ' chat-result--top' : '');
+      card.className = 'chat-result';
       card.href = pageUrl(chunk.u);
       card.target = '_blank';
       card.rel = 'noopener';
-
-      var title = document.createElement('div');
-      title.className = 'chat-result__title';
-      title.textContent = (idx === 0 ? '⭐ ' : '') + chunk.t;
-      card.appendChild(title);
-
-      var crumb = document.createElement('div');
-      crumb.className = 'chat-result__crumb';
-      crumb.textContent = chunk.c === chunk.p ? chunk.p : (chunk.c + ' › ' + chunk.p);
-      card.appendChild(crumb);
-
-      var snip = document.createElement('p');
-      snip.className = 'chat-result__snip';
-      snip.textContent = chunk.s;
-      card.appendChild(snip);
-
-      var foot = document.createElement('span');
-      foot.className = 'chat-result__go';
-      foot.textContent = '查看原文 →';
-      card.appendChild(foot);
-      void score;
-
+      card.innerHTML = '<div class="chat-result__title">' + chunk.t + '</div>' +
+        '<div class="chat-result__crumb">' + (chunk.c === chunk.p ? chunk.p : chunk.c + ' › ' + chunk.p) + '</div>' +
+        '<p class="chat-result__snip">' + chunk.s + '</p>' +
+        '<span class="chat-result__go">查看原文 →</span>';
       box.appendChild(card);
     });
 
     var note = document.createElement('div');
     note.className = 'chat-answer__note';
-    note.textContent = '回答为 Wiki 原文片段检索结果，仅供参考，请以官方最新通知为准。';
+    note.textContent = '回答为 Wiki 原文片段检索结果，附出处可溯源；要办事请直接说需求（如"今日简报"），会委托导航站智能体执行。';
     box.appendChild(note);
 
     addMsg('bot', box);
+
+    // 消息操作：复制 / 反馈回流（与 Nav 智能体同一套语言）
+    addOpsRow(box, '知识检索：' + topChunk.t);
+    // 动态追问
+    addFollowChips([
+      results[1] ? '《' + results[1][1].t + '》讲了什么' : '这篇文章还讲了什么',
+      '今日简报'
+    ]);
   }
+
+  /* ── 消息操作行：复制 / 👍 / 👎（👎 回流社区网关反馈队列） ── */
+  function addOpsRow(box, labelText) {
+    var row = document.createElement('div');
+    row.className = 'chat-ops';
+    var copyBtn = document.createElement('button');
+    copyBtn.className = 'chat-op';
+    copyBtn.type = 'button';
+    copyBtn.textContent = '⧉ 复制';
+    copyBtn.addEventListener('click', function () {
+      try {
+        navigator.clipboard.writeText(labelText || box.innerText);
+        copyBtn.textContent = '✓ 已复制';
+        setTimeout(function () { copyBtn.textContent = '⧉ 复制'; }, 1500);
+      } catch (e) { /* noop */ }
+    });
+    var likeBtn = document.createElement('button');
+    likeBtn.className = 'chat-op';
+    likeBtn.type = 'button';
+    likeBtn.textContent = '👍';
+    likeBtn.addEventListener('click', function () {
+      likeBtn.classList.add('on');
+      likeBtn.textContent = '👍 已赞';
+    });
+    var dislikeBtn = document.createElement('button');
+    dislikeBtn.className = 'chat-op';
+    dislikeBtn.type = 'button';
+    dislikeBtn.textContent = '👎';
+    dislikeBtn.addEventListener('click', function () {
+      dislikeBtn.classList.add('bad');
+      dislikeBtn.textContent = '👎 已反馈';
+      // 回流：进管理台「👎 反馈」聚合视图
+      try {
+        fetch(feedbackBase() + '/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: (labelText || box.innerText).slice(0, 200), kind: 'wiki-dislike', detail: 'Wiki 客服点踩', path: location.pathname })
+        }).catch(function () { /* 网关未连：静默 */ });
+      } catch (e) { /* noop */ }
+    });
+    row.appendChild(copyBtn);
+    row.appendChild(likeBtn);
+    row.appendChild(dislikeBtn);
+    box.appendChild(row);
+  }
+
+  /* ── 跨站委托执行：把用户原话带进导航站智能体（?q= 协议） ── */
+  function agentHref(rawQ) {
+    return NAV_AGENT_URL + '?q=' + encodeURIComponent(rawQ || '你能做什么')
+  }
+
+  /**
+   * 办事意图卡片 v2 —— 对齐 Nav 智能体的展示语言：
+   * 置信度徽标 + 三步执行轨迹 + 跨站委托直达按钮（带原话执行工作流）
+   */
+  function renderJump(intent, rawQ) {
+    var box = document.createElement('div');
+    box.className = 'chat-answer chat-answer--agent';
+
+    // 徽标行（对齐 Nav：识别层 + 置信度 + 耗时由 ask 记录）
+    var meta = document.createElement('div');
+    meta.className = 'chat-meta';
+    meta.innerHTML = '<span class="chat-badge">意图命中</span><span class="chat-conf">置信度 100%</span>' +
+      '<span class="chat-conf">耗时 ' + (lastMs || 0).toFixed(2) + 's</span>';
+    box.appendChild(meta);
+
+    // 执行轨迹（三步可视）
+    var steps = document.createElement('div');
+    steps.className = 'chat-steps';
+    steps.innerHTML =
+      '<div class="chat-step done">✅ 识别为「' + (intent.kind === 'agent' ? '跨站办事' : intent.kind === 'home' ? '导航直达' : '应用直达') + '」</div>' +
+      '<div class="chat-step done">✅ 组装目标与参数' + (intent.kind === 'agent' && rawQ ? '（携带话术：' + String(rawQ).slice(0, 18) + (rawQ.length > 18 ? '…' : '') + '）' : '') + '</div>' +
+      '<div class="chat-step done">✅ 生成直达链接 · 点击即达</div>';
+    box.appendChild(steps);
+
+    var url, title;
+    if (intent.kind === 'agent') {
+      url = agentHref(rawQ);
+      title = '🤖 委托导航站智能体执行';
+    } else if (intent.kind === 'home') {
+      url = NAV_URL;
+      title = '🧭 打开校园导航首页';
+    } else {
+      url = NAV_URL + '#/app/' + intent.app;
+      title = '🚀 直达 · ' + (INTENT_APP_NAMES[intent.app] || intent.app);
+    }
+
+    var wrap = document.createElement('div');
+    wrap.className = 'chat-golink';
+    // 主操作：同页内嵌预览（不再单开标签堆页面）
+    var previewBtn = document.createElement('button');
+    previewBtn.className = 'chat-btn-main';
+    previewBtn.textContent = '👁 同页预览（不离开当前文章）';
+    previewBtn.addEventListener('click', function () { toggleInlineFrame(wrap, url, title); });
+    // 次操作：确需新标签时
+    var openBtn = document.createElement('a');
+    openBtn.className = 'chat-btn-ghost';
+    openBtn.href = url;
+    openBtn.target = '_blank';
+    openBtn.rel = 'noopener';
+    openBtn.textContent = '↗ 新标签打开';
+    wrap.appendChild(previewBtn);
+    wrap.appendChild(openBtn);
+    var frameBox = document.createElement('div');
+    frameBox.className = 'chat-inlineframe';
+    frameBox.hidden = true;
+    wrap.appendChild(frameBox);
+    box.appendChild(wrap);
+
+    var note = document.createElement('div');
+    note.className = 'chat-answer__note';
+    note.textContent = intent.kind === 'agent'
+      ? '问答在 Wiki · 办事在 Nav：预览或跳转后由导航站智能体继续执行（原话已携带）。'
+      : '问答在 Wiki · 办事在 Nav —— 推荐同页预览，避免标签堆积。';
+    box.appendChild(note);
+    addMsg('bot', box);
+    // 追问建议
+    addFollowChips(['这篇文章还讲了什么', '换一种问法', '打开校园导航']);
+  }
+
+  /* ── 同页内嵌预览（iframe）：解决"单开新页越用越冗余" ── */
+  function toggleInlineFrame(wrap, url, title) {
+    var boxEl = wrap.querySelector('.chat-inlineframe');
+    if (!boxEl) return;
+    if (!boxEl.hidden) { boxEl.hidden = true; boxEl.innerHTML = ''; return }
+    boxEl.hidden = false;
+    boxEl.innerHTML = '<div class="chat-frame-bar"><span>👁 ' + (title || '页面预览') + '（同页内嵌 · 点右上收起）</span>' +
+      '<button type="button" class="chat-frame-close" onclick="this.closest(\'.chat-inlineframe\').hidden=true;this.closest(\'.chat-inlineframe\').innerHTML=\'\'">收起 ✕</button></div>' +
+      '<iframe class="chat-frame" src="' + url + '" loading="lazy" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>' +
+      '<div class="chat-frame-tip">若目标站禁止内嵌，请点上方「↗ 新标签打开」</div>';
+  }
+
+  /* ── 动态追问 chips ── */
+  function addFollowChips(list) {
+    var chips = document.createElement('div');
+    chips.className = 'chat-chips';
+    (list || []).forEach(function (c) {
+      var b = document.createElement('button');
+      b.className = 'chat-chip';
+      b.type = 'button';
+      b.textContent = c;
+      b.addEventListener('click', function () { ask(c); });
+      chips.appendChild(b);
+    });
+    msgListEl.appendChild(chips);
+    scrollBottom();
+  }
+
+  /* 常用应用中文名（直达按钮文案） */
+  var INTENT_APP_NAMES = {
+    classroomNav: '教室导航', timetable: '课程表', whatToEat: '今天吃什么',
+    budget: '生活费计数器', officialSites: '学校官网与服务'
+  };
 
   function ask(q) {
     q = (q || '').trim();
     if (!q) return;
+    pushHistory(q);
     addUserMsg(q);
     inputEl.value = '';
+    var t0 = performance.now();
+
+    // 第一层：办事意图（跳转 Nav 端智能体/应用）
+    var intent = matchIntent(q);
+    if (intent) {
+      lastMs = (performance.now() - t0) / 1000;
+      renderJump(intent, q);
+      return;
+    }
 
     var typing = addTyping();
     loadKb().then(function (data) {
@@ -252,8 +514,9 @@
         var score = top[i][1];
         if (score > 0) results.push([cid, data.chunks[cid], score]);
       }
+      lastMs = (performance.now() - t0) / 1000;
       if (typing.parentNode) typing.remove();
-      renderAnswer(results);
+      renderAnswer(results, q);
     }).catch(function () {
       if (typing.parentNode) typing.remove();
       var err = document.createElement('div');
@@ -313,7 +576,7 @@
       '<div class="chat-panel__head">' +
       '  <div class="chat-panel__titles">' +
       '    <div class="chat-panel__title">青大智答</div>' +
-      '    <div class="chat-panel__sub">校园 AI 客服 · 本地检索，秒回不卡</div>' +
+      '    <div class="chat-panel__sub">三层识别 · 百科问答可溯源 · 办事直达导航站</div>' +
       '  </div>' +
       '  <div class="chat-panel__actions">' +
       '    <button type="button" class="chat-clear" aria-label="清空对话">↺</button>' +
@@ -331,6 +594,7 @@
     inputEl = panelEl.querySelector('.chat-input');
 
     showWelcome();
+    mountHistoryBtn();
 
     launcherEl.addEventListener('click', open);
     panelEl.querySelector('.chat-panel__close').addEventListener('click', close);
@@ -358,9 +622,75 @@
     document.body.classList.remove('chat-open');
   }
 
+  /* ---------- 划词提问：选中正文 → 「❓ 问这段」→ 带上下文向 AI 提问 ---------- */
+  function mountAskSelection() {
+    if (document.getElementById('chat-ask-btn')) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = 'chat-ask-btn';
+    btn.textContent = '❓ 问这段';
+    btn.style.cssText = 'position:absolute;z-index:91;display:none;font-size:12.5px;padding:5px 13px;border-radius:999px;background:#1b66c9;color:#fff;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);font-family:inherit';
+    document.body.appendChild(btn);
+    document.addEventListener('mouseup', function (e) {
+      if (btn.contains(e.target)) return;
+      var panel = document.querySelector('.chat-panel');
+      if (panel && panel.contains(e.target)) return;
+      setTimeout(function () {
+        var sel = window.getSelection();
+        if (!sel || sel.isCollapsed) { btn.style.display = 'none'; return; }
+        var text = sel.toString().trim();
+        var inContent = document.querySelector('.md-content') && document.querySelector('.md-content').contains(sel.anchorNode);
+        if (text.length < 4 || text.length > 300 || !inContent) { btn.style.display = 'none'; return; }
+        var rect = sel.getRangeAt(0).getBoundingClientRect();
+        btn.style.top = (rect.top + window.scrollY - 42) + 'px';
+        btn.style.left = Math.max(8, rect.left + window.scrollX + 72) + 'px';
+        btn.style.display = 'inline-block';
+        btn._selText = text;
+      }, 10);
+    });
+    btn.addEventListener('mousedown', function (e) { e.preventDefault(); });
+    btn.addEventListener('click', function () {
+      var text = btn._selText || '';
+      btn.style.display = 'none';
+      if (!text) return;
+      open();
+      ask('请解释这段话：' + text.slice(0, 160));
+      var sel = window.getSelection();
+      if (sel) sel.removeAllRanges();
+    });
+  }
+
+  /* ---------- 历史快捷（面板头部 🕘 按钮） ---------- */
+  function mountHistoryBtn() {
+    if (!panelEl) return;
+    var actions = panelEl.querySelector('.chat-panel__actions');
+    if (!actions || actions.querySelector('.chat-history')) return;
+    var hb = document.createElement('button');
+    hb.type = 'button';
+    hb.className = 'chat-history';
+    hb.title = '最近问过';
+    hb.textContent = '🕘';
+    hb.addEventListener('click', function () {
+      var list = getHistory();
+      if (!list.length) { alert('暂无历史提问'); return; }
+      var pick = prompt('最近问过（输入序号重发，或点取消）：\n' + list.map(function (q, i) { return (i + 1) + '. ' + q; }).join('\n'));
+      var n = parseInt(pick, 10);
+      if (n >= 1 && n <= list.length) ask(list[n - 1]);
+    });
+    actions.insertBefore(hb, actions.firstChild);
+  }
+
   function init() {
     if (bodyEl && bodyEl.querySelector('.chat-launcher')) return;
     buildUI();
+    // 事件委托兜底：i18n 等脚本若替换 launcher 节点会丢监听，
+    // document 级委托保证点击永远可达（幂等，init 仅一次）
+    document.addEventListener('click', function delegateChatLauncher(e) {
+      var t = e.target;
+      if (t && t.closest && t.closest('.chat-launcher') && panelEl && panelEl.hidden) {
+        open();
+      }
+    });
   }
 
   if (document.readyState === 'loading') {

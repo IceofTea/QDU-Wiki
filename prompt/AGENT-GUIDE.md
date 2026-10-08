@@ -639,6 +639,22 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-10-07：社区评论系统上线 + AI 客服升级为跨站智能体入口（挑战杯专项）
+
+- **任务**：响应挑战杯专家"互动空心化、Wiki 无评论、信息与需求没有动作"的点评，为本站补齐社区评论与段落批注能力，并把 AI 客服升级为可直达导航站办事的跨站智能体入口。
+- **改动**：
+  - 新增：`docs/javascripts/comments.js`（约 700 行，零依赖）——文章级评论（发布/列表/点赞/昵称记忆）、**段落级批注**（鼠标划选正文 → 浮出「✏️ 批注所选」→ 弹窗提交 → 锚定段落并高亮 `p.qdu-anno` 带 📌 角标）、纠错反馈（🚩 按钮前缀 `[纠错]`）、**AI 归纳**（纯前端抽取式摘要：二元词频句子打分取 Top2）、评论数徽标（标题旁 `💬 N`，点击滚动到评论区）、存储双模式——服务器模式（`window.QDU_AGENT_API` / `<meta name="qdu-agent-api">` / `CONFIG_API` 常量配置，localhost 自动连 `http://localhost:8787` 的 Nav 评论网关，跨用户共享）+ localStorage 本地模式自动降级（横幅明确标注当前模式）
+  - 修改：`mkdocs.yml`（`extra_javascript` 追加 `javascripts/comments.js`）
+  - 修改：`docs/javascripts/chat-widget.js`——新增**第一层「办事意图」识别**（40+ 关键词模式）：命中即渲染跳转卡片直达 QDU-Nav 对应应用或 `#/app/assistant` 智能体（`NAV_URL` 为换校落点），与 BM25 知识检索形成"问答在 Wiki · 办事在 Nav"双站联动；副标题改为"三层识别 · 百科问答可溯源 · 办事直达导航站"
+  - 新增：`customize_wiki.py` + `templates/qdu_wiki.json`——MkDocs 版一键换校（落点：`mkdocs.yml` 的 site_name/site_url/repo_url/copyright/贴吧社交链接 + chat-widget 的 NAV_URL/智能体名称/欢迎语），与 Nav 站 `customize.py` 同款交互与 `--config` 导入
+  - 修改：`prompt/AGENT-GUIDE.md`（追加本维护记录）
+- **说明**：
+  - **踩坑记录**：① `.qc-modal` 样式含 `display:flex`，作者样式优先级高于 UA 的 `[hidden]{display:none}` → 弹窗永远可见且遮罩挡住全页按钮（E2E fill/click 卡死的根因），必须显式补 `.qc-modal[hidden]{display:none}`（同理补了 `.qc-sel-btn[hidden]`/`.qc-ai[hidden]`）；② 拼接字符串时漏引号导致整站脚本 SyntaxError（`node --check` 秒查）；③ 本地 `mkdocs serve` 按 `site_url` 挂在 `/QDU-Wiki/` 子路径，直连根路径拿到的是 404 壳页（有完整导航易误判），本地验证必须带前缀；④ 评论网关 POST 需透传 `type/paraIndex/quote` 否则批注退化为普通评论。
+  - **验证**：`mkdocs build` 通过；Playwright E2E——评论区挂载、🟢 服务器模式横幅、发表评论入账、段落批注提交后 `anno:1 + highlighted:1`（标签与段落高亮同时生效）、弹窗隐藏修复复测通过。
+  - 部署提示：纯静态托管默认本地模式开箱即用；配置一行 `CONFIG_API`（或 meta 标签）指向任意跑着 `server/index.mjs` 的节点即升级为跨用户共享模式，无需改 CI。
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

@@ -146,6 +146,7 @@ extra_javascript:
   - javascripts/chat-widget.js
   - javascripts/comments.js
   - javascripts/giscus.js
+  - javascripts/ai-badge.js
   - javascripts/friend-cards.js
   - i18n/i18n.js
 markdown_extensions:

@@ -13,7 +13,9 @@
 
   var LS_KEY = 'qdu_wiki_comments_v1';
   var LS_NAME_KEY = 'qdu_wiki_commenter';
-  var CONFIG_API = ''; // 部署评论网关后填入其地址（如 http://localhost:8787 或 https://your-server），留空 = 本地模式
+  var LS_API_KEY = 'qdu_api_base'; // 与 Nav 站 wall/apiBase.js 同键：数据管家页设置的网关地址 Wiki 同步生效
+  var CONFIG_API = ''; // 部署评论网关后填入其地址（如 https://your-gateway.onrender.com），留空 = 本地模式
+  var PUBLIC_API_DEFAULT = ''; // 公网网关上线后填入缺省地址，手机/静态站直连线上版
   var mode = 'local'; // 'api' | 'local'
   var apiBase = '';
   var pollTimer = null;
@@ -58,18 +60,35 @@
 
   /** 准实时轮询（15s 拉取增量，新评论自动出现） */
   var sse = null
+  var sseFails = 0
+  var sseRetryTimer = null
   function startSse() {
     if (sse || mode !== 'api' || typeof EventSource === 'undefined') return
-    try {
-      sse = new EventSource(apiBase + '/api/events')
-      sse.onmessage = function (e) {
-        try {
-          var d = JSON.parse(e.data)
-          if (d.type === 'comment') refreshComments()
-        } catch (err) { /* noop */ }
-      }
-      sse.onerror = function () { /* 断开：轮询兜底仍在 */ }
-    } catch (err) { /* noop */ }
+    // 指数退避重连：5s/15s/30s，连续 4 次失败停建（轮询兜底仍在，手机弱网不空转）
+    function connect() {
+      if (mode !== 'api' || typeof EventSource === 'undefined') return
+      try { if (sse) sse.close() } catch (err) { /* noop */ }
+      try {
+        sse = new EventSource(apiBase + '/api/events')
+        sse.onmessage = function (e) {
+          sseFails = 0
+          try {
+            var d = JSON.parse(e.data)
+            if (d.type === 'comment') refreshComments()
+          } catch (err) { /* noop */ }
+        }
+        sse.onerror = function () {
+          sseFails++
+          try { if (sse) sse.close() } catch (err) { /* noop */ }
+          sse = null
+          if (sseFails >= 4) return // 停建，重度断线靠 15s 轮询
+          var wait = Math.min(30000, 5000 * Math.pow(2, Math.min(2, sseFails - 1)))
+          clearTimeout(sseRetryTimer)
+          sseRetryTimer = setTimeout(connect, wait)
+        }
+      } catch (err) { sseFails++; /* noop */ }
+    }
+    connect()
   }
   function refreshComments() {
     fetchComments().then(function (list) {
@@ -122,9 +141,18 @@
   /* ---------- 配置与存储 ---------- */
   function detectApi() {
     if (CONFIG_API) return CONFIG_API.replace(/\/+$/, '');
+    try {
+      var q = new URLSearchParams(location.search).get('api');
+      if (q) return q.replace(/\/+$/, '');
+    } catch (e) { /* noop */ }
+    try {
+      var stored = localStorage.getItem(LS_API_KEY);
+      if (stored) return stored.replace(/\/+$/, '');
+    } catch (e) { /* noop */ }
     if (window.QDU_AGENT_API) return String(window.QDU_AGENT_API).replace(/\/+$/, '');
     var meta = document.querySelector('meta[name="qdu-agent-api"]');
     if (meta && meta.content) return meta.content.replace(/\/+$/, '');
+    if (PUBLIC_API_DEFAULT) return PUBLIC_API_DEFAULT.replace(/\/+$/, '');
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') return 'http://localhost:8787';
     return '';
   }
@@ -310,8 +338,8 @@
     var host = document.querySelector('.md-content__inner');
     var art = articleEl();
     if (!host || !art) return;
-    // 只在正文页挂载（排除首页索引等）
-    if (!art.querySelector('h1')) return;
+    // 正文页优先挂载；无 h1 的页面（如索引/404 壳）也挂载，标题取 document.title 兜底，
+    // 避免“评论框压根不出现 → 以为发不了评论”。
 
     rootEl = document.createElement('section');
     rootEl.className = 'qdu-comments';

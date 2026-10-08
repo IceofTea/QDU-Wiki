@@ -221,6 +221,13 @@
     c.likes = 0;
     db[path] = (db[path] || []).concat([c]);
     localWrite(db);
+    // 写后回读校验：浏览器拒绝存储时给明确提示，而不是“假装成功”
+    var ok = false;
+    try {
+      var back = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+      ok = (back[path] || []).some(function (x) { return x.id === c.id; });
+    } catch (e) { ok = false; }
+    c._volatile = !ok;
     return c;
   }
 
@@ -678,7 +685,10 @@
         if (!res) return;
         setName(name);
         document.getElementById('qcText').value = '';
-        tip('已发表 ✅ 全站实时可见（维护 Agent 24h 内核验纠错）');
+        // 按模式诚实提示：本机模式不承诺“全站可见”
+        tip(res._volatile
+          ? '⚠️ 浏览器拒绝了本地存储，评论仅本次可见（换无痕/隐私模式或清存储限制后重试）'
+          : (mode === 'api' ? '已发表 ✅ 全站实时可见（维护 Agent 24h 内核验纠错）' : '已发表 ✅ 仅保存在本机浏览器（配网关后全员可见）'));
         busy = false;
         return loadAndRender();
       }).catch(function (e) {

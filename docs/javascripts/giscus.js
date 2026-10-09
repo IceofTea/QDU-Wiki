@@ -8,7 +8,8 @@
 (function () {
   'use strict';
 
-  var GISCUS_DEFAULT = { repo: '', repoId: '', category: '', categoryId: '' };
+  // 已配置（仓库 IceofTea/QDU-Wiki）：meta 标签可覆盖此处缺省
+  var GISCUS_DEFAULT = { repo: 'IceofTea/QDU-Wiki', repoId: 'R_kgDOTkjRBQ', category: '评论', categoryId: 'DIC_kwDOTkjRBc4DHYbl' };
 
   function meta(name) {
     var m = document.querySelector('meta[name="' + name + '"]');
@@ -50,7 +51,7 @@
     s.setAttribute('data-strict', '0');
     s.setAttribute('data-reactions-enabled', '1');
     s.setAttribute('data-emit-metadata', '0');
-    s.setAttribute('data-input-position', 'top');
+    s.setAttribute('data-input-position', 'bottom');
     s.setAttribute('data-theme', 'preferred_color_scheme');
     s.setAttribute('data-lang', 'zh-CN');
     sec.querySelector('.giscus').appendChild(s);

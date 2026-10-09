@@ -28,7 +28,7 @@
   function mount() {
     var c = cfg();
     if (!c.repo || !c.repoId || !c.categoryId) return; // 未配置：静默
-    if (document.querySelector('.giscus-frame')) return;
+    if (document.querySelector('.giscus-frame')) { tidyLocal(); return; }
     // 只在正文页挂载（与 comments.js 同策略：找正文容器）
     var host = document.querySelector('.md-content__inner');
     if (!host) return;
@@ -55,6 +55,45 @@
     s.setAttribute('data-theme', 'preferred_color_scheme');
     s.setAttribute('data-lang', 'zh-CN');
     sec.querySelector('.giscus').appendChild(s);
+    tidyLocal();
+  }
+
+  /* ---------- 版面整理：全网评论置顶 + 本地评论折叠（静态区太占地方） ── */
+  var foldCssDone = false;
+  function tidyLocal() {
+    try {
+      var local = document.querySelector('.qdu-comments');
+      var wrap = document.querySelector('.giscus-wrap');
+      if (!wrap) return;
+      // 全网评论挪到本地评论前面
+      if (local && (local.compareDocumentPosition(wrap) & 4)) {
+        local.parentNode.insertBefore(wrap, local);
+      }
+      if (!local || local.classList.contains('qdu-folded')) return;
+      local.classList.add('qdu-folded');
+      if (!foldCssDone) {
+        foldCssDone = true;
+        var st = document.createElement('style');
+        st.textContent = '.qdu-comments.qdu-folded .qc-list,.qdu-comments.qdu-folded .qc-form,' +
+          '.qdu-comments.qdu-folded .qc-sortbar,.qdu-comments.qdu-folded .qc-ai,' +
+          '.qdu-comments.qdu-folded .qc-sel-btn,.qdu-comments.qdu-folded .qc-modal{display:none!important}' +
+          '.qdu-comments.qdu-folded{opacity:.92}' +
+          '.qc-unfold{margin-left:8px}';
+        document.head.appendChild(st);
+      }
+      var head = local.querySelector('.qc-head');
+      if (head && !local.querySelector('.qc-unfold')) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'qc-tool qc-unfold';
+        btn.textContent = '📦 本地评论（仅本机） ▸ 展开';
+        btn.addEventListener('click', function () {
+          var folded = local.classList.toggle('qdu-folded');
+          btn.textContent = folded ? '📦 本地评论（仅本机） ▸ 展开' : '📦 本地评论（仅本机） ▾ 收起';
+        });
+        head.appendChild(btn);
+      }
+    } catch (e) { /* noop */ }
   }
 
   function boot() {

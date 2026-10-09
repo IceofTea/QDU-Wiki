@@ -1,0 +1,15 @@
+/* Wiki 打印样式：新生手册等长文打印/存 PDF 用，只留正文 */
+@media print {
+  .md-header, .md-tabs, .md-sidebar, .md-footer, .md-search,
+  .chat-launcher, .chat-panel, #qdu-progress, #qdu-kbd,
+  .qdu-comments, .giscus-wrap, #qcSelBtn, #qcModal,
+  .md-content__button, .md-source, .md-top {
+    display: none !important;
+  }
+  .md-content__inner { margin: 0 !important; max-width: 100% !important; }
+  .md-typeset { font-size: 12pt; line-height: 1.8; color: #000; }
+  .md-typeset a::after { content: ""; }
+  .md-typeset h1, .md-typeset h2 { break-after: avoid; }
+  .md-typeset table { font-size: 10pt; }
+  @page { margin: 18mm 15mm; }
+}

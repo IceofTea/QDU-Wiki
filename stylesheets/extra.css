@@ -1994,3 +1994,33 @@ body.pop-open {
 [data-md-color-scheme="slate"] .chat-badge { background: rgba(88,166,255,.15) !important; color: #58a6ff !important; }
 [data-md-color-scheme="slate"] .chat-chip, [data-md-color-scheme="slate"] .chat-btn-ghost { background: #21262d; border-color: #30363d; color: #e6edf3; }
 [data-md-color-scheme="slate"] .chat-inlineframe { background: #0d1117; border-color: #30363d; }
+
+/* ── 知识图谱 ── */
+#kgRoot{max-width:880px;margin:0 auto}
+.kg-svg{width:100%;height:auto;background:var(--md-default-bg-color,#fafafa);border:1px solid var(--md-default-fg-color--lightest,#eee);border-radius:12px}
+.kg-edge{stroke:#cbd5e1;stroke-width:1}
+.kg-edge.hot{stroke:#1b66c9;stroke-width:2}
+.kg-node{cursor:pointer}
+.kg-node.iso circle{stroke:#e11d48;stroke-width:1.5;stroke-dasharray:3 2}
+.kg-label{font-size:11px;fill:var(--md-default-fg-color,#333)}
+.kg-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.kg-leg{font-size:12px;border:1px solid var(--md-default-fg-color--lightest,#e5e5e5);border-radius:999px;padding:2px 10px;cursor:pointer}
+.kg-leg.on{background:#1b66c9;color:#fff;border-color:#1b66c9}
+.kg-leg i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}
+.kg-bar{margin:12px 0 4px}
+.kg-bar input{width:100%;border:1px solid var(--md-default-fg-color--lightest,#e0e0e0);border-radius:8px;padding:8px 12px;font-size:13px}
+.kg-stat{font-size:13px;margin:8px 0}
+.kg-iso{font-size:13px;margin-top:6px}
+.kg-iso a{display:inline-block;margin:0 8px 4px 0;font-size:12px}
+.kg-loading,.kg-empty{padding:30px;text-align:center;color:#999}
+
+
+/* ── 纠错看板 ── */
+.fx-summary{font-size:14px;margin:8px 0}
+.fx-ops{margin:8px 0}
+.fx-btn{border:1px solid var(--md-primary-fg-color,#1b66c9);color:var(--md-primary-fg-color,#1b66c9);background:transparent;border-radius:999px;padding:5px 16px;cursor:pointer}
+.fx-item{border:1px solid var(--md-default-fg-color--lightest,#eee);border-radius:10px;padding:10px 12px;margin:8px 0}
+.fx-meta{display:flex;justify-content:space-between;font-size:12px;color:#888;flex-wrap:wrap;gap:6px}
+.fx-quote{font-size:12px;color:#888;border-left:2px solid var(--md-primary-fg-color,#1b66c9);padding-left:8px;margin:6px 0}
+.fx-content{font-size:14px;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+

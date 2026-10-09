@@ -60,6 +60,7 @@
 
   /* ---------- 版面整理：全网评论置顶 + 本地评论折叠（静态区太占地方） ── */
   var foldCssDone = false;
+  var localOpen = false; // 用户亲手点开过 → 观察者不再强行折叠（此前 bug：展开后下一次 DOM 变动即被收回）
   function tidyLocal() {
     try {
       var local = document.querySelector('.qdu-comments');
@@ -69,8 +70,8 @@
       if (local && (local.compareDocumentPosition(wrap) & 4)) {
         local.parentNode.insertBefore(wrap, local);
       }
-      if (!local || local.classList.contains('qdu-folded')) return;
-      local.classList.add('qdu-folded');
+      if (!local || (local.classList.contains('qdu-folded') && localOpen)) return;
+      if (!local.classList.contains('qdu-folded') && !localOpen) local.classList.add('qdu-folded');
       if (!foldCssDone) {
         foldCssDone = true;
         var st = document.createElement('style');
@@ -89,6 +90,7 @@
         btn.textContent = '📦 本地评论（仅本机） ▸ 展开';
         btn.addEventListener('click', function () {
           var folded = local.classList.toggle('qdu-folded');
+          localOpen = !folded;
           btn.textContent = folded ? '📦 本地评论（仅本机） ▸ 展开' : '📦 本地评论（仅本机） ▾ 收起';
         });
         head.appendChild(btn);

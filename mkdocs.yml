@@ -76,7 +76,6 @@ nav:
   - 学生组织:
     - 社团与学生组织: organization/index.md
   - 文件共享: share/index.md
-  - 知识图谱: graph.md
   - 有话送你:
     - words/index.md
     - 说明: words/guide.md
@@ -85,6 +84,8 @@ nav:
     - about/index.md
     - 维护说明: about/guide.md
     - 纠错看板: about/fixes.md
+  # —— 以下为近期新增入口（新应用统一靠后，老应用在前，勿插回中部）——
+  - 知识图谱: graph.md
   - 友情链接:
     - friends/index.md
     - 申请友链: friends/guide.md
@@ -152,7 +153,6 @@ extra_javascript:
   - javascripts/chat-widget.js
   - javascripts/comments.js
   - javascripts/giscus.js
-  - javascripts/ai-badge.js
   - javascripts/fix-board.js
   - javascripts/reading.js
   - javascripts/graph.js

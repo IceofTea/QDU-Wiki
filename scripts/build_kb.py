@@ -5,11 +5,16 @@
 
 职责：
   1. 从 mkdocs.yml 的 nav 收集正式展示的页面（排除 words/share/about 等非问答板块）
-  2. 按 H2/H3 标题将每个页面切成信息块，并用与 MkDocs 一致的 toc 算法生成标题锚点
+  2. 按 H2/H3 标题将每个页面切成信息块，锚点直接取自 site/ 构建产物（与站点 100% 一致）
   3. jieba 精确分词 + 去停用词，构建 BM25 倒排索引（标题词加权）
   4. 输出紧凑 JSON，供前端 chat-widget.js 在浏览器内完成本地检索
 
-运行：python scripts/build_kb.py
+URL 规则（MkDocs use_directory_urls）：
+  organization/index.md → organization/   （不是 organization/index → 否则 #锚点 拼出 /index/#x 线上 404）
+  index.md              → （空，即站点根）
+  live/map.md           → live/map/
+
+运行：先 python -m mkdocs build（产出 site/），再 python scripts/build_kb.py
 产物：docs/assets/kb.json（构建产物，已被 .gitignore 忽略，由 CI 自动生成）
 """
 from __future__ import annotations
@@ -26,6 +31,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
+SITE = ROOT / "site"
 OUT = DOCS / "assets" / "kb.json"
 MKDOCS_YML = ROOT / "mkdocs.yml"
 
@@ -109,14 +115,46 @@ def collect_nav_pages() -> dict[str, list[str]]:
     return pages
 
 
-def render_heads(md_text: str) -> list[tuple[str, str]]:
-    """渲染整页，返回标题序列 [(id, 标题文本), ...]（与站点锚点一致）"""
-    html = markdown.markdown(md_text, extensions=MD_EXTENSIONS)
-    heads = []
-    for m in re.finditer(r"<h([1-6])[^>]*?id=\"([^\"]+)\"[^>]*>(.*?)</h\1>", html, re.S):
-        title = re.sub(r"<[^>]+>", "", m.group(3))
-        heads.append((m.group(2), html_mod.unescape(title).strip()))
+def page_url(rel: str) -> str:
+    """按 MkDocs use_directory_urls 规则把 md 相对路径转为站内 URL（尾斜杠目录式）。
+
+    organization/index.md → organization/
+    index.md              → ''（站点根）
+    live/map.md           → live/map/
+    """
+    p = Path(rel)
+    if p.name == "index.md":
+        parent = p.parent.as_posix()
+        return "" if parent == "." else parent + "/"
+    return p.with_suffix("").as_posix() + "/"
+
+
+def heads_from_site(rel: str) -> list[tuple[str, int, str]]:
+    """从 site/ 构建产物提取标题序列 [(id, 层级, 文本)]。
+
+    锚点直接取自站点渲染结果——中文标题经默认 slugify 变空后由 toc 编号为 _N，
+    该编号只能从真实产物获得，本地重算必然与站点错位（线上 404 教训）。
+    """
+    url = page_url(rel)
+    html_path = (SITE / url / "index.html") if url else (SITE / "index.html")
+    if not html_path.exists():
+        raise SystemExit(
+            f"[build_kb] 缺少站点产物 {html_path.relative_to(ROOT)}，"
+            f"请先执行 python -m mkdocs build 再运行本脚本"
+        )
+    html = html_path.read_text(encoding="utf-8", errors="replace")
+    heads: list[tuple[str, int, str]] = []
+    for m in re.finditer(r'<h([1-6])[^>]*?\bid="([^"]+)"[^>]*>(.*?)</h\1>', html, re.S):
+        text = re.sub(r"<[^>]+>", "", m.group(3))
+        heads.append((m.group(2), int(m.group(1)), html_mod.unescape(text).strip()))
     return heads
+
+
+def norm_title(s: str) -> str:
+    """归一化标题文本，用于 md 源码标题与站点渲染文本的对齐校验。"""
+    s = re.sub(r"[`*_~\[\]()#>|]", "", s)
+    s = re.sub(r"\s+", "", s)
+    return s.strip("。．.、，,：:；;！!？?“”\"'")
 
 
 def split_blocks(lines: list[str]) -> list[tuple[int, str, list[str]]]:
@@ -199,17 +237,22 @@ def main() -> int:
             page_title = m.group(2).strip()
             lines = lines[1:]  # 去掉 H1 标题行
 
-        html_heads = render_heads(md_text)
+        html_heads = [h for h in heads_from_site(rel) if h[1] >= 2]
         blocks = split_blocks(lines)
         if not blocks:
             skipped.append(rel)
             continue
 
-        base_url = Path(rel).with_suffix("").as_posix()  # 如 live/dorm
+        base_url = page_url(rel)  # 目录式 URL：organization/index.md → organization/
         crumb_text = " › ".join(crumbs) if crumbs else "主页"
+        mismatch = 0
 
-        # 标题块与渲染标题按顺序配对取锚点
-        anchor_iter = iter(html_heads)
+        # 标题块与站点渲染标题配对取锚点（H1 对应页首块，故过滤层级 1）。
+        # 采用「有界文本匹配」：md 源码里可能混有 HTML 写死的 <h2>（如 stats-modal-title）
+        # 只出现在站点 HTML 中，纯顺序配对会整体错位；纯远距离文本匹配又可能跨节乱跳，
+        # 故只在接下来 5 个标题内找文本一致者，找不到才退回顺序位。
+        hi = 0
+        n_heads = len(html_heads)
         for level, title, blines in blocks:
             if not title:
                 # 页首块：无锚点
@@ -233,12 +276,20 @@ def main() -> int:
                 post_chunk(chunk_id, tokens, [], df, postings, vocab)
                 continue
 
-            # 找到匹配锚点
-            anchor = None
-            for h_id, h_title in anchor_iter:
-                if h_title == title or not h_title:
-                    anchor = h_id
+            nt = norm_title(title)
+            found = None
+            for k in range(hi, min(hi + 5, n_heads)):
+                if norm_title(html_heads[k][2]) == nt:
+                    found = k
                     break
+            if found is None and hi < n_heads:
+                found = hi
+                mismatch += 1
+                if mismatch <= 3:
+                    log(f"  标题对齐偏差 {rel}: md「{title}」 vs 站点「{html_heads[hi][2]}」")
+            anchor = html_heads[found][0] if found is not None else None
+            if found is not None:
+                hi = found + 1
             text = block_to_text(blines)
             if not text:
                 continue
@@ -248,7 +299,7 @@ def main() -> int:
                 continue
             chunk_id = len(chunks)
             snippet = text[:120]
-            url = f"{base_url}/#{anchor}" if anchor else base_url
+            url = f"{base_url}#{anchor}" if anchor else base_url
             chunks.append({
                 "id": chunk_id,
                 "t": title,
@@ -259,6 +310,8 @@ def main() -> int:
                 "len": len(tokens),
             })
             post_chunk(chunk_id, tokens, title_tokens, df, postings, vocab)
+        if mismatch:
+            log(f"  {rel}: {mismatch} 处标题对齐偏差（已按顺序取锚点，可跑 check_kb_links 复核）")
 
     log(f"生成 {len(chunks)} 个信息块，{len(vocab)} 个词条")
 

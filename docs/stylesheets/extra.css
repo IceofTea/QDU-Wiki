@@ -1046,7 +1046,9 @@ body.pop-open {
 /* 移动端：入口网格 2 列，冷知识紧凑 */
 @media screen and (max-width: 720px) {
   .hero-book {
-    height: clamp(480px, 78vh, 620px);
+    /* 78vh→82vh：375×667 等小屏下内容总高逼近卡片高度，flex 居中会双向溢出，
+       顶部英文 eyebrow 被裁；留足余量后 overflow ≤ 0 */
+    height: clamp(480px, 82vh, 620px);
   }
   /* 统计卡片 2 列网格，避免 flex 在窄屏退化成 1 列导致内容超高被裁切 */
   .hero-stats {
@@ -1184,6 +1186,137 @@ body.pop-open {
   .hero-cta {
     padding: 9px 22px;
     font-size: 0.9rem;
+  }
+}
+
+/* ===== 手机端 hero 防裁切（关键修复）=====
+   症状：≤720px 时英文 eyebrow 因 0.35em 字距在窄屏换行成 2 行，同时 h1 的
+   margin-bottom 被 .md-typeset h1（特异性 0-1-1）的 1.25em 覆盖成 ~41px
+   （.hero-title 的 0-1-0 规则永远输），内容总高超过卡片高度后，
+   .hero-inner 的 justify-content:center 让上下各溢 ~20px —— 顶部
+   QINGDAO UNIVERSITY WIKI 被裁，且 flex 居中溢出无法向上滚动。
+   对策：eyebrow 强制单行压缩字距 + 用更高特异性压回紧凑边距。 */
+@media screen and (max-width: 720px) {
+  .hero-inner .hero-eyebrow {
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    white-space: nowrap;
+    margin-top: 2px;
+    margin-bottom: 4px;
+  }
+  .md-typeset .hero-inner .hero-title {
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+  /* 375×667 等小屏：内容总高仍略超卡片（flex 居中会双向溢出裁掉顶部英文），
+     再压统计区底距，确保 overflow ≤ 0 */
+  .hero-inner .hero-stats {
+    margin-bottom: 8px;
+  }
+}
+
+/* ===== QQ 交流群卡片（share 页）===== */
+.qq-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+  margin: 14px 0 6px;
+}
+.qq-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 16px 16px;
+  border: 1px solid var(--md-default-fg-color--lightest, rgba(0, 0, 0, 0.12));
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--md-code-bg-color, #f6f8fa) 0%, transparent 120%);
+  text-align: center;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.qq-group:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+.qq-group__badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--md-primary-fg-color, #1b66c9);
+  background: color-mix(in srgb, var(--md-primary-fg-color, #1b66c9) 12%, transparent);
+  border-radius: 999px;
+  padding: 3px 12px;
+}
+.qq-group__name {
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin: 2px 0 0;
+  color: var(--md-default-fg-color, #000);
+}
+.qq-group__id {
+  font-family: var(--md-code-font-family, monospace);
+  font-size: 1.06rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--md-primary-fg-color, #1b66c9);
+}
+.qq-group__id small {
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  opacity: 0.7;
+  margin-right: 6px;
+}
+.qq-group__qr {
+  width: 100%;
+  max-width: 190px;
+  border-radius: 10px;
+  border: 1px solid var(--md-default-fg-color--lightest, rgba(0, 0, 0, 0.1));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+.qq-group__tip {
+  font-size: 0.74rem;
+  opacity: 0.75;
+  margin: 0;
+}
+@media screen and (max-width: 480px) {
+  /* 双列紧凑：二维码原图为竖版整屏截图，单列会导致本区块高逾 1300px，
+     改双列 + 缩图，并给图片套链接点击看原图大图 */
+  .qq-groups {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .qq-group {
+    padding: 14px 8px 12px;
+    gap: 6px;
+  }
+  .qq-group__badge {
+    font-size: 0.62rem;
+    padding: 2px 9px;
+  }
+  .qq-group__name {
+    font-size: 0.86rem;
+  }
+  .qq-group__id {
+    font-size: 0.95rem;
+  }
+  .qq-group__qr {
+    max-width: 132px;
+  }
+  .qq-group__tip {
+    font-size: 0.66rem;
+  }
+}
+
+/* 手机端页眉按钮过多（汉堡/季节/暗黑/搜索/语言 5 个会挤到标题截断）：
+   隐藏低频的「四季切换」入口，桌面端保留 */
+@media screen and (max-width: 600px) {
+  .season-picker {
+    display: none;
   }
 }
 

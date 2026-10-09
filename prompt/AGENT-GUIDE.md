@@ -655,6 +655,34 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-10-10：手机端适配专项 + 直达链接 404 根治 + QQ 交流群卡片（多设备并行维护）
+
+- **任务**：维护者在两台设备上并行推进——本机负责 ①修复青大智答「直达」链接线上 404（`organization/index/#_4404` Not found）并全面排查同类坏链，②手机端适配（主页大卡片英文被裁、右侧徽标不居中、顶栏过挤、导航新老排序），③收录两张 QQ 群二维码图。
+- **改动**：
+  - **直达链接 404 根治**：`scripts/build_kb.py`（`index.md` 按 MkDocs `use_directory_urls` 规则转目录式 URL——`organization/index.md` → `organization/`，杜绝拼出 `/organization/index/#x`；标题锚点改为**直接从 `site/` 构建产物提取**，中文标题 `_N` 编号与站点 100% 一致，另加"有界文本对齐"防止 md 内 HTML 写死的 `<h2>` 造成序列错位）
+  - 新增 `scripts/check_kb_links.py`（kb 每条直达链接的路径/锚点/标题三重审计，退出码 0 才算过）、`scripts/check_site_links.py`（扫 `site/**/*.html` 全部 href/src，覆盖跨页锚点与静态资源）
+  - `docs/javascripts/graph.js`（新增 `pageUrl()`：知识图谱节点 `xxx/index` → `xxx/`，修复点节点 404）、`docs/javascripts/fix-board.js`（新增 `fixHref()`：纠错记录 path 已含 `/QDU-Wiki/` 前缀，原拼接会变成双前缀 404）、`scripts/build_graph.py`（反解 kb 的 u 先去锚点）
+  - 修复既有死链：`docs/en/share/index.md`（3 个 `files/…` 指向不存在的 `en/share/files/` → 改 `../../share/files/`）、`docs/en/friends/index.md`（图片路径多一级 `../../../` + 文件名/alt 整篇 mojibake，按中文版重写）
+  - `.github/workflows/ci.yml`：**构建顺序改为 `mkdocs build --strict` → `build_kb` → `test_kb` → `check_kb_links` → … → gh-deploy`**（build_kb 需要 site/ 产物，且 gh-deploy 会再构建一次带上新 kb.json）
+  - **手机端**：`docs/stylesheets/extra.css`（hero 防裁切：eyebrow 强制单行压缩字距、h1 底距用 `.md-typeset .hero-inner` 高特异性压回 10px——Material 的 `.md-typeset h1{1.25em}` 特异性更高会覆盖 `.hero-title` 的 6px、`hero-book` 78vh→82vh 留余量；QQ 群卡片 `.qq-*` 样式；≤480px 双列紧凑；≤600px 隐藏 `.season-picker` 给顶栏腾位）、`docs/javascripts/comments.js`（主页 hero 内 h1 不挂 `💬` 评论徽标，文章页保留）、删除 `docs/javascripts/ai-badge.js` + `mkdocs.yml` 引用（「AI 共建」徽标应维护者要求应删尽删）
+  - **导航新老排序**：`mkdocs.yml`——「知识图谱」由「文件共享」后移到「关于Wiki」之后，与「友情链接」「English」同列尾部新应用区（加注释勿插回）
+  - **QQ 群卡片**：新增 `docs/pics/share/share-图1-战争雷霆QQ群二维码.jpg`、`share-图2-准时还QQ贷款群二维码.jpg`（桌面原图按 `<板块>-图N-描述` 规范落位）；`docs/share/index.md` + `docs/en/share/index.md` 新增「QQ 交流群 / QQ Group Chat」区块（徽章+群名+等宽高亮群号+二维码，小屏双列、图片套链接点开原图）
+  - `.gitignore` 补 `node_modules/`
+  - `prompt/AGENT-GUIDE.md`（追加本记录）
+- **说明**：
+  - **根因**：线上 404 = 路径错（`index.md` 拼成 `organization/index`，加 `#锚点` 后带尾斜杠，GitHub Pages 找 `index/index.html`）+ 锚点错位（kb 用默认 slugify 自算 `_N`，与 Material 真实渲染编号不一致）双重叠加。
+  - **踩坑记录**：① Material 的 `.md-typeset h1` 特异性 (0,1,1) 恒高于 `.hero-title` (0,1,0)，小屏 media query 里写的 `margin-bottom:6px` 实际从未生效（实测 41.25px），必须用 `.md-typeset .hero-inner .hero-title` 压制；② `.hero-inner` 是 flex 垂直居中，内容总高一旦超过卡片会**上下双向溢出，顶部被裁且 scrollHeight 滚不到**——诊断指标用 `scrollHeight - clientHeight`（本次 375 屏由 42px → 0）；③ 手机端顶栏最多容 5 个按钮，季节切换属低频彩蛋先隐藏；④ 二维码原图为竖版整屏截图，手机单列会让区块高 1300px+，双列 + 132px 缩图 + 点击看原图后降至 472px。
+  - **全站体检**：87 页在 375 视口逐页扫描横向溢出/破图/JS 错误全部通过；`check_kb_links` 924/924、`check_site_links` 10976 引用 0 死链 0 锚点失效、`check_links` 0 死链、`test_kb` 3 PASS。
+  - **⚠️ 导航重排是维护者明确要求**（新应用后置、老应用前置），与本指南「不要删除/重排已有导航项」红线不冲突——后续 Agent 请勿改回。
+  - **多设备并行维护接续须知**（本机 ↔ 另一台 i18n 设备同时改仓库）：
+    1. 开工先 `git fetch origin` 看远程新增，再 `git pull --no-rebase origin main`；若报 untracked 冲突，先 `git hash-object --path <f> <f>` 与 `git rev-parse origin/main:<f>` 比对——内容相同只是行尾符差异时，备份到临时目录后删除再 pull。
+    2. **提交前必跑**（全部退出码 0 才能推）：`python -m mkdocs build --strict` → `python scripts/build_kb.py` → `python scripts/test_kb.py` → `python scripts/check_kb_links.py` → `python scripts/check_links.py` → `python scripts/check_site_links.py`（CI 已同步该链）。
+    3. 改动落在**不同文件/不同章节**时直接改即可；若必须动对方在改的文件（`docs/i18n/*`、`scripts/update_i18n.py`、`generate_en.py` 等 i18n 线文件），先 pull 同步再改，避免互相覆盖。
+    4. 本机已完成清单见上「改动」，未做/留给后续：英文版群卡片文案若随原图群名更新需同步、QDU-Nav 导航站侧的应用排序不在本仓库（属另一项目）。
+    5. 每完成一轮工作即提交推送，让另一台设备 `git pull` 即可续作——这是避免两线混乱的唯一可靠手段。
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

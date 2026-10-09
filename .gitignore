@@ -166,8 +166,10 @@ venv.bak/
 
 # mkdocs documentation
 /site
-# 检索知识库构建产物（由 scripts/build_kb.py 在 CI 生成）
+# 站内知识库构建产物（由 scripts/build_kb.py 在 CI 生成）
 /docs/assets/kb.json
+# 本地 npm 依赖（package.json 已入库，node_modules 不入库）
+node_modules/
 
 # mypy
 .mypy_cache/

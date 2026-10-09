@@ -7,12 +7,12 @@ This site and various university Wiki sites watch over each other, sharing bits 
 <div class="friend-card">
 
 <div class="friend-card__avatar">
-<img src="../../../pics/friends/friends-å?-éå²çå·¥å¤§å­¦logo.png" alt="éå²çå·¥å¤§å­¦ logo" loading="lazy">
+<img src="../../pics/friends/friends-图1-青岛理工大学logo.png" alt="Qingdao University of Technology logo" loading="lazy">
 </div>
 
 <div class="friend-card__content">
 
-<a href="https://wiki.quters.top" target="_blank" class="friend-card__link-overlay" aria-label="è®¿é®éå²çå·¥å¤§å­¦çæ´»æå"></a>
+<a href="https://wiki.quters.top" target="_blank" class="friend-card__link-overlay" aria-label="Visit Qingdao University of Technology Life Guide"></a>
 
 <div class="friend-card__header">
 
@@ -26,7 +26,7 @@ This site and various university Wiki sites watch over each other, sharing bits 
 
 <div class="friend-card__screenshot">
 
-<img src="../../../pics/friends/friends-å?-éå²çå·¥å¤§å­¦ç½ç«æªå¾.png" alt="éå²çå·¥å¤§å­¦ç½ç«é¦é¡µæªå¾" loading="lazy">
+<img src="../../pics/friends/friends-图2-青岛理工大学网站截图.png" alt="Qingdao University of Technology website screenshot" loading="lazy">
 
 </div>
 

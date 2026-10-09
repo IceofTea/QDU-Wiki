@@ -17,8 +17,11 @@ jobs:
         with:
           python-version: '3.x'
       - run: pip install mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 jieba
+      # 先构建站点：build_kb 的标题锚点取自 site/ 真实产物（否则中文标题 _N 编号会错位 → 线上 404）
+      - run: mkdocs build --strict
       - run: python scripts/build_kb.py
       - run: python scripts/test_kb.py
+      - run: python scripts/check_kb_links.py
       - run: python scripts/build_graph.py
       - run: python scripts/check_links.py
       - run: mkdocs gh-deploy --force

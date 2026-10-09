@@ -24,6 +24,14 @@
     var root = seg.length > 1 && seg[1] ? '/' + seg[1] + '/' : '/';
     return location.origin + root;
   }
+  // 节点 id（md 路径）→ 站内目录式 URL。
+  // 必须把 xxx/index 归位成 xxx/：拼成 xxx/index/ 时 GitHub Pages 会按目录找
+  // xxx/index/index.html → 404（与青大智答直达链接同源的坑，见 check_kb_links）。
+  function pageUrl(id) {
+    if (id === 'index') return siteBase();
+    if (/\/index$/.test(id)) return siteBase() + id.slice(0, -'/index'.length) + '/';
+    return siteBase() + id + '/';
+  }
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
@@ -103,7 +111,7 @@
       title.textContent = n.id + ' · ' + (n.n || 0) + ' 知识块 · ' + (deg[n.id] || 0) + ' 条互链';
       g.appendChild(c); g.appendChild(t); g.appendChild(title);
       g.addEventListener('click', function () {
-        location.href = siteBase() + (n.id === 'index' ? '' : n.id + '/');
+        location.href = pageUrl(n.id);
       });
       // 悬停高亮邻边
       g.addEventListener('mouseenter', function () {
@@ -167,7 +175,7 @@
     isoBox.appendChild(sum);
     iso.slice(0, 30).forEach(function (n) {
       var a = document.createElement('a');
-      a.href = siteBase() + (n.id === 'index' ? '' : n.id + '/');
+      a.href = pageUrl(n.id);
       a.textContent = n.id;
       isoBox.appendChild(a);
     });

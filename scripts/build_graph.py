@@ -90,8 +90,14 @@ def main() -> int:
         try:
             kb = json.loads(kb_file.read_text(encoding="utf-8"))
             for ch in kb.get("chunks", []):
-                u = str(ch.get("u", "")).strip("/")
-                key = u[:-len("/index")] if u.endswith("/index") else u
+                # u 是目录式 URL（organization/、live/map/、空=根），先去锚点再反解成 md 节点 id
+                u = str(ch.get("u", "")).split("#", 1)[0].strip("/")
+                if u == "":
+                    key = "index"
+                elif (DOCS / f"{u}/index.md").is_file():
+                    key = f"{u}/index"
+                else:
+                    key = u  # 旧格式 organization/index 或 live/map
                 chunks[key] = chunks.get(key, 0) + 1
         except Exception:
             pass

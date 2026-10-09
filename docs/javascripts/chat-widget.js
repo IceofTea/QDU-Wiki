@@ -588,6 +588,49 @@
       chips.appendChild(b);
     });
     addMsg('bot', chips);
+    // 历史提问快捷入口（本机最近 5 问，有记录才出现）
+    try {
+      var hist = getHistory().slice(0, 5);
+      if (hist.length) {
+        var hw = document.createElement('div');
+        hw.className = 'chat-chips';
+        var cap = document.createElement('span');
+        cap.className = 'chat-chips__cap';
+        cap.textContent = '🕘 最近问过';
+        hw.appendChild(cap);
+        hist.forEach(function (h) {
+          var b = document.createElement('button');
+          b.className = 'chat-chip';
+          b.type = 'button';
+          b.textContent = h.length > 14 ? h.slice(0, 14) + '…' : h;
+          b.title = h;
+          b.addEventListener('click', function () { ask(h); });
+          hw.appendChild(b);
+        });
+        addMsg('bot', hw);
+      }
+    } catch (e) { /* noop */ }
+  }
+
+  /* ---------- 对话导出 txt（问答对逐条，方便粘进反馈/作业） ---------- */
+  function exportDialogue() {
+    try {
+      var rows = msgListEl.querySelectorAll('.chat-msg');
+      var lines = ['青大智答 · 对话导出 ' + new Date().toLocaleString('zh-CN'), ''];
+      Array.prototype.forEach.call(rows, function (w) {
+        var isUser = w.className.indexOf('chat-msg--user') >= 0;
+        var t = (w.innerText || '').trim().replace(/\n{3,}/g, '\n\n');
+        if (!t) return;
+        lines.push((isUser ? '【我】' : '【智答】') + t);
+        lines.push('');
+      });
+      var blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'qdu-chat-' + new Date().toISOString().slice(0, 10) + '.txt';
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+    } catch (e) { /* noop */ }
   }
 
   /* ---------- UI 构建 ---------- */
@@ -623,6 +666,7 @@
       '    <div class="chat-panel__sub">三层识别 · 百科问答可溯源 · 办事直达导航站</div>' +
       '  </div>' +
       '  <div class="chat-panel__actions">' +
+      '    <button type="button" class="chat-export" aria-label="导出对话">⬇</button>' +
       '    <button type="button" class="chat-clear" aria-label="清空对话">↺</button>' +
       '    <button type="button" class="chat-panel__close" aria-label="关闭">×</button>' +
       '  </div>' +
@@ -642,6 +686,7 @@
 
     launcherEl.addEventListener('click', open);
     panelEl.querySelector('.chat-panel__close').addEventListener('click', close);
+    panelEl.querySelector('.chat-export').addEventListener('click', exportDialogue);
     panelEl.querySelector('.chat-clear').addEventListener('click', function () {
       msgListEl.textContent = '';
       showWelcome();

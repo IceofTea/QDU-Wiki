@@ -1,0 +1,17 @@
+{
+  "name": "青岛大学 Wiki",
+  "short_name": "QDU-Wiki",
+  "description": "非官方青岛大学校园指南百科",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1b66c9",
+  "icons": [
+    {
+      "src": "assets/logo-spring.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}

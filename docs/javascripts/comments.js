@@ -366,6 +366,7 @@
       '  <div class="qc-title">💬 社区评论 <span class="qc-count" id="qcCount">…</span></div>' +
       '  <div class="qc-tools">' +
       '    <button type="button" class="qc-tool" id="qcAi">🤖 AI 归纳</button>' +
+      '    <button type="button" class="qc-tool" id="qcSum">📄 整页总结</button>' +
       '    <button type="button" class="qc-tool qc-tool-warn" id="qcFix">🚩 信息有误？纠错</button>' +
       '  </div>' +
       '</div>' +
@@ -661,6 +662,19 @@
         box.textContent = s || '暂无可归纳的评论——先来发表第一条吧。';
         box.hidden = false;
       } else box.hidden = true;
+    });
+
+    /* 整页总结：H2 清单 + 段落数（纯本机抽取，零请求） */
+    document.getElementById('qcSum').addEventListener('click', function () {
+      var box = document.getElementById('qcAiBox');
+      var art = articleEl();
+      if (!art) { box.textContent = '找不到正文'; box.hidden = false; return; }
+      var heads = Array.prototype.slice.call(art.querySelectorAll('h2')).slice(0, 6);
+      var paras = paragraphs().length;
+      box.textContent = heads.length
+        ? '📄 本页 ' + paras + ' 段，讲了 ' + heads.length + ' 块：' + heads.map(function (h) { return '「' + h.textContent.trim().slice(0, 18) + '」'; }).join('、')
+        : '📄 本页共 ' + paras + ' 段（无二级标题）';
+      box.hidden = false;
     });
 
     document.getElementById('qcFix').addEventListener('click', function () {

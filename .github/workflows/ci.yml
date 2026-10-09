@@ -18,6 +18,9 @@ jobs:
           python-version: '3.x'
       - run: pip install mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 jieba
       - run: python scripts/build_kb.py
+      - run: python scripts/test_kb.py
+      - run: python scripts/build_graph.py
+      - run: python scripts/check_links.py
       - run: mkdocs gh-deploy --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

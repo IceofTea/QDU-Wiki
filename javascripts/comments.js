@@ -424,15 +424,23 @@
       if (taps >= 5) {
         taps = 0;
         var t = prompt('🛰️ 社区控制台\n请输入管理口令：');
-        if (t) {
+        if (!t) return;
+        // 先验后开：口令错/无网关一律静默，不向普通用户证实入口存在
+        var base = detectApi();
+        if (!base) return;
+        var ctrl = new AbortController();
+        var timer = setTimeout(function () { ctrl.abort(); }, 6000);
+        fetch(base + '/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: t }),
+          signal: ctrl.signal
+        }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); }).then(function (ret) {
+          clearTimeout(timer);
+          if (!ret.ok || (!ret.d.token && !ret.d.ok)) return;
           try { localStorage.setItem('pending_admin_token', t); } catch (e) { /* noop */ }
-          // 有网关走网关 /admin；否则走 Nav 站同站 admin.html（子路径安全，
-          // 禁止拼 '/admin' —— Pages 下会跳到域名根 404；localhost 只本机有效）
-          var target = apiBase
-            ? apiBase.replace(/\/+$/, '') + '/admin'
-            : 'https://iceoftea.github.io/QDU-Nav/admin.html';
-          window.open(target, '_blank', 'noopener');
-        }
+          window.open(base.replace(/\/+$/, '') + '/admin', '_blank', 'noopener');
+        }).catch(function () { clearTimeout(timer); /* 静默 */ });
       }
     });
   }

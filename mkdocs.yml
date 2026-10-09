@@ -130,11 +130,13 @@ nav:
     - File Sharing: en/share/index.md
     - Messages:
       - en/words/index.md
+      - Guide: en/words/guide.md
     - About Wiki:
       - en/about/index.md
       - Maintenance: en/about/guide.md
     - Links:
       - en/friends/index.md
+      - Application: en/friends/guide.md
 extra_css:
   - stylesheets/extra.css
   - i18n/i18n.css

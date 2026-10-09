@@ -2,7 +2,7 @@
 
 !!! warning "Content based on the 2022 Student Handbook"
     This article is compiled from the **2022 "Qingdao University Student Handbook"** (containing various regulatory documents, mostly from 2017–2022). Policies on enrollment status, degrees, financial aid, etc. **may be adjusted yearly**. This article is for understanding the general framework; **please refer to the university's currently valid documents for specifics**.
-    📥 Click to download: [Qingdao University Student Handbook PDF](../share/files/2022学生手册03.pdf)
+    📥 Click to download: [Qingdao University Student Handbook PDF](../../share/files/2022学生手册03.pdf)
 
 ~~Everyone gets one at enrollment; you flip through it for a couple of days at the start of the semester, then it gathers dust. You only realize its usefulness when something happens~~ This little booklet actually contains the most important rules you should know during your four years at Qingdao University. Here we highlight the key points.
 

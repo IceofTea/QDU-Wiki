@@ -426,8 +426,12 @@
         var t = prompt('🛰️ 社区控制台\n请输入管理口令：');
         if (t) {
           try { localStorage.setItem('pending_admin_token', t); } catch (e) { /* noop */ }
-          var base = apiBase || 'http://localhost:8787';
-          window.open(base.replace(/\/+$/, '') + '/admin', '_blank', 'noopener');
+          // 有网关走网关 /admin；否则走 Nav 站同站 admin.html（子路径安全，
+          // 禁止拼 '/admin' —— Pages 下会跳到域名根 404；localhost 只本机有效）
+          var target = apiBase
+            ? apiBase.replace(/\/+$/, '') + '/admin'
+            : 'https://iceoftea.github.io/QDU-Nav/admin.html';
+          window.open(target, '_blank', 'noopener');
         }
       }
     });

@@ -8,9 +8,9 @@
 
 | Material | Description | Size | Download |
 | --- | --- | --- | --- |
-| **2022 Student Handbook** | 2022 edition of "Qingdao University Student Handbook" | 1.31 MB | [Download](files/2022学生手册03.pdf) |
-| **Midterm and Final Exam Papers "Advanced Mathematics I"** | Collection of advanced mathematics midterm and final exam papers | 6.65 MB | [Download](files/期中期末试卷《高等数学Ⅰ》.zip) |
-| **Song of Qingda** | Qingdao University anthem | 8.4 MB | [Play/Download](files/青大之歌.mp3) |
+| **2022 Student Handbook** | 2022 edition of "Qingdao University Student Handbook" | 1.31 MB | [Download](../../share/files/2022学生手册03.pdf) |
+| **Midterm and Final Exam Papers "Advanced Mathematics I"** | Collection of advanced mathematics midterm and final exam papers | 6.65 MB | [Download](../../share/files/期中期末试卷《高等数学Ⅰ》.zip) |
+| **Song of Qingda** | Qingdao University anthem | 8.4 MB | [Play/Download](../../share/files/青大之歌.mp3) |
 
 !!! tip "Want to share materials?"
     Contributions via GitHub are welcome. For upload methods, see [Maintenance Guide](../about/guide.md); you can also directly upload to the "File Sharing" section of the [Tencent Docs portable version](https://docs.qq.com/aio/DVFJnbFR3TWdzbFVn), with a relatively lower threshold.

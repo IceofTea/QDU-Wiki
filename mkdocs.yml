@@ -169,6 +169,14 @@ markdown_extensions:
       alternate_style: true
       combine_header_slug: false
       slugify: !!python/object/apply:pymdownx.slugs.slugify {}
+# 固化校验级别：agent-features.md 等页面有意不进 nav（INFO 提示属预期），
+# 显式声明为 info，防止未来 MkDocs 版本默认值升级为 warn 后被 --strict 放大成 fatal
+validation:
+  nav:
+    omitted_files: info
+  links:
+    not_found: warn
+    absolute_links: info
 plugins:
   - search
   - git-revision-date-localized:

@@ -18,7 +18,11 @@ jobs:
           python-version: '3.x'
       - run: pip install mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 jieba
       # 先构建站点：build_kb 的标题锚点取自 site/ 真实产物（否则中文标题 _N 编号会错位 → 线上 404）
+      # 注意：CI=true 会启用 git-committers 插件，无 token 时它必打一条 WARNING，
+      # --strict 会把 WARNING 放大为 fatal → 此处必须与 gh-deploy 一样注入 GITHUB_TOKEN
       - run: mkdocs build --strict
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: python scripts/build_kb.py
       - run: python scripts/test_kb.py
       - run: python scripts/check_kb_links.py

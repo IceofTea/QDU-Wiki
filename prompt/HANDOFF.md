@@ -1,0 +1,212 @@
+# HANDOFF · 三仓接力并入指南（QDU-Wiki / QDU-Nav / FJNU-Nav）
+
+> 本文件与桌面《接力任务-QDU-Nav与Wiki-20261009.md》同步，供**任何一台接续设备** git pull 后直接读取。
+> 更新：2026-10-10 第二棒完成回写（原 8 项任务闭环、三仓已推送）。
+> **接续者先读 §0 并入流程**（防冲突防丢失），再看 §二 避免重复劳动、§三 开放项。
+> 维护总纲见 [AGENT-GUIDE.md](AGENT-GUIDE.md) 的「历次维护记录 · 多设备并行维护接续须知」。
+
+---
+
+> **生成**：2026-10-09 晚 · 第一棒（会话中断收尾）
+> **更新**：2026-10-10 11:40 · **第二棒完成回写**——原 8 项任务全部闭环，三仓已全部推送 GitHub 并部署。
+> **本文档现服务第三棒**：你（另一台设备）手上有「进行了一半、未完成、未推送」的优化，
+> **按 §0 流程操作即可无冲突、无丢失地融入三个项目**。§0 是必读核心。
+> 仓库根：`E:\A老分盘\默认数据D\2025海之子计算机复试电子资料\福star\学习\wiki\{QDU-Nav, FJNU-Nav, QDU-Wiki}`
+
+---
+
+## 〇、你的半成品如何并入（防冲突防丢失，必读）★
+
+### 0.1 三仓当前基线（第二棒推送后，你的改动可能基于旧基线）
+
+| 仓库 | 远端 main | 远端关键内容 | 本机工作区 |
+| --- | --- | --- | --- |
+| QDU-Wiki | **`0d2eae6`** | 直达 404 根治 / 手机端适配 / 群卡片（仅学生组织页保留）/ PR#6 马院页合并 / kb no-cache | 干净 |
+| QDU-Nav | **`f057f54`** | v1.6.11 busuanzi 三指标共享模块 + 35 应用老前新后 + rebrand 375 修复（已 rebase 到 snapshot 自动提交之上） | 干净 |
+| FJNU-Nav | **`a035081`** | v1.5.11 busuanzi 三指标（**基线已从 1.2.22 跃升至 v1.5.10 后重新移植**） | 干净 |
+
+⚠️ 比 10-09 晚的老基线新很多：FJNU 远端曾领先 92 个提交、QDU-Nav 有 snapshot.yml 每 6h 自动提交。
+**你若在老基线上改的，务必完整走完下面五步，不要直接 push。**
+
+### 0.2 第 1 步 · 无条件保存你的未提交改动（三个仓库各做一次）
+
+```powershell
+# 方案 A（推荐，可回滚、可追溯）
+git add -A
+git commit -m "wip(device-B): 未完成优化暂存（稍后 rebase 到最新）"
+
+# 方案 B
+git stash push -u -m "device-B wip"
+```
+
+❌ **严禁** `git checkout .` / `git reset --hard` / `git restore .`——会**直接丢弃**你的半成品。
+
+### 0.3 第 2 步 · 同步远端（网络注意）
+
+```powershell
+# 网络：~/.ssh/config 把 github.com 重写到 ssh.github.com:443，该域名常 DNS 不通；
+# 一律改走 https URL + 可用网络（本机 ant_vpn 代理 127.0.0.1:1080 HTTP/SOCKS 双协议，
+# 或能直连的热点）。设置：$env:https_proxy="http://127.0.0.1:1080"; $env:http_proxy 同。
+git fetch https://github.com/IceofTea/QDU-Wiki.git main     # 另两仓换对应 URL
+git log --oneline HEAD..FETCH_HEAD      # 远端新增了什么
+git diff --stat HEAD FETCH_HEAD         # 哪些文件被动过（评估你的改动撞不撞）
+```
+
+### 0.4 第 3 步 · 把你的 wip 叠到最新远端之上
+
+```powershell
+git rebase FETCH_HEAD          # 你已 commit（方案A）
+# 或 git stash pop             # 你用了 stash（方案B），冲突同样逐文件解
+
+# 有冲突 → git status 列出冲突文件
+#        → 手工合并（原则见 0.5）→ git add <file> → git rebase --continue
+# 想反悔 → git rebase --abort   （你的提交/改动仍在，绝不丢）
+```
+
+**QDU-Nav 特例**：push 被拒（`fetch first`）是 snapshot.yml 自动提交，先 `pull --rebase` 再推。
+
+### 0.5 冲突高危文件清单（第二棒改过；你的改动若涉及，逐行对比取舍）
+
+**QDU-Wiki**
+| 文件 | 第二棒做了什么 |
+| --- | --- |
+| `scripts/build_kb.py` | **大改**：directory_urls 路径规则 + 锚点改从 `site/` 产物提取 + 有界文本对齐 |
+| `scripts/build_graph.py` | kb 的 u 反解先去锚点 |
+| `docs/javascripts/graph.js` | 新增 `pageUrl()` 修图谱节点 `/index/` 404 |
+| `docs/javascripts/fix-board.js` | 新增 `fixHref()` 修纠错记录双 `/QDU-Wiki/` 前缀 404 |
+| `docs/javascripts/comments.js` | 主页 hero 内 h1 不挂 💬 徽标（文章页保留） |
+| `docs/javascripts/chat-widget.js` | `loadKb` 加 `cache:'no-cache'`（防旧 kb 缓存直达 404，**勿改回**） |
+| `docs/stylesheets/extra.css` | hero 防裁（eyebrow 单行/h1 底距高特异性/82vh）、`.qq-*` 群卡片样式、≤600px 隐藏季节按钮 |
+| `mkdocs.yml` | nav 新页面一律后置（维护者约定）+ `validation` 固化 |
+| `.github/workflows/ci.yml` | 构建顺序 `build --strict → build_kb → 校验链`，strict 步骤注入 `GITHUB_TOKEN` |
+| `docs/share/index.md`、`docs/en/share/index.md` | 死链修复 + 群卡片区块后又按维护者要求**删除**（表格末尾新增 logo 两行来自 PR#4） |
+| `docs/organization/index.md`、`docs/en/organization/index.md` | 新增「兴趣交流群」2 张群卡片（**保留**） |
+| `docs/en/friends/index.md` | 整篇重写（路径 `../../../`→`../../` + mojibake 修复） |
+| `prompt/AGENT-GUIDE.md` | 追加 2026-10-10 维护记录（含多设备接续须知） |
+| 新增 | `scripts/check_kb_links.py`、`scripts/check_site_links.py`、`docs/pics/share/share-图{1,2}-*.jpg` |
+| 删除 | `docs/javascripts/ai-badge.js`（AI 共建应维护者要求删净） |
+
+**QDU-Nav**：`src/utils/busuanzi.js`(新)、`src/router.js`(parseHash 注入)、`src/components/VisitStats.vue`(消 UU+只读共享态)、`src/data/apps.js`(35 应用组内老前新后，`appGroups` 组序未动)、`src/views/RebrandPreview.vue`(375 修复)、`AGENTS.md`/`CHANGELOG.md`/`README.md`/`package.json`/`src/config/site.js`(v1.6.11)、`src/i18n/{zh,en}.js`(bsz* 键)
+
+**FJNU-Nav**：`src/utils/busuanzi.js`(新)、`src/router.js`、`src/components/VisitStats.vue`、`site.js`/`package.json`(1.5.11)、`README.md`/`CHANGELOG.md`/`AGENTS.md`
+
+**冲突解决三原则**
+1. **版本号一律以远端为准**（案例：FJNU 本地 1.2.23 vs 远端 1.5.10 → 放弃本地版本提交、按远端序列 bump 1.5.11；旧提交留档分支 `backup-v1223-busuanzi`，可 `git show` 参考但勿直接 merge）
+2. **功能代码保留双方**：重复实现取更完善的一版（`git diff` 两边比对）；busuanzi 若你也有实现，以远端 `utils/busuanzi.js` 为准（含 ensureHost 逐个补齐等实测坑修复）
+3. **文档日志（AGENTS/CHANGELOG/README）是追加式**：冲突时两段都保留，不要二删一
+
+### 0.6 第 4 步 · 验证（全绿才能推）
+
+```powershell
+# QDU-Wiki
+python -m mkdocs build --strict
+python scripts/build_kb.py          # 必须在 build 之后（锚点取自 site/）
+python scripts/test_kb.py           # 3 PASS
+python scripts/check_kb_links.py    # 期望「可达 N，路径失效 0，锚点失效 0，标题错位 0」
+python scripts/check_links.py       # 0 死链
+python scripts/check_site_links.py  # 0 死链 0 锚点失效
+# 注意 kb.json 随内容变化条数会变，看「失效 0」而非绝对值
+
+# QDU-Nav
+npm run build
+python -m unittest discover -s tests        # 18/18
+node scripts/unit-grow.mjs                  # 另有 unit-agent/unit-wall/unit-im，全 PASS
+node scripts/audit-refs.mjs                 # 0/0
+
+# FJNU-Nav
+npm run build
+```
+
+### 0.7 第 5 步 · 推送
+
+```powershell
+git push https://github.com/IceofTea/QDU-Wiki.git main    # 另两仓换 URL
+# 推前看一眼有没有别人的新提交：git fetch <url> main && git log --oneline HEAD..FETCH_HEAD
+# 推完看 CI：git fetch <url> gh-pages && git log FETCH_HEAD -1
+#   出现 "Deployed <你的sha>" = 部署成功；远端 main 前进 = 有人抢推，回 0.4 再 rebase
+```
+
+---
+
+## 二、原任务清单状态（第二棒已全部闭环，勿重复劳动）
+
+| # | 任务 | 状态 | 结果与提交 |
+| --- | --- | --- | --- |
+| 1 | QDU-Nav busuanzi 物尽其用 | ✅ | `f057f54` 共享模块 `utils/busuanzi.js`（串行队列+常驻 span+清空防旧值），CDP 冒烟 ALL PASS |
+| 2 | FJNU-Nav 同款接入 | ✅ | `a035081` v1.5.11 三指标与 Vercount 并存；**基于 v1.5.10 重基线移植** |
+| 3 | QDU-Wiki 404 全面排查 | ✅ | `bfd128d` build_kb 根治（路径+锚点双因）+ `check_kb_links`/`check_site_links` 双审计 + graph/fix-board 同类修复 + en 死链清零；线上 kb 943 条 0 legacy |
+| 4 | Wiki 手机适配 + AI 共建清理 | ✅ | hero 375 溢出 42→0、AI 共建删净（`ai-badge.js` 已删）、主页 h1 不挂徽标、顶栏隐藏季节按钮 |
+| 5 | QDU-Nav 375 逐页扫描 | ✅ | 35 应用页 0 溢出（修 rebrand `sp-row3` 撑破 grid） |
+| 6 | QDU-Nav 应用排序 | ✅ | 35 应用**组内**老前新后，`appGroups` 组序不动，冲奖六件套后置；谜底：「评委演示」= v1.6.0 冲奖六件套（jobs/compare/flywheel/transplant/profile+buildingGallery） |
+| 7 | 群二维码上架 | ✅ | 图入 `docs/pics/share/share-图{1,2}-*.jpg`；**仅学生组织页保留** 2 张兴趣群卡片（share 中英页区块已按维护者要求删除）；群号 837794374 / 1087984049 |
+| 8 | 版本与文档 | ✅ | QDU-Nav v1.6.11、FJNU v1.5.11、Wiki 无版本号；三仓日志同步并推送 |
+
+**第二棒额外完成**：CI run failed 修复（strict 步骤缺 `GITHUB_TOKEN` 被 git-committers WARNING 打死，`d218b91`）、PR#6 马院页合并（`cf9f23e`）、kb 请求 `no-cache` 防缓存回潮（`af24fa2`）。
+
+---
+
+## 三、剩余可做（第三棒开放项，与你的半成品一并考虑）
+
+1. **QDU-Wiki**：`check_site_links.py` 尚未入 CI（可加）；`docs/en/graph.md` 不存在而 i18n 会把中文页链接强转 `/en/...`（需 `i18n.js` 的 `toEnHref` 白名单跳过 graph，或补英文版）
+2. **QDU-Nav**：CDP 冒烟/扫描脚本在 `C:\Users\13111\AppData\Local\Temp\opencode\`（系统清理即丢），可固化到 `scripts/`；`kb-nav.json` 与 QDU-Wiki kb 的交叉审计未做
+3. **FJNU-Nav**：`VisitStats.vue` 尚未接 i18n（该组件现为硬编码中文；若做，参照 QDU 的 `visitStats.bsz*` 键模式）
+4. **三仓通用**：你手上那半份「进行了一半的优化」按 §0 并入；若涉及 i18n 线文件（`generate_en.py`、`scripts/update_i18n.py`、`docs/i18n/*`），远端 10-09 已有该线内容，先 `git log` 看它改到哪再叠
+
+---
+
+## 四、坑与约定（沿用第一棒 + 第二棒新增）
+
+**继承**
+- CJK 文件禁用 PowerShell `Get-Content/Set-Content` 读写（BOM/乱码）→ 用编辑器工具或 Python `encoding='utf-8'`
+- PowerShell 内联 `python -e` / `node -e` 转义必炸 → **写临时脚本文件再跑**
+
+**新增**
+- git 走 **https URL + VPN/代理**（`~/.ssh/config` 的 ssh.github.com 重写常 DNS 不通）；本机 ant_vpn 代理 `127.0.0.1:1080`
+- `docs/assets/kb.json` 是构建产物（gitignore）但被 chat-widget fetch → chat-widget 已配 `cache:'no-cache'`，**勿改回**
+- `build_kb.py` 依赖 `site/` → 本地与 CI 必须 `mkdocs build` 在前（`ci.yml` 已固化顺序，改 CI 时保持）
+- nav 新增页面一律放尾部（维护者明确要求，见 AGENT-GUIDE 2026-10-10 记录；与「不要重排导航」红线不冲突）
+- 判断 CI 成败看 `gh-pages`：`git fetch <url> gh-pages && git log FETCH_HEAD -1` 出现 `Deployed <sha>` 即成功
+- 微信/QQ 群卡片组件类名 `.qq-*` 定义在 `extra.css`，organization 页与 share 页共用（share 已撤、样式保留）
+
+---
+
+## 五、第一棒任务明细存档（全部完成，背景结论仍有效）
+
+### 任务 1 · QDU-Nav busuanzi 三指标（✅ 已完成，实现见 `src/utils/busuanzi.js`）
+| 指标 | 语义 | 实现 |
+| --- | --- | --- |
+| `site_pv` | 全站点击总次数 | 每次导航注入一次 JSONP → +1 |
+| `site_uv` | 全站独立访客 | busuanzi 按域名去重 |
+| `page_pv` | 单页阅读量 | 按 Referer 计数；**hash 路由下各页共享站点根计数**，前端按 path 缓存展示 |
+
+- 脚本 `https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js`（官方 8.3.2 路径 404）
+- 降级：onerror / 10s 超时 → `fail` 文案，不影响其他统计
+- 本机 localhost 桶数字巨大属全网共享桶，非 bug；测试污染线上计数 ≈ +10 次属已知
+
+### 任务 3 · 404 根因结论（✅ 已根治，勿重查）
+- 双因叠加：`index.md` 拼成 `organization/index/`（带尾斜杠找 `index/index.html` → 404）+ 中文标题默认 slugify 空串 `_N` 编号与站点渲染错位
+- 用户报的 `#_4404` 属旧构建产物中间态，现行数据 0 命中
+- 修法：路径按 `use_directory_urls`、锚点从 `site/` HTML 提取、双审计脚本守门、chat-widget `no-cache`
+
+### 任务 7 · 群图信息（✅ 已落位，仅学生组织页展示）
+- `1.jpg` = 战争雷霆·青大战雷… 群号 **837794374**；`2.jpg` = 准时还QQ贷款分24… 群号 **1087984049**（群名按图原文展示勿补全）
+- 规范命名 `docs/pics/share/share-图N-描述.jpg`；卡片组件 `.qq-*`（徽章+等宽群号+响应式二维码+点击看原图）
+
+### 常用验证与工具备忘
+```powershell
+# CDP 手法（本机 Chrome 仓库禁止 playwright install）
+C:\Users\13111\AppData\Local\ms-playwright\chromium-1234\chrome-win64\chrome.exe `
+  --headless=new --remote-debugging-port=9222 --user-data-dir=<临时目录> [--proxy-server=http://127.0.0.1:1080]
+# 连 ws：fetch http://127.0.0.1:9222/json/new?<url> (PUT) 取 webSocketDebuggerUrl
+# 欢迎屏 sessionStorage key：QDU=qdu_welcome_seen、FJNU=fjnu_welcome_seen（新 tab 必显示，先置 1 再 reload）
+# 静态预览：python -m http.server 8789 --directory <repo>\dist （或 mkdocs 的 site/）
+
+# QDU-Wiki 快速体检
+python -m mkdocs build --strict; python scripts/build_kb.py; python scripts/test_kb.py
+python scripts/check_kb_links.py; python scripts/check_links.py; python scripts/check_site_links.py
+```
+
+### 第一棒记录的其他结论
+- Wiki 页眉/页脚、导航、平台信息源等细节以 `prompt/AGENT-GUIDE.md` 为准（每次维护后追加记录）
+- QDU-Nav `apps.js` 的分组顺序由 `appGroups` 数组显式定义（**不是**数组出现顺序），组内顺序 = 数组顺序
+- FJNU 的 Vercount 会自建 `busuanzi_value_site_pv/site_uv` 两个 span → `ensureHost` 必须逐个补齐（否则漏 `page_pv` 卡 loading）

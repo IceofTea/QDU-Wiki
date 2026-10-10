@@ -690,7 +690,7 @@ python -m mkdocs build --strict
   - **踩坑记录**：① Material 的 `.md-typeset h1` 特异性 (0,1,1) 恒高于 `.hero-title` (0,1,0)，小屏 media query 里写的 `margin-bottom:6px` 实际从未生效（实测 41.25px），必须用 `.md-typeset .hero-inner .hero-title` 压制；② `.hero-inner` 是 flex 垂直居中，内容总高一旦超过卡片会**上下双向溢出，顶部被裁且 scrollHeight 滚不到**——诊断指标用 `scrollHeight - clientHeight`（本次 375 屏由 42px → 0）；③ 手机端顶栏最多容 5 个按钮，季节切换属低频彩蛋先隐藏；④ 二维码原图为竖版整屏截图，手机单列会让区块高 1300px+，双列 + 132px 缩图 + 点击看原图后降至 472px。
   - **全站体检**：87 页在 375 视口逐页扫描横向溢出/破图/JS 错误全部通过；`check_kb_links` 924/924、`check_site_links` 10976 引用 0 死链 0 锚点失效、`check_links` 0 死链、`test_kb` 3 PASS。
   - **⚠️ 导航重排是维护者明确要求**（新应用后置、老应用前置），与本指南「不要删除/重排已有导航项」红线不冲突——后续 Agent 请勿改回。
-  - **多设备并行维护接续须知**（本机 ↔ 另一台 i18n 设备同时改仓库）：
+  - **多设备并行维护接续须知**（本机 ↔ 另一台 i18n 设备同时改仓库）：**完整版与实时任务状态见 [`prompt/HANDOFF.md`](HANDOFF.md)**（含三仓最新基线、半成品并入五步流程、冲突高危文件清单、验证命令链）——接续新设备先读它再动手，下面是要点：
     1. 开工先 `git fetch origin` 看远程新增，再 `git pull --no-rebase origin main`；若报 untracked 冲突，先 `git hash-object --path <f> <f>` 与 `git rev-parse origin/main:<f>` 比对——内容相同只是行尾符差异时，备份到临时目录后删除再 pull。
     2. **提交前必跑**（全部退出码 0 才能推）：`python -m mkdocs build --strict` → `python scripts/build_kb.py` → `python scripts/test_kb.py` → `python scripts/check_kb_links.py` → `python scripts/check_links.py` → `python scripts/check_site_links.py`（CI 已同步该链）。
     3. 改动落在**不同文件/不同章节**时直接改即可；若必须动对方在改的文件（`docs/i18n/*`、`scripts/update_i18n.py`、`generate_en.py` 等 i18n 线文件），先 pull 同步再改，避免互相覆盖。

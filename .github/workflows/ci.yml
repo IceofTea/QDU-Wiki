@@ -28,6 +28,8 @@ jobs:
       - run: python scripts/check_kb_links.py
       - run: python scripts/build_graph.py
       - run: python scripts/check_links.py
+      # 站点产物级死链/锚点审计（扫 site/**/*.html 的 href/src；须在 build_kb/build_graph 之后）
+      - run: python scripts/check_site_links.py
       - run: mkdocs gh-deploy --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

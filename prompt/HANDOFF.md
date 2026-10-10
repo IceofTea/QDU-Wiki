@@ -12,8 +12,11 @@
 > **更新**：2026-10-10 下午 · **第三棒前核查 + 推送实测完成**（VPN 连通后逐仓验证）：
 > 内容无丢失；§0.1.1 三处风险已全部解决，三仓真实远端已确认（见 §0.1.1 尾部终态表）。
 > **⚠️ 账户归属纠正**：FJNU-Nav 属于 **icyteacn** 账户（非 IceofTea）——推送/拉取一律用本地 `origin`，详见 §0.1.1 红线框。
-> **本文档现服务第三棒**：你（另一台设备）手上有「进行了一半、未完成、未推送」的优化，
-> **按 §0 流程操作即可无冲突、无丢失地融入三个项目**。§0 是必读核心。
+> **更新**：2026-10-10 晚 · **第四棒完成回写**（工作机 `F:\000000\QSX20261480\disk\学习\wiki\*-agent` 三仓）：
+> 按 §0 五步并入（本机三仓无本地独有提交、工作区干净 → 快进融合，全套验证全绿）；
+> §三 四个开放项全部处置（见 §三 尾部处置结果表）；p0-p3 逐项核验实际早已闭环（线上 CI 均 success，仅 todo 状态未回写）。
+> 三仓终态：QDU-Nav=**v1.6.12**、FJNU-Nav=**v1.5.12**（⚠️仍属 icyteacn，推送一律 `git push origin`）、QDU-Wiki=本 HANDOFF 所在提交（无版本号）。
+> **本文档现服务第五棒**：接续者先 `git pull` 读本文件最新更新行，再按 §0 流程操作；§0 仍是必读核心。
 > 仓库根：`E:\A老分盘\默认数据D\2025海之子计算机复试电子资料\福star\学习\wiki\{QDU-Nav, FJNU-Nav, QDU-Wiki}`
 > 仓库内同源副本：本文件（与桌面《接力任务-QDU-Nav与Wiki-20261009.md》同步维护，新设备 git pull 即可读取）
 
@@ -203,6 +206,17 @@ git push origin main
 2. **QDU-Nav**：CDP 冒烟/扫描脚本在 `C:\Users\13111\AppData\Local\Temp\opencode\`（系统清理即丢），可固化到 `scripts/`；`kb-nav.json` 与 QDU-Wiki kb 的交叉审计未做
 3. **FJNU-Nav**：`VisitStats.vue` 尚未接 i18n（该组件现为硬编码中文；若做，参照 QDU 的 `visitStats.bsz*` 键模式）
 4. **三仓通用**：你手上那半份「进行了一半的优化」按 §0 并入；若涉及 i18n 线文件（`generate_en.py`、`scripts/update_i18n.py`、`docs/i18n/*`），远端 10-09 已有该线内容，先 `git log` 看它改到哪再叠
+
+### §三 处置结果（2026-10-10 晚 · 第四棒，四项全部闭环）★
+
+| # | 开放项 | 处置 |
+| --- | --- | --- |
+| 1 | Wiki `check_site_links` 未入 CI / EN 模式 graph 404 | ✅ `ci.yml` 在 `check_links` 后、`gh-deploy` 前插入 `python scripts/check_site_links.py`（死链拦部署）；`docs/i18n/i18n.js` 新增 `ZH_ONLY` 白名单（`graph` / `college/marxism` / `about/agent-features` 三个无英文版页）：`toEnHref` 不改写指向它们的链接 + EN 模式落在白名单页不再被弹回 `/en/` + `SIDEBAR_MAP`/`TAB_MAP` 补 Knowledge Graph / School of Marxism 英译（点击进中文页，与 EN 索引「To be added」口径一致） |
+| 2 | QDU CDP 固化 / kb-nav 交叉审计 | ⚠️ CDP 原件在第二棒设备 `C:\Users\13111\...\Temp` 不可恢复——已由入库的 `scripts/e2e-browser.mjs` + `.github/workflows/e2e.yml`（每 push 自动跑，QDU/FJNU 均 success）承接，视为闭环；✅ kb-nav 交叉审计完成：`kb-nav.json` 自 v1.4.0 后首次重生成 **80→104 条（旧 80 条零删减）**，35 应用出处 ⊆ apps.js/router、39 工作流出处 ⊆ workflows.js、4 条 QDU-Wiki 百科出处对 kb 943 chunk 全命中（faq.js 出处俗称→正式页名：生活指南/宿舍→住宿、医院→医疗），**QDU v1.6.12** |
+| 3 | FJNU `VisitStats.vue` 未接 i18n | ✅ 硬编码中文全部 t() 化 + zh/en 词包同构新增 `visitStats` 9 键（参照 QDU `visitStats.bsz*` 模式），**FJNU v1.5.12**；顺手回补 Contributors 版本历史 v1.5.11 缺行（第二棒漏挂） |
+| 4 | 半成品并入 | ✅ 本机三仓工作区干净且无未推送提交 → 快进融合（无冲突、无遗漏、无删减）；昨日 p0-p3 逐项核验**实际早已全部闭环**（QDU/FJNU deploy+e2e-browser、Wiki pages CI 线上均 success），仅 todo 状态未回写 |
+
+**第四棒验证口径备忘**：本机默认 `python` 是 3.6.8（跑不动 crawler 测试/mkdocs）→ 一律用 **`py -3.13`**（自带 mkdocs 1.6.1）；QDU 单测 18/18 即用 `py -3.13 -m unittest discover -s tests`。
 
 ---
 

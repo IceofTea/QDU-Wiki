@@ -699,6 +699,22 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-10-10（晚）：第四棒接力收尾——check_site_links 入 CI + i18n 白名单防 EN 404（多设备并行维护）
+
+- **任务**：接力任务文档（与 [`prompt/HANDOFF.md`](HANDOFF.md) 同源）§三 四个开放项收尾 + 前几棒半成品并入核验。本机三仓（`F:\000000\QSX20261480\disk\学习\wiki\*-agent` 工作副本）无未推送提交、工作区干净 → 按 §0 快进融合，零冲突、零遗漏、零删减；昨日 todo 的 p0-p3 逐项核验**实际早已全部闭环**（线上 deploy/e2e-browser/pages CI 均 success）。
+- **改动（本仓库）**：
+  - `.github/workflows/ci.yml`：`check_links` 之后、`gh-deploy` 之前插入 `python scripts/check_site_links.py`——站点产物级死链/锚点审计现在拦部署（此前仅本地手动跑）
+  - `docs/i18n/i18n.js`：新增 `ZH_ONLY` 白名单（`/QDU-Wiki/graph`、`/QDU-Wiki/college/marxism`、`/QDU-Wiki/about/agent-features` 三个无英文版页）。EN 模式原本会：①把侧栏/正文指向这些中文页的链接强转 `/en/...` → 404；②EN 用户落地中文页又被弹回 `/en/`。现在 `toEnHref` 遇白名单不改写、落地白名单页不弹回；`SIDEBAR_MAP`/`TAB_MAP` 补 Knowledge Graph / School of Marxism 英译（点击进中文页）
+  - `prompt/HANDOFF.md`（第四棒完成回写 + §三 处置结果表）、`prompt/AGENT-GUIDE.md`（本记录）
+- **说明**：
+  - 中英页面对齐实测：仅 `graph`/`college/marxism`/`about/agent-features` 三页无 EN 版（其余分类 zh/en 一一对应）；EN 内容页对它们只有纯文本提及（无 href），404 暴露面仅在导航栏
+  - 为什么不做 EN 版：维护者在 `en/college/index.md` 对马院标注「To be added」、`agent-features.md` 为长期隐藏页不挂 nav——白名单与其口径一致，content 不动
+  - 本机验证：`mkdocs build --strict` 通过、site 产物 `i18n/i18n.js` 已含白名单、`check_site_links` 88 页 11192 引用 0 死链 0 锚点失效、`check_kb_links` 943/943 可达
+  - **本机 Python 备忘**：默认 `python` = 3.6.8（跑不动 mkdocs/crawler 测试），一律用 **`py -3.13`**（mkdocs 1.6.1）
+  - 同批三仓版本：QDU-Nav **v1.6.12**（kb-nav 重生成 80→104 + 与 Wiki kb 交叉审计零失效）、FJNU-Nav **v1.5.12**（VisitStats i18n）
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

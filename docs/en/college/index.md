@@ -61,7 +61,7 @@ Qingdao University currently has the following colleges (grouped by discipline c
 | **School of Foreign Languages** | Offers majors in English, Japanese, Korean, German, French, Spanish, and other languages | To be added |
 | **College of Public Foreign Language Education** | Responsible for public foreign language teaching across the university | To be added |
 | **School of International Education** | Responsible for international student training and international Chinese education | To be added |
-| **School of Marxism** | Responsible for ideological and political theory courses across the university | To be added |
+| **School of Marxism** | Responsible for ideological and political theory courses across the university | [View Details](marxism.md) |
 | **Law School** | Offers Law major, cultivating legal talents | To be added |
 | **School of Politics and Public Administration** | Offers majors in Administrative Management, International Politics, etc. | To be added |
 | **School of Education Science** | Responsible for teacher education training and development | To be added |

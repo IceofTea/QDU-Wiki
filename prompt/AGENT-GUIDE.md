@@ -715,6 +715,20 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-10-10（深夜）：第四棒二期——三页英文版补齐 + sw 数据缓存改网络优先 + Nav 两仓防复发门禁（多设备并行维护）
+
+- **任务**：维护者要求「全部优化改进」——把当晚体检列出的 10 项（维稳 5 + 改进 5）全部落地。
+- **改动（本仓库）**：
+  - **EN 补齐**：新增 `docs/en/graph.md`、`docs/en/college/marxism.md`（137 行整页翻译）、`docs/en/about/agent-features.md`；`mkdocs.yml` EN nav 后置两入口（`Knowledge Graph`、`School of Marxism`，agent-features 维持不挂 nav 与中文版口径一致）；`docs/en/college/index.md` 马院行 `To be added` → 链接详情页
+  - **i18n.js 白名单收敛**：`ZH_ONLY` 清空（机制保留备用）——三页有英文版后，EN 模式链接照常强转 `/en/`，不再落中文页
+  - **sw.js v2**：`CORE` 只留 manifest 壳；`assets/kb.json`/`graph.json` 改**网络优先**（isData 分支）——根治「预缓存旧 kb + 静态 CACHE 名不换代」的旧数据窗口
+  - `prompt/AGENT-GUIDE.md`（本记录）、`prompt/HANDOFF.md`（四棒补记）
+- **改动（Nav 两仓同批，版本 QDU v1.6.13 / FJNU v1.5.14）**：integrity 新增 ⑤ kb-nav 新鲜度门禁（`KB_NAV_OUT` 临时重生成比对——FJNU 立即抓到库陈旧 59→83 零删减）+ ⑥ i18n zh/en 键对等双向门禁（QDU 补 3 个缺英文键后硬拦）；`COMMUNITY_DATA` 环境变量隔离测试数据；snapshot 4 次/天→1 次/天；`crosscheck-kbnav.mjs`/`sync-diff.mjs` 入库；e2e-browser 新增「375 全应用无横向溢出」
+- **验证**：`mkdocs build --strict` 通过；kb 943→**962** chunks、`check_kb_links` 962/962、`check_site_links` 91 页 11750 引用 **0 死链 0 锚点失效**、`check_links` 0 死链、`test_kb` PASS、`build_graph` 通过；Nav 两仓 integrity 17/18 项 PASS + 本地网关 E2E 全绿
+- **坑**：EN 页之间的中文页互链在 md 源里必须用 `../graph.md`（mkdocs 转 URL），写成 `../../graph/` 会被 md 级审计判死链（源文件相对路径解析，不是 URL 解析）。
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

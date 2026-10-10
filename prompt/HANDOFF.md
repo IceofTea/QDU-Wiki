@@ -218,6 +218,11 @@ git push origin main
 
 **第四棒验证口径备忘**：本机默认 `python` 是 3.6.8（跑不动 crawler 测试/mkdocs）→ 一律用 **`py -3.13`**（自带 mkdocs 1.6.1）；QDU 单测 18/18 即用 `py -3.13 -m unittest discover -s tests`。
 
+**四棒补记（同日深夜 · 二期「全部优化改进」10 项落地）**：
+- §三-1 收口：`graph`/`college/marxism`/`about/agent-features` **三页英文版已补齐**（en nav 后置两入口；agent-features 维持不挂 nav），`ZH_ONLY` 白名单清空（机制保留备用）；sw.js **v2**（kb/graph.json 改网络优先，CORE 只留壳）
+- Nav 两仓同批硬化（QDU **v1.6.13** / FJNU **v1.5.14**）：integrity 新增 kb-nav 新鲜度 + i18n 键对等两道硬门禁（FJNU 门禁立即抓到 kb-nav 陈旧 59→83 零删减）；`COMMUNITY_DATA` 测试数据隔离；snapshot 4 次/天→1 次/天；`crosscheck-kbnav.mjs`/`sync-diff.mjs` 入库；e2e-browser 增「375 全应用无横向溢出」
+- 三仓终态：QDU-Nav=`1.6.13` 本次提交 · FJNU-Nav=`1.5.14` 本次提交 · QDU-Wiki=本补记所在提交
+
 ---
 
 ## 四、坑与约定（沿用第一棒 + 第二棒新增）

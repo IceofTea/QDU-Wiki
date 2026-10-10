@@ -72,8 +72,8 @@ FJNU `a035081` 8 文件 +198 行，含 AGENTS/CHANGELOG/i18n/版本号/Contribut
 > ⚠️ **账户归属红线**：FJNU-Nav 属于 **icyteacn**（本地 `origin` = `git@github.com:icyteacn/FJNU-Nav.git`，
 > SSH 直连可用）。IceofTea 名下存在一个同名 `IceofTea/FJNU-Nav` **旧副本仓库**——手写 URL 推送极易推错它。
 > **推送/拉取 FJNU 一律用 `git push origin` / `git fetch origin`（本地已配好），严禁手写 IceofTea URL。**
-> 已知污染：误推的 `7b8f130`（错误 merge）与 `backup-v1223-busuanzi` 分支残留在 IceofTea/FJNU-Nav 上，
-> 是否 force-push 清理由维护者另行决定；icyteacn 主仓库未受影响。
+> 误推事故已闭环（2026-10-10）：误推到 IceofTea/FJNU-Nav 的 `7b8f130` 已 force-push 回退到 `b2a992f`、
+> 误推的 `backup-v1223-busuanzi` 分支已删除，该旧副本已还原；icyteacn 主仓库全程未受影响（现为 `a035081`）。
 
 ### 0.2 第 1 步 · 无条件保存你的未提交改动（三个仓库各做一次）
 

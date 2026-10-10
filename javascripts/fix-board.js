@@ -22,6 +22,14 @@
     var root = seg.length > 1 && seg[1] ? '/' + seg[1] + '/' : '/';
     return location.origin + root;
   }
+  // 纠错记录的 path 由 comments.js 写入 location.pathname（已含站点前缀 /QDU-Wiki/），
+  // 直接拿 siteBase() 再拼一次会变成 /QDU-Wiki/QDU-Wiki/xxx → 404，故按格式分流。
+  function fixHref(p) {
+    p = String(p || '');
+    if (/^https?:\/\//.test(p)) return p;
+    if (p.charAt(0) === '/') return location.origin + p;  // 绝对路径（线上/本地均适用）
+    return siteBase() + p.replace(/^\/+/, '');            // 兜底：相对路径
+  }
   function collect() {
     var db = {};
     try { db = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch (e) { db = {}; }
@@ -59,7 +67,7 @@
       html += '<div class="fx-ops"><button type="button" class="fx-btn" id="fxCsv">⬇ 导出 CSV</button></div>';
       html += '<div class="fx-list">' + rows.map(function (r) {
         return '<div class="fx-item">' +
-          '<div class="fx-meta"><a href="' + siteBase() + r.path.replace(/^\//, '') + '">' + esc(r.path) + '</a>' +
+          '<div class="fx-meta"><a href="' + fixHref(r.path) + '">' + esc(r.path) + '</a>' +
           '<span>' + esc(r.author) + ' · ' + fmtTime(r.ts) + '</span></div>' +
           (r.quote ? '<div class="fx-quote">「' + esc(r.quote) + '」</div>' : '') +
           '<div class="fx-content">' + esc(r.content) + '</div></div>';

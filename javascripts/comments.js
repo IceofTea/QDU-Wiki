@@ -405,6 +405,9 @@
   function addTitleBadge() {
     var h1 = document.querySelector('.md-content h1') || document.querySelector('h1');
     if (!h1 || document.querySelector('.qc-badge')) return;
+    // 主页 hero 大卡片标题不挂徽标：手机端徽标使「青岛大学指南」行高抖动、
+    // 右侧不居中，维护者要求恢复原样（评论入口仍保留页脚评论区）
+    if (h1.closest && h1.closest('.hero')) return;
     var b = document.createElement('button');
     b.type = 'button';
     b.className = 'qc-badge';

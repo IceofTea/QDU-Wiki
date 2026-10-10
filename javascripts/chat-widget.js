@@ -113,7 +113,9 @@
   function loadKb() {
     if (kb) return Promise.resolve(kb);
     if (kbPromise) return kbPromise;
-    kbPromise = fetch(kbUrl())
+    // no-cache：强制 revalidate 而非吃浏览器/CDN 强缓存——kb.json 无 hash 文件名，
+    // 部署后旧缓存会把直达按钮指到已删除的 /index/#x 旧锚点（线上 404 教训）
+    kbPromise = fetch(kbUrl(), { cache: 'no-cache' })
       .then(function (res) {
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.json();

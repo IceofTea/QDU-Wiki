@@ -10,6 +10,28 @@
     - To be filled: Welcome group numbers for each club
     - To be filled: Welcome group numbers for each college
 
+## Interest Groups
+
+<div class="qq-groups">
+
+<div class="qq-group">
+  <span class="qq-group__badge">GAMING</span>
+  <p class="qq-group__name">War Thunder · QDU Squad…</p>
+  <div class="qq-group__id"><small>Group No.</small>837794374</div>
+  <a href="../../pics/share/share-图1-战争雷霆QQ群二维码.jpg" target="_blank" rel="noopener" title="View full-size image"><img class="qq-group__qr" src="../../pics/share/share-图1-战争雷霆QQ群二维码.jpg" alt="War Thunder QDU QQ group QR code (group 837794374)" loading="lazy"></a>
+  <p class="qq-group__tip">Scan with QQ · or search the group number above</p>
+</div>
+
+<div class="qq-group">
+  <span class="qq-group__badge">COMMUNITY</span>
+  <p class="qq-group__name">Repay QQ Loan on Time, 24 Instalments…</p>
+  <div class="qq-group__id"><small>Group No.</small>1087984049</div>
+  <a href="../../pics/share/share-图2-准时还QQ贷款群二维码.jpg" target="_blank" rel="noopener" title="View full-size image"><img class="qq-group__qr" src="../../pics/share/share-图2-准时还QQ贷款群二维码.jpg" alt="QQ group QR code (group 1087984049)" loading="lazy"></a>
+  <p class="qq-group__tip">Scan with QQ · or search the group number above</p>
+</div>
+
+</div>
+
 !!! warning "To be updated"
     Some information on this page may be outdated or unverified. Contributions via GitHub are welcome.
 

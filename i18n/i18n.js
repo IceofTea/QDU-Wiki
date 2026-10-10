@@ -5,9 +5,11 @@
   var cur = localStorage.getItem(SK) || 'zh';
   var isEN = location.pathname.indexOf('/en/') !== -1;
 
-  // 无英文版的中文页白名单：EN 模式不改写指向它们的链接，也不把人弹回 /en/
-  // （否则 EN 侧栏「知识图谱」「马克思主义学院」会 404；详见 HANDOFF §0 三-1）
-  var ZH_ONLY = ['/QDU-Wiki/graph', '/QDU-Wiki/college/marxism', '/QDU-Wiki/about/agent-features'];
+  // 无英文版的中文页白名单：EN 模式不改写指向它们的链接，也不把人弹回 /en/。
+  // 2026-10-10 第四棒晚间收口：graph / college/marxism / about/agent-features
+  // 已补英文版，白名单清空（机制保留备用）——以后若新增「只有中文版」的页面，
+  // 把它的路径前缀（如 '/QDU-Wiki/xxx'）加进数组即可。
+  var ZH_ONLY = [];
   function isZhOnly(path) {
     for (var i = 0; i < ZH_ONLY.length; i++) {
       if (path.indexOf(ZH_ONLY[i]) === 0) return true;

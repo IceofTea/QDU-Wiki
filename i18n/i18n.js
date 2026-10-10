@@ -5,12 +5,23 @@
   var cur = localStorage.getItem(SK) || 'zh';
   var isEN = location.pathname.indexOf('/en/') !== -1;
 
+  // 无英文版的中文页白名单：EN 模式不改写指向它们的链接，也不把人弹回 /en/
+  // （否则 EN 侧栏「知识图谱」「马克思主义学院」会 404；详见 HANDOFF §0 三-1）
+  var ZH_ONLY = ['/QDU-Wiki/graph', '/QDU-Wiki/college/marxism', '/QDU-Wiki/about/agent-features'];
+  function isZhOnly(path) {
+    for (var i = 0; i < ZH_ONLY.length; i++) {
+      if (path.indexOf(ZH_ONLY[i]) === 0) return true;
+    }
+    return false;
+  }
+
   var TAB_MAP = {
     '主页': 'Home', '新生手册': 'New Student Guide', '生活指南': 'Campus Life',
     '学习学业': 'Academics', '校园服务': 'Campus Services', '学院详情': 'Colleges',
     '学生组织': 'Student Orgs', '文件共享': 'File Sharing', '有话送你': 'Messages',
     '前往Nav': 'QDU-Nav', '关于Wiki': 'About Wiki', '友情链接': 'Links',
-    '青岛大学 Wiki': 'Qingdao University', '青岛大学': 'Qingdao University'
+    '青岛大学 Wiki': 'Qingdao University', '青岛大学': 'Qingdao University',
+    '知识图谱': 'Knowledge Graph', '马克思主义学院': 'School of Marxism'
   };
 
   var SIDEBAR_MAP = {
@@ -38,12 +49,13 @@
     '维护说明': 'Maintenance', '申请友链': 'Apply for Link', '说明': 'Guide',
     '学校概况': 'About the University',
     '开发者的话': 'A Word from the Developer', '关于本站': 'About This Site',
-    '校区分布': 'Campus Distribution'
+    '校区分布': 'Campus Distribution',
+    '知识图谱': 'Knowledge Graph', '马克思主义学院': 'School of Marxism'
   };
 
   if (isEN && cur !== 'en') { cur = 'en'; localStorage.setItem(SK, 'en'); }
 
-  if (cur === 'en' && !isEN) {
+  if (cur === 'en' && !isEN && !isZhOnly(location.pathname)) {
     var ep = location.pathname.replace('/QDU-Wiki/', '/QDU-Wiki/en/');
     if (ep === location.pathname) ep = '/QDU-Wiki/en/';
     location.replace(ep);
@@ -55,6 +67,7 @@
     var resolved;
     try { resolved = new URL(href, location.href).pathname; } catch(e) { return null; }
     if (resolved.indexOf('/QDU-Wiki/en/') !== -1) return null;
+    if (isZhOnly(resolved)) return null;
     if (resolved.indexOf('/QDU-Wiki/') === 0) {
       var enAbs = resolved.replace('/QDU-Wiki/', '/QDU-Wiki/en/');
       return absToRelative(location.pathname, enAbs);

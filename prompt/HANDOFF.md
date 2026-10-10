@@ -11,6 +11,7 @@
 > **更新**：2026-10-10 11:40 · **第二棒完成回写**——原 8 项任务全部闭环，三仓已全部推送 GitHub 并部署。
 > **更新**：2026-10-10 下午 · **第三棒前核查 + 推送实测完成**（VPN 连通后逐仓验证）：
 > 内容无丢失；§0.1.1 三处风险已全部解决，三仓真实远端已确认（见 §0.1.1 尾部终态表）。
+> **⚠️ 账户归属纠正**：FJNU-Nav 属于 **icyteacn** 账户（非 IceofTea）——推送/拉取一律用本地 `origin`，详见 §0.1.1 红线框。
 > **本文档现服务第三棒**：你（另一台设备）手上有「进行了一半、未完成、未推送」的优化，
 > **按 §0 流程操作即可无冲突、无丢失地融入三个项目**。§0 是必读核心。
 > 仓库根：`E:\A老分盘\默认数据D\2025海之子计算机复试电子资料\福star\学习\wiki\{QDU-Nav, FJNU-Nav, QDU-Wiki}`
@@ -26,7 +27,7 @@
 | --- | --- | --- | --- |
 | QDU-Wiki | **`4e47725`** | 直达 404 根治 / 手机端适配 / 群卡片（仅学生组织页保留）/ PR#4、#6 合并 / kb no-cache / `prompt/HANDOFF.md` 接力指南入库 | 干净 |
 | QDU-Nav | **`f057f54`** | v1.6.11 busuanzi 三指标共享模块 + 35 应用老前新后 + rebrand 375 修复 + ensureHost 修复 | 干净 |
-| FJNU-Nav | **`a035081`** | v1.5.11 busuanzi 三指标（**基线已从 1.2.22 跃升至 v1.5.10 后重新移植**） | 干净 |
+| FJNU-Nav（⚠️ **icyteacn 账户**） | **`a035081`** | v1.5.11 busuanzi 三指标（**基线已从 1.2.22 跃升至 v1.5.10 后重新移植**） | 干净 |
 
 ⚠️ 比 10-09 晚的老基线新很多：FJNU 远端曾领先 92 个提交、QDU-Nav 有 snapshot.yml 每 6h 自动提交。
 **你若在老基线上改的，务必完整走完下面五步，不要直接 push。**
@@ -60,12 +61,19 @@ FJNU `a035081` 8 文件 +198 行，含 AGENTS/CHANGELOG/i18n/版本号/Contribut
 
 | 风险 | 处置 |
 | --- | --- |
-| 推送未实测 | 已逐仓 `ls-remote` 实测：QDU-Nav `f057f54` 早已在远端（up-to-date）；QDU-Wiki 推上 `355458e`；FJNU 发现**真实分叉**（远端是纯 snapshot 自动链、本地是 v1.5.x 功能链，分叉点 `69e580f`）→ merge 解 4 个数据文件冲突（取本地含 NFS 数据源版）后推上 `7b8f130` |
-| backup 分支未推 | 已推：`backup-v1223-busuanzi` = `ad54398` 在远端 |
-| 代理不通 | 已用直连完成全部推送 |
+| 推送未实测 | 已逐仓实测：QDU-Nav `f057f54` 早已在远端（up-to-date）；QDU-Wiki 推上 `8a793d0`；**FJNU-Nav 在正确远端 icyteacn 上早已是 `a035081`（第二棒推送成功，无需任何 merge）**——曾误 fetch/push IceofTea 名下同名旧副本一次，本地已 `reset --hard a035081` 回正 |
+| backup 分支未推 | 已推到正确账户：icyteacn 的 `backup-v1223-busuanzi` = `ad54398` |
+| 代理不通 | VPN 全局模式下直连（清空代理环境变量）完成推送；走 1080 代理 git push 大包会超时 |
 
 **三仓终态（第三棒以此为准）：**
-`QDU-Wiki main = 355458e` · `QDU-Nav main = f057f54` · `FJNU-Nav main = 7b8f130`（含 merge commit）
+`QDU-Wiki main = 8a793d0`（IceofTea 账户）· `QDU-Nav main = f057f54`（IceofTea 账户）·
+**`FJNU-Nav main = a035081`（⚠️ icyteacn 账户，不是 IceofTea！）**
+
+> ⚠️ **账户归属红线**：FJNU-Nav 属于 **icyteacn**（本地 `origin` = `git@github.com:icyteacn/FJNU-Nav.git`，
+> SSH 直连可用）。IceofTea 名下存在一个同名 `IceofTea/FJNU-Nav` **旧副本仓库**——手写 URL 推送极易推错它。
+> **推送/拉取 FJNU 一律用 `git push origin` / `git fetch origin`（本地已配好），严禁手写 IceofTea URL。**
+> 已知污染：误推的 `7b8f130`（错误 merge）与 `backup-v1223-busuanzi` 分支残留在 IceofTea/FJNU-Nav 上，
+> 是否 force-push 清理由维护者另行决定；icyteacn 主仓库未受影响。
 
 ### 0.2 第 1 步 · 无条件保存你的未提交改动（三个仓库各做一次）
 
@@ -84,9 +92,10 @@ git stash push -u -m "device-B wip"
 
 ```powershell
 # 网络：~/.ssh/config 把 github.com 重写到 ssh.github.com:443，该域名常 DNS 不通；
-# 一律改走 https URL + 可用网络（本机 ant_vpn 代理 127.0.0.1:1080 HTTP/SOCKS 双协议，
-# 或能直连的热点）。设置：$env:https_proxy="http://127.0.0.1:1080"; $env:http_proxy 同。
-git fetch https://github.com/IceofTea/QDU-Wiki.git main     # 另两仓换对应 URL
+# VPN 全局/TUN 模式下直连即可（清空代理环境变量）；走 127.0.0.1:1080 代理时 git push 大包易超时。
+# FJNU-Nav 的 origin（SSH git@github.com:icyteacn/FJNU-Nav.git）实测直连可用。
+git fetch https://github.com/IceofTea/QDU-Wiki.git main     # QDU-Nav 同账户换名
+git fetch origin                                            # FJNU-Nav 专用（icyteacn，勿手写 URL）
 git log --oneline HEAD..FETCH_HEAD      # 远端新增了什么
 git diff --stat HEAD FETCH_HEAD         # 哪些文件被动过（评估你的改动撞不撞）
 ```
@@ -159,8 +168,12 @@ npm run build
 ### 0.7 第 5 步 · 推送
 
 ```powershell
-git push https://github.com/IceofTea/QDU-Wiki.git main    # 另两仓换 URL
-# 推前看一眼有没有别人的新提交：git fetch <url> main && git log --oneline HEAD..FETCH_HEAD
+# QDU-Wiki / QDU-Nav（IceofTea 账户）
+git push https://github.com/IceofTea/QDU-Wiki.git main
+git push https://github.com/IceofTea/QDU-Nav.git main
+# FJNU-Nav（⚠️ icyteacn 账户！）——用本地 origin，勿手写 URL
+git push origin main
+# 推前看一眼有没有别人的新提交：git fetch <对应远端> main && git log --oneline HEAD..FETCH_HEAD
 # 推完看 CI：git fetch <url> gh-pages && git log FETCH_HEAD -1
 #   出现 "Deployed <你的sha>" = 部署成功；远端 main 前进 = 有人抢推，回 0.4 再 rebase
 ```
@@ -200,7 +213,9 @@ git push https://github.com/IceofTea/QDU-Wiki.git main    # 另两仓换 URL
 - PowerShell 内联 `python -e` / `node -e` 转义必炸 → **写临时脚本文件再跑**
 
 **新增**
-- git 走 **https URL + VPN/代理**（`~/.ssh/config` 的 ssh.github.com 重写常 DNS 不通）；本机 ant_vpn 代理 `127.0.0.1:1080`
+- ⚠️ **FJNU-Nav 归属 icyteacn 账户**（`git@github.com:icyteacn/FJNU-Nav.git`，本地 origin 已配好）；
+  IceofTea 名下有同名旧副本 `IceofTea/FJNU-Nav`——手写 URL 推错会污染它，FJNU 一律 `git push origin` / `git fetch origin`
+- git 走 **https URL + VPN/代理**（`~/.ssh/config` 的 ssh.github.com 重写常 DNS 不通）；VPN 全局/TUN 直连即可，1080 代理 push 大包易超时
 - `docs/assets/kb.json` 是构建产物（gitignore）但被 chat-widget fetch → chat-widget 已配 `cache:'no-cache'`，**勿改回**
 - `build_kb.py` 依赖 `site/` → 本地与 CI 必须 `mkdocs build` 在前（`ci.yml` 已固化顺序，改 CI 时保持）
 - nav 新增页面一律放尾部（维护者明确要求，见 AGENT-GUIDE 2026-10-10 记录；与「不要重排导航」红线不冲突）

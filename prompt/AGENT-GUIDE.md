@@ -741,6 +741,18 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-10-11（下午）：视觉走查——图谱本地 404 根因 + EN 打字机夹生（多设备并行维护）
+
+- **任务**：维护者要求三项目「逐一排查显示不美观处，优化到高级感」。用 Playwright 真机截图 22 张（390/1280 双视口）肉眼走查后定点修复。
+- **Wiki 侧改动**：
+  - **`graph.js` 图谱数据本地预览 100% 失败根因**：`boot()` 里**内联了一份旧 siteBase**（取 `pathname` 第一段）——上一轮只改了顶部函数没发现这处重复实现；线上前缀恰好对、本地 serve 把 `graph` 当前缀 → fetch 404「图谱数据加载失败」。改为 `var base = siteBase()` 一行根治，本地/线上全场景渲染 ✓（截图验收：移动端图谱完整出图）
+  - **`home-hero.js` EN 打字机夹生**：27 条中文校园梗短语在 EN 首页照打 → 新增 `PHRASES_EN` 10 条（正经+轻梗英文池），`/en/` 自动切换；中文梗池原样保留
+- **Nav 两仓同批**（QDU **v1.6.15** / FJNU **v1.5.16**）：私信空态竖排折行（小屏会话列表 132px+nowrap）、数据洞察柱被 min-width:220 文字区挤出卡片（flex 防挤出）、FJNU 顶栏截断（home 桌面专属+短名+ellipsis）、APK 标题一行、Wiki 卡按钮一行、FJNU hero-sub/Welcome 全 i18n（EN 夹生清零，DOM 断言验证）
+- **走查未动项**（记录取舍）：移动端表格横滚为 Material 标准行为（已有 overflow-x:auto）；墙帖「分区+类型」双徽章为合法组合；欢迎页 tour 弹层属正常首访引导；FJNU 底部导航 emoji 风格为既定设计
+- **验证**：Nav 两仓 build/integrity/unit×4/E2E（QDU 10、FJNU 11 含 375 扫描）全绿；Wiki strict+三审计全绿、`node --check` 两 JS 通过
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

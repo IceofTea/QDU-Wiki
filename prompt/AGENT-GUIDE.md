@@ -753,6 +753,22 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-10-11（晚）：评论区大修——潜伏 bug 根治 + 自删/管理员删除 + 入口重做（多设备并行维护）
+
+- **用户反馈**：手机 hero 不居中+多余评论图标；无法楼中楼、无法删除自己的评论；追加需求：管理员（IceofTea）可删他人不合适的评论。
+- **三个真相**（Playwright 实测定位）：
+  1. **手机 hero 问题 = 旧 SW 缓存**：v1 SW 对 .js 缓存优先，手机仍跑旧 comments.js（无 hero 徽章排除版）→ `CACHE` bump **v3** 强刷
+  2. **"无法楼中楼" = 本地评论区被默认折叠**（giscus.js `qdu-folded`）且展开入口几乎不可见——功能链路（前端嵌套渲染+后端 parent）本来完好
+  3. **"无法删除" = 功能真缺**；实测还揪出**潜伏大 bug**：`bindEvents` 内 `var tip`（批注导航元素）遮蔽顶层 `tip()` → **本地主发表一直 TypeError**——一行改名 `annoTip` 根治
+- **改动**：
+  - **comments.js**：owner token + 本机 my-ids——我的评论「我」徽章+🗑删除（API/本地双路径，连子级）；**管理员态**（`pending_admin_token`）下他人评论显示 🛡 删除（`x-admin-token` 调 `/api/admin/moderate`）；POST 带 owner 但列表与本地存储均剔除 token；`qc-update` 事件广播条数；删除按钮三元补括号（曾致列表只剩按钮文本的拼接 bug）
+  - **giscus.js**：展开按钮重做——"💬 展开本地评论（楼中楼 · 批注 · 纠错）（N 条）"、primary 描边、手机全宽
+  - **sw.js**：CACHE v3
+  - **Nav 网关**（QDU **v1.6.16/17** / FJNU **v1.5.17/18** 字节级同源）：`/api/comments/delete` owner 鉴权自删 + POST 收 owner + GET/queue 剔 owner 防盗删 + **admin moderate 删除改多级子孙收敛**（旧版只删一层留悬空孙级）
+- **验证**：浏览器全流程 **9/9 PASS**（展开→发评→我标记→楼中楼→删除连子级→hero 无徽章）；管理员页内删除 PASS（🛡→确认→200→消失）；curl（他人删 403 / 自删 ok / admin 连删 0 残留 / 列表不泄露 owner）；mkdocs strict+三审计 0 死链；Nav 两仓 build/integrity/unit 全绿
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

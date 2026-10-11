@@ -348,6 +348,24 @@
       }
     } catch (e) { /* noop */ }
   }
+  /** 管理员态：暗门登录管理台后 pending_admin_token 已写入本浏览器（与 admin 控制台同凭证） */
+  function adminTok() {
+    try { return localStorage.getItem('pending_admin_token') || ''; } catch (e) { return ''; }
+  }
+  /** 管理员删除他人评论：走 /api/admin/moderate（x-admin-token 头鉴权） */
+  function adminDeleteComment(id) {
+    var tok = adminTok();
+    if (!tok) return Promise.reject(new Error('未登录管理台'));
+    return fetch(apiBase + '/api/admin/moderate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': tok },
+      body: JSON.stringify({ type: 'comments', id: id, action: 'delete' }),
+      signal: timeout(8000)
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || !d.ok) throw new Error((d && d.error) || '删除失败');
+      return d;
+    });
+  }
 
   /* ---------- AI 归纳（抽取式摘要 · 纯前端） ---------- */
   function aiSummarize(list) {
@@ -578,7 +596,7 @@
       '  <div class="qc-foot">' +
       '    <button type="button" class="qc-like" data-id="' + esc(c.id) + '">👍 <span>' + (c.likes || 0) + '</span></button>' +
       '    <button type="button" class="qc-replybtn" data-id="' + esc(c.id) + '" data-author="' + esc(c.author) + '">↩ 回复' + (kids.length ? ' (' + kids.length + ')' : '') + '</button>' +
-      (mine ? '<button type="button" class="qc-del" data-id="' + esc(c.id) + '" title="删除这条评论（含其下的回复）">🗑 删除</button>' : '') +
+      ((mine || (mode === 'api' && adminTok())) ? '<button type="button" class="qc-del' + (mine ? '' : ' admin') + '" data-id="' + esc(c.id) + '" title="' + (mine ? '删除这条评论（含其下的回复）' : '管理员删除（含其下回复）') + '">' + (mine ? '🗑 删除' : '🛡 删除') + '</button>' : '') +
       '    <button type="button" class="qc-report" data-id="' + esc(c.id) + '" title="举报这条内容">🚩 举报</button>' +
       '    <span class="qc-reacts">' + reactChips + '</span>' +
       '  </div>' + replyForm +
@@ -619,8 +637,13 @@
     Array.prototype.forEach.call(box.querySelectorAll('.qc-del'), function (btn) {
       btn.addEventListener('click', function () {
         var id = btn.getAttribute('data-id');
-        if (!window.confirm('删除这条评论？其下的回复也会一并删除，且不可恢复。')) return;
-        deleteComment(id).then(function () {
+        var obj = comments.find(function (x) { return x.id === id; });
+        var adminDel = obj && !isMine(obj) && mode === 'api' && adminTok();
+        if (!window.confirm(adminDel
+          ? '以管理员身份删除这条评论？其下的回复也会一并删除。'
+          : '删除这条评论？其下的回复也会一并删除，且不可恢复。')) return;
+        var p = adminDel ? adminDeleteComment(id) : deleteComment(id);
+        p.then(function () {
           // 内存与本地缓存同步剔除（含子孙）
           var doomed = { };
           doomed[id] = true;
@@ -953,6 +976,7 @@
     '.qc-item.mine{border-left:3px solid rgba(163,113,247,.55)}' +
     '.qc-del{font-size:12px;border:1px solid var(--md-default-fg-color--lightest,#e5e5e5);background:transparent;border-radius:999px;padding:3px 10px;cursor:pointer;color:var(--md-default-fg-color--light,#999);font-family:inherit}' +
     '.qc-del:hover{border-color:#e11d48;color:#e11d48}' +
+    '.qc-del.admin{border-color:rgba(225,29,72,.5);color:#e11d48;font-weight:700}' +
     '.qc-replybtn{font-size:12px;border:1px solid var(--md-default-fg-color--lightest,#e5e5e5);background:transparent;border-radius:999px;padding:3px 10px;cursor:pointer;color:var(--md-default-fg-color--light,#888);font-family:inherit}' +
     '.qc-replybtn:hover{border-color:#a371f7;color:#a371f7}' +
     '.qc-reacts{display:inline-flex;gap:5px;margin-left:auto;flex-wrap:wrap}' +

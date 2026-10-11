@@ -79,7 +79,8 @@
           '.qdu-comments.qdu-folded .qc-sortbar,.qdu-comments.qdu-folded .qc-ai,' +
           '.qdu-comments.qdu-folded .qc-sel-btn,.qdu-comments.qdu-folded .qc-modal{display:none!important}' +
           '.qdu-comments.qdu-folded{opacity:.92}' +
-          '.qc-unfold{margin-left:8px}';
+          '.qc-unfold{margin-left:8px;font-weight:700;color:var(--md-primary-fg-color,#1b66c9);border-color:rgba(27,102,201,.45)}' +
+          '@media (max-width:600px){.qc-unfold{margin:6px 0 0;width:100%;justify-content:center}}';
         document.head.appendChild(st);
       }
       var head = local.querySelector('.qc-head');
@@ -87,11 +88,24 @@
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'qc-tool qc-unfold';
-        btn.textContent = '📦 本地评论（仅本机） ▸ 展开';
+        btn.textContent = '💬 展开本地评论（楼中楼 · 批注 · 纠错）';
         btn.addEventListener('click', function () {
           var folded = local.classList.toggle('qdu-folded');
           localOpen = !folded;
-          btn.textContent = folded ? '📦 本地评论（仅本机） ▸ 展开' : '📦 本地评论（仅本机） ▾ 收起';
+          btn.textContent = folded
+            ? '💬 展开本地评论（楼中楼 · 批注 · 纠错）' + (btn._n ? '（' + btn._n + ' 条）' : '')
+            : '💬 收起本地评论 ▾';
+          if (!folded) {
+            var list = local.querySelector('.qc-list');
+            if (list) list.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        });
+        // comments.js 发表/刷新后广播计数 → 按钮带条数，入口更直观
+        window.addEventListener('qc-update', function (e) {
+          btn._n = (e && e.detail && e.detail.n) || 0;
+          if (local.classList.contains('qdu-folded')) {
+            btn.textContent = '💬 展开本地评论（楼中楼 · 批注 · 纠错）' + (btn._n ? '（' + btn._n + ' 条）' : '');
+          }
         });
         head.appendChild(btn);
       }

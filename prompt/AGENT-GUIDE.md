@@ -729,6 +729,18 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-10-11：全面复盘修复——graph.js 路径推导 + 过时数据（多设备并行维护）
+
+- **任务**：维护者要求对三轮新功能「逐一排查，发现即刻改正」。Wiki 侧回炉发现并修复：
+  - **`graph.js` `siteBase()` 路径推导 bug**：旧实现取 `pathname.split('/')[1]` 当站点根——线上 `/QDU-Wiki/(en/)graph/` 正确，但**本地 `mkdocs serve` 预览**时第一段是 `graph`，图谱数据 fetch 404（中文页同样中招，既有 bug）。改为剥掉页面自身路径 `/\/(en\/)?graph\/?$/` 回根，线上/本地全场景正确
+  - **`pageUrl()` EN 跳转**：EN 图谱页点节点原本跳中文版——加 `en/` 前缀（全站页面均有 EN 镜像，`index` 特判 `/en/`）；图例分类名新增 `CAT_NAMES_EN` 按页语言切换
+  - **`docs/about/agent-features.md` 过时数据**：「基于 80 篇条目的本地 BM25 检索」——kb 早已 962 chunks，改为「基于全站条目」（EN 版本就已模糊化，本次对齐）
+- **验证**：`mkdocs build --strict` / `test_kb` 962 / `check_links` 0 死链 / `check_kb_links` 962/962 / `check_site_links` 0 锚点失效 / `build_graph` / `node --check graph.js` 全绿
+- **同批 Nav 两仓**：QDU **v1.6.14**（gen_kb_nav 逐行加固 + unit-agent 周日公式修正）、FJNU **v1.5.15**（首页 i18n 补全 16 键——词包 home 节键早备好但模板漏接，EN 首页 28 处夹生→0）
+- **复盘未见问题清单**（记录以免重复排查）：kb-nav 词条与 apps 源零错位；integrity 门禁已在两仓 `deploy.yml` 实跑拦部署；`roomsUnit/periodOption` 为无害死键；sw v2 缓存清理逻辑正确（activate 删旧 CACHE）；FJNU 应用排序纯重排零内容改动
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

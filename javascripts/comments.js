@@ -13,6 +13,8 @@
 
   var LS_KEY = 'qdu_wiki_comments_v1';
   var LS_NAME_KEY = 'qdu_wiki_commenter';
+  var LS_OWNER_KEY = 'qdu_wiki_cowner_v1'; // 作者凭证：删除自己的评论时向服务端证明身份（不随列表下发）
+  var LS_MYIDS_KEY = 'qdu_wiki_my_cids_v1'; // 本机发过的评论 id：渲染「我」标记与删除按钮（跨设备各自记录）
   var LS_API_KEY = 'qdu_api_base'; // 与 Nav 站 wall/apiBase.js 同键：数据管家页设置的网关地址 Wiki 同步生效
   var CONFIG_API = ''; // 部署评论网关后填入其地址（如 https://your-gateway.onrender.com），留空 = 本地模式
   var PUBLIC_API_DEFAULT = ''; // 公网网关上线后填入缺省地址，手机/静态站直连线上版
@@ -189,6 +191,7 @@
   function postComment(c) {
     var path = pagePath();
     c.path = path;
+    c.owner = c.owner || myOwner();
     if (mode === 'api') {
       return fetch(apiBase + '/api/comments', {
         method: 'POST',
@@ -200,11 +203,15 @@
         return r.json();
       }).then(function (d) {
         if (!d || !d.ok) throw new Error((d && d.error) || 'bad');
-        // 同步一份到本地（离线也能看到自己发的）
+        rememberMyId(d.comment.id);
+        // 同步一份到本地（离线也能看到自己发的）——剔除 owner 凭证不落存储
+        var saved = {};
+        for (var k in d.comment) saved[k] = d.comment[k];
+        delete saved.owner;
         var db = localRead();
-        db[path] = (db[path] || []).concat([d.comment]);
+        db[path] = (db[path] || []).concat([saved]);
         localWrite(db);
-        return d.comment;
+        return saved;
       }).catch(function () {
         mode = 'local';
         return localPost(c);
@@ -219,7 +226,12 @@
     c.id = 'L' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     c.ts = Date.now();
     c.likes = 0;
-    db[path] = (db[path] || []).concat([c]);
+    rememberMyId(c.id);
+    // 存储副本剔除 owner 凭证（token 不落盘，仅内存用于本次流程）
+    var rec = {};
+    for (var k in c) rec[k] = c[k];
+    delete rec.owner;
+    db[path] = (db[path] || []).concat([rec]);
     localWrite(db);
     // 写后回读校验：浏览器拒绝存储时给明确提示，而不是“假装成功”
     var ok = false;
@@ -251,6 +263,36 @@
     return Promise.resolve({ ok: true });
   }
 
+  /** 删除自己的评论（连同其楼中楼子孙）：API 模式走 owner 鉴权接口，本地模式直接清存储 */
+  function deleteComment(id) {
+    if (mode === 'api') {
+      return fetch(apiBase + '/api/comments/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id, owner: myOwner() }),
+        signal: timeout(8000)
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        if (!d || !d.ok) throw new Error((d && d.error) || '删除失败');
+        return d;
+      });
+    }
+    // 本地模式：从存储剔除该评论及其子孙
+    var db = localRead();
+    var path = pagePath();
+    var list = db[path] || [];
+    var doomed = { id: true };
+    var grew = true;
+    while (grew) {
+      grew = false;
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].parent && doomed[list[i].parent] && !doomed[list[i].id]) { doomed[list[i].id] = true; grew = true; }
+      }
+    }
+    db[path] = list.filter(function (x) { return !doomed[x.id]; });
+    localWrite(db);
+    return Promise.resolve({ ok: true });
+  }
+
   function timeout(ms) {
     var c = new AbortController();
     setTimeout(function () { c.abort(); }, ms);
@@ -277,6 +319,34 @@
   }
   function setName(n) {
     try { localStorage.setItem(LS_NAME_KEY, n) } catch (e) { /* noop */ }
+  }
+  /** 作者凭证（本浏览器稳定随机串）：仅用于删除自己的评论，服务端 GET 不回传 */
+  function myOwner() {
+    try {
+      var v = localStorage.getItem(LS_OWNER_KEY);
+      if (!v) {
+        v = 'o' + Date.now().toString(36) + Math.random().toString(36).slice(2, 14);
+        localStorage.setItem(LS_OWNER_KEY, v);
+      }
+      return v;
+    } catch (e) { return 'o-anon-' + (navigator.userAgent || '').length; }
+  }
+  function isMine(c) {
+    if (!c) return false;
+    try {
+      var arr = JSON.parse(localStorage.getItem(LS_MYIDS_KEY) || '[]');
+      return arr.indexOf(c.id) >= 0;
+    } catch (e) { return false; }
+  }
+  function rememberMyId(id) {
+    try {
+      var arr = JSON.parse(localStorage.getItem(LS_MYIDS_KEY) || '[]');
+      if (arr.indexOf(id) < 0) {
+        arr.push(id);
+        if (arr.length > 200) arr = arr.slice(-200);
+        localStorage.setItem(LS_MYIDS_KEY, JSON.stringify(arr));
+      }
+    } catch (e) { /* noop */ }
   }
 
   /* ---------- AI 归纳（抽取式摘要 · 纯前端） ---------- */
@@ -475,6 +545,7 @@
   function commentRow(c, depth) {
     var isAnno = c.type === 'para';
     var isFix = c.type === 'correction';
+    var mine = isMine(c);
     var initial = esc((c.author || '匿')[0]);
     var kids = comments.filter(function (x) { return x.parent === c.id; });
     var reactions = c.reactions || {};
@@ -493,19 +564,21 @@
         '  <button type="button" class="qc-submit" id="qcReplyOk">回复</button>' +
         '</div></div>';
     }
-    var html = '<div class="qc-item' + (isFix ? ' fix' : '') + (isAnno ? ' anno' : '') + (depth ? ' child' : '') + '">' +
+    var html = '<div class="qc-item' + (isFix ? ' fix' : '') + (isAnno ? ' anno' : '') + (depth ? ' child' : '') + (mine ? ' mine' : '') + '">' +
       '<div class="qc-avatar">' + initial + '</div>' +
       '<div class="qc-main">' +
       '  <div class="qc-meta"><b>' + esc(c.author) + '</b>' +
+      (mine ? '<span class="qc-tag me">我</span>' : '') +
       (isFix ? '<span class="qc-tag fix">🚩 纠错</span>' : '') +
       (isAnno ? '<span class="qc-tag anno">📌 段落批注</span>' : '') +
       (c.parent ? '<span class="qc-tag reply">↩ 回复' + esc(c.replyTo || '') + '</span>' : '') +
-      '  <span class="qc-time">' + fmtTime(c.ts) + '</span></div>' +
+      '  <span class="qc-time" title="' + new Date(c.ts || Date.now()).toLocaleString() + '">' + fmtTime(c.ts) + '</span></div>' +
       (isAnno ? '<div class="qc-quote">「' + esc((c.quote || '').slice(0, 80)) + '」</div>' : '') +
       '  <div class="qc-content">' + esc(c.content) + '</div>' +
       '  <div class="qc-foot">' +
       '    <button type="button" class="qc-like" data-id="' + esc(c.id) + '">👍 <span>' + (c.likes || 0) + '</span></button>' +
       '    <button type="button" class="qc-replybtn" data-id="' + esc(c.id) + '" data-author="' + esc(c.author) + '">↩ 回复' + (kids.length ? ' (' + kids.length + ')' : '') + '</button>' +
+      (mine ? '<button type="button" class="qc-del" data-id="' + esc(c.id) + '" title="删除这条评论（含其下的回复）">🗑 删除</button>' : '') +
       '    <button type="button" class="qc-report" data-id="' + esc(c.id) + '" title="举报这条内容">🚩 举报</button>' +
       '    <span class="qc-reacts">' + reactChips + '</span>' +
       '  </div>' + replyForm +
@@ -543,6 +616,35 @@
     Array.prototype.forEach.call(box.querySelectorAll('.qc-report'), function (btn) {
       btn.addEventListener('click', function () { reportComment(btn.getAttribute('data-id')); });
     });
+    Array.prototype.forEach.call(box.querySelectorAll('.qc-del'), function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-id');
+        if (!window.confirm('删除这条评论？其下的回复也会一并删除，且不可恢复。')) return;
+        deleteComment(id).then(function () {
+          // 内存与本地缓存同步剔除（含子孙）
+          var doomed = { };
+          doomed[id] = true;
+          var grew = true;
+          while (grew) {
+            grew = false;
+            comments.forEach(function (x) {
+              if (x.parent && doomed[x.parent] && !doomed[x.id]) { doomed[x.id] = true; grew = true; }
+            });
+          }
+          comments = comments.filter(function (x) { return !doomed[x.id]; });
+          var db = localRead();
+          var path = pagePath();
+          if (db[path]) {
+            db[path] = db[path].filter(function (x) { return !doomed[x.id]; });
+            localWrite(db);
+          }
+          renderList();
+          syncBadges();
+        }).catch(function (e) {
+          alert((e && e.message) || '删除失败');
+        });
+      });
+    });
     Array.prototype.forEach.call(box.querySelectorAll('.qc-react'), function (btn) {
       btn.addEventListener('click', function () {
         reactComment(btn.getAttribute('data-id'), btn.getAttribute('data-e'));
@@ -568,6 +670,8 @@
     if (cnt) cnt.textContent = comments.length + ' 条';
     var badge = document.getElementById('qcBadge');
     if (badge) badge.textContent = '💬 ' + comments.length;
+    // 通知外层（giscus.js 折叠按钮等）更新本地评论计数
+    try { window.dispatchEvent(new CustomEvent('qc-update', { detail: { n: comments.length } })); } catch (e) { /* noop */ }
   }
 
   /* ── 发送楼中楼回复（走评论接口，parent 指向被回复评论） ── */
@@ -642,8 +746,9 @@
           renderList();
         });
       });
-      var tip = document.getElementById('qcAnnoTip');
-      if (tip) tip.addEventListener('click', function () {
+      // 注意：勿用 tip 作局部变量名——会遮蔽顶层 tip() 提示函数（曾致主发表 TypeError）
+      var annoTip = document.getElementById('qcAnnoTip');
+      if (annoTip) annoTip.addEventListener('click', function () {
         var first = document.querySelector('p.qdu-anno');
         if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
         else alert('本页暂无段落批注——划选正文任意句子即可添加');
@@ -844,6 +949,10 @@
     '.qc-annotip:hover{opacity:1;text-decoration:underline}' +
     '.qc-item.child{margin-left:34px;border-left:2px solid rgba(27,102,201,.35);background:rgba(27,102,201,.03)}' +
     '.qc-tag.reply{background:rgba(163,113,247,.15);color:#a371f7}' +
+    '.qc-tag.me{background:rgba(163,113,247,.18);color:#8250df;font-weight:700}' +
+    '.qc-item.mine{border-left:3px solid rgba(163,113,247,.55)}' +
+    '.qc-del{font-size:12px;border:1px solid var(--md-default-fg-color--lightest,#e5e5e5);background:transparent;border-radius:999px;padding:3px 10px;cursor:pointer;color:var(--md-default-fg-color--light,#999);font-family:inherit}' +
+    '.qc-del:hover{border-color:#e11d48;color:#e11d48}' +
     '.qc-replybtn{font-size:12px;border:1px solid var(--md-default-fg-color--lightest,#e5e5e5);background:transparent;border-radius:999px;padding:3px 10px;cursor:pointer;color:var(--md-default-fg-color--light,#888);font-family:inherit}' +
     '.qc-replybtn:hover{border-color:#a371f7;color:#a371f7}' +
     '.qc-reacts{display:inline-flex;gap:5px;margin-left:auto;flex-wrap:wrap}' +

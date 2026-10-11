@@ -202,11 +202,7 @@
     if (!root || root.dataset.done) return;
     root.dataset.done = '1';
     root.innerHTML = '<div class="kg-loading">图谱加载中…</div>';
-    var base = (function () {
-      var seg = location.pathname.split('/');
-      var r = seg.length > 1 && seg[1] ? '/' + seg[1] + '/' : '/';
-      return location.origin + r;
-    })();
+    var base = siteBase();
     fetch(base + 'assets/graph.json').then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();

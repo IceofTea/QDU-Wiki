@@ -491,26 +491,46 @@
   }
 
   /** 标题徽章 = GitHub（Giscus）全网评论数：本地社区评论尚未上线，显示本地 0 无意义。
-   *  走评论网关 gh-count（60s 缓存）；无网关/失败时显示裸 💬，不误导。 */
+   *  优先走评论网关 gh-count（60s 缓存）；线上未配网关时直连 GitHub REST（CORS 公开，
+   *  匿名 60 次/时/IP，sessionStorage 缓存 30 分钟减频，限频时回退缓存值）；全失败显裸 💬。 */
   function refreshGhBadge() {
-    var badge = document.getElementById('qcBadge');
-    if (!badge) return;
+    var apply = function (n) {
+      var el = document.getElementById('qcBadge');
+      if (el) el.textContent = (typeof n === 'number') ? ('💬 ' + n) : '💬';
+    };
     var base = detectApi();
-    if (!base) { badge.textContent = '💬'; return; }
+    if (!base) {
+      try {
+        var cached = JSON.parse(sessionStorage.getItem('qdu_gh_count') || 'null');
+        if (cached && typeof cached.n === 'number' && Date.now() - cached.t < 1800000) { apply(cached.n); return; }
+      } catch (e) { /* noop */ }
+      var c2 = null;
+      try { c2 = JSON.parse(sessionStorage.getItem('qdu_gh_count') || 'null'); } catch (e) { /* noop */ }
+      var ctrl0 = new AbortController();
+      var to0 = setTimeout(function () { ctrl0.abort(); }, 6000);
+      fetch('https://api.github.com/repos/IceofTea/QDU-Wiki/discussions?per_page=100', { signal: ctrl0.signal })
+        .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+        .then(function (arr) {
+          clearTimeout(to0);
+          var n = (Array.isArray(arr) ? arr : []).reduce(function (s, d) { return s + (Number(d.comments) || 0); }, 0);
+          apply(n);
+          try { sessionStorage.setItem('qdu_gh_count', JSON.stringify({ n: n, t: Date.now() })); } catch (e) { /* noop */ }
+        })
+        .catch(function () {
+          clearTimeout(to0);
+          apply(c2 && typeof c2.n === 'number' ? c2.n : ''); // 限频/断网：回退缓存，无缓存显裸 💬
+        });
+      return;
+    }
     var ctrl = new AbortController();
     var timer = setTimeout(function () { ctrl.abort(); }, 6000);
     fetch(base + '/api/comments/gh-count', { signal: ctrl.signal })
       .then(function (r) { return r.json(); })
       .then(function (d) {
         clearTimeout(timer);
-        var el = document.getElementById('qcBadge');
-        if (el) el.textContent = '💬 ' + (d && d.ok && typeof d.total === 'number' ? d.total : '');
+        apply(d && d.ok && typeof d.total === 'number' ? d.total : '');
       })
-      .catch(function () {
-        clearTimeout(timer);
-        var el = document.getElementById('qcBadge');
-        if (el) el.textContent = '💬';
-      });
+      .catch(function () { clearTimeout(timer); apply(''); });
   }
 
   function addTitleBadge() {
@@ -539,9 +559,13 @@
     function openConsole() {
       var t = prompt('🛰️ 社区控制台\n请输入管理口令：');
       if (!t) return;
-      // 先验后开：口令错/无网关一律静默，不向普通用户证实入口存在
       var base = detectApi();
-      if (!base) return;
+      if (!base) {
+        // 无法验证口令（无网关可查）：给管理员出路提示，不判口令对错、不暴露入口细节
+        alert('未检测到评论网关——管理台需要社区网关在线。\n本地：在仓库根启动 node server/index.mjs 后访问 http://localhost:8787/admin\n线上：在本文件 PUBLIC_API_DEFAULT 填入已部署网关地址');
+        return;
+      }
+      // 先验后开：口令错一律静默（红线）
       var ctrl = new AbortController();
       var to = setTimeout(function () { ctrl.abort(); }, 6000);
       fetch(base + '/api/admin/login', {
@@ -551,9 +575,13 @@
         signal: ctrl.signal
       }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); }).then(function (ret) {
         clearTimeout(to);
-        if (!ret.ok || (!ret.d.token && !ret.d.ok)) return;
+        if (!ret.ok || (!ret.d.token && !ret.d.ok)) return; // 静默
         try { localStorage.setItem('pending_admin_token', t); } catch (e) { /* noop */ }
-        window.open(base.replace(/\/+$/, '') + '/admin', '_blank', 'noopener');
+        var url = base.replace(/\/+$/, '') + '/admin';
+        // 新标签打开（登录后 5s 用户激活窗口内通常放行）；被弹窗拦截则当前页直达，保底可达
+        var opened = null;
+        try { opened = window.open(url, '_blank'); } catch (e) { opened = null; }
+        if (!opened) location.href = url;
       }).catch(function () { clearTimeout(to); /* 静默 */ });
     }
     b.addEventListener('pointerdown', function () {

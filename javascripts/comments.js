@@ -104,7 +104,7 @@
         var cnt = document.getElementById('qcCount')
         if (cnt) cnt.textContent = comments.length + ' 条'
         var badge = document.getElementById('qcBadge')
-        if (badge) badge.textContent = '\uD83D\uDCAC ' + comments.length
+        refreshGhBadge();
       }
     }).catch(function () { /* noop */ })
   }
@@ -124,7 +124,7 @@
           var cnt = document.getElementById('qcCount');
           if (cnt) cnt.textContent = comments.length + ' 条';
           var badge = document.getElementById('qcBadge');
-          if (badge) badge.textContent = '💬 ' + comments.length;
+          refreshGhBadge();
         }
       }).catch(function () { /* noop */ });
     }, 15000);
@@ -490,6 +490,29 @@
       '</div>';
   }
 
+  /** 标题徽章 = GitHub（Giscus）全网评论数：本地社区评论尚未上线，显示本地 0 无意义。
+   *  走评论网关 gh-count（60s 缓存）；无网关/失败时显示裸 💬，不误导。 */
+  function refreshGhBadge() {
+    var badge = document.getElementById('qcBadge');
+    if (!badge) return;
+    var base = detectApi();
+    if (!base) { badge.textContent = '💬'; return; }
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 6000);
+    fetch(base + '/api/comments/gh-count', { signal: ctrl.signal })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        clearTimeout(timer);
+        var el = document.getElementById('qcBadge');
+        if (el) el.textContent = '💬 ' + (d && d.ok && typeof d.total === 'number' ? d.total : '');
+      })
+      .catch(function () {
+        clearTimeout(timer);
+        var el = document.getElementById('qcBadge');
+        if (el) el.textContent = '💬';
+      });
+  }
+
   function addTitleBadge() {
     var h1 = document.querySelector('.md-content h1') || document.querySelector('h1');
     if (!h1 || document.querySelector('.qc-badge')) return;
@@ -501,39 +524,45 @@
     b.className = 'qc-badge';
     b.id = 'qcBadge';
     b.textContent = '💬 …';
+    var suppressClick = false;
     b.addEventListener('click', function () {
+      if (suppressClick) { suppressClick = false; return; } // 长按暗门刚触发：吞掉紧随的点击
       if (rootEl) rootEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
     h1.appendChild(b);
+    refreshGhBadge();
 
-    /* 隐秘暗门：连点评论徽章 5 次 → 输入口令 → 打开社区控制台（管理员专属，外人无感知） */
-    var taps = 0;
-    var timer = null;
-    b.addEventListener('click', function () {
-      taps++;
-      clearTimeout(timer);
-      timer = setTimeout(function () { taps = 0; }, 1400);
-      if (taps >= 5) {
-        taps = 0;
-        var t = prompt('🛰️ 社区控制台\n请输入管理口令：');
-        if (!t) return;
-        // 先验后开：口令错/无网关一律静默，不向普通用户证实入口存在
-        var base = detectApi();
-        if (!base) return;
-        var ctrl = new AbortController();
-        var timer = setTimeout(function () { ctrl.abort(); }, 6000);
-        fetch(base + '/api/admin/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: t }),
-          signal: ctrl.signal
-        }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); }).then(function (ret) {
-          clearTimeout(timer);
-          if (!ret.ok || (!ret.d.token && !ret.d.ok)) return;
-          try { localStorage.setItem('pending_admin_token', t); } catch (e) { /* noop */ }
-          window.open(base.replace(/\/+$/, '') + '/admin', '_blank', 'noopener');
-        }).catch(function () { clearTimeout(timer); /* 静默 */ });
-      }
+    /* 隐秘暗门：长按评论徽章约 1.2 秒 → 输入口令 → 打开社区控制台（管理员专属，外人无感知）。
+       旧「连点 5 次」会被单击的自动滚动打断（一点就滑走、连点追不上），弃用；
+       长按计时独立于滚动，单击跳转评论区的行为保留。 */
+    var pressTimer = null;
+    function openConsole() {
+      var t = prompt('🛰️ 社区控制台\n请输入管理口令：');
+      if (!t) return;
+      // 先验后开：口令错/无网关一律静默，不向普通用户证实入口存在
+      var base = detectApi();
+      if (!base) return;
+      var ctrl = new AbortController();
+      var to = setTimeout(function () { ctrl.abort(); }, 6000);
+      fetch(base + '/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: t }),
+        signal: ctrl.signal
+      }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); }).then(function (ret) {
+        clearTimeout(to);
+        if (!ret.ok || (!ret.d.token && !ret.d.ok)) return;
+        try { localStorage.setItem('pending_admin_token', t); } catch (e) { /* noop */ }
+        window.open(base.replace(/\/+$/, '') + '/admin', '_blank', 'noopener');
+      }).catch(function () { clearTimeout(to); /* 静默 */ });
+    }
+    b.addEventListener('pointerdown', function () {
+      suppressClick = false;
+      clearTimeout(pressTimer);
+      pressTimer = setTimeout(function () { suppressClick = true; openConsole(); }, 1200);
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) {
+      b.addEventListener(ev, function () { clearTimeout(pressTimer); });
     });
   }
 
@@ -548,7 +577,7 @@
       var cnt = document.getElementById('qcCount');
       if (cnt) cnt.textContent = comments.length + ' 条';
       var badge = document.getElementById('qcBadge');
-      if (badge) badge.textContent = '💬 ' + comments.length;
+      refreshGhBadge();
       var modeEl = document.getElementById('qcMode');
       if (modeEl) {
         modeEl.textContent = mode === 'api'
@@ -692,7 +721,7 @@
     var cnt = document.getElementById('qcCount');
     if (cnt) cnt.textContent = comments.length + ' 条';
     var badge = document.getElementById('qcBadge');
-    if (badge) badge.textContent = '💬 ' + comments.length;
+    refreshGhBadge();
     // 通知外层（giscus.js 折叠按钮等）更新本地评论计数
     try { window.dispatchEvent(new CustomEvent('qc-update', { detail: { n: comments.length } })); } catch (e) { /* noop */ }
   }

@@ -491,46 +491,33 @@
   }
 
   /** 标题徽章 = GitHub（Giscus）全网评论数：本地社区评论尚未上线，显示本地 0 无意义。
-   *  优先走评论网关 gh-count（60s 缓存）；线上未配网关时直连 GitHub REST（CORS 公开，
-   *  匿名 60 次/时/IP，sessionStorage 缓存 30 分钟减频，限频时回退缓存值）；全失败显裸 💬。 */
+   *  直连 GitHub REST（CORS 公开，匿名 60 次/时/IP，sessionStorage 缓存 30 分钟减频，
+   *  限频时回退缓存值再退裸 💬）——不依赖评论网关，线上/本地同一行为。 */
   function refreshGhBadge() {
     var apply = function (n) {
       var el = document.getElementById('qcBadge');
       if (el) el.textContent = (typeof n === 'number') ? ('💬 ' + n) : '💬';
     };
-    var base = detectApi();
-    if (!base) {
-      try {
-        var cached = JSON.parse(sessionStorage.getItem('qdu_gh_count') || 'null');
-        if (cached && typeof cached.n === 'number' && Date.now() - cached.t < 1800000) { apply(cached.n); return; }
-      } catch (e) { /* noop */ }
-      var c2 = null;
-      try { c2 = JSON.parse(sessionStorage.getItem('qdu_gh_count') || 'null'); } catch (e) { /* noop */ }
-      var ctrl0 = new AbortController();
-      var to0 = setTimeout(function () { ctrl0.abort(); }, 6000);
-      fetch('https://api.github.com/repos/IceofTea/QDU-Wiki/discussions?per_page=100', { signal: ctrl0.signal })
-        .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
-        .then(function (arr) {
-          clearTimeout(to0);
-          var n = (Array.isArray(arr) ? arr : []).reduce(function (s, d) { return s + (Number(d.comments) || 0); }, 0);
-          apply(n);
-          try { sessionStorage.setItem('qdu_gh_count', JSON.stringify({ n: n, t: Date.now() })); } catch (e) { /* noop */ }
-        })
-        .catch(function () {
-          clearTimeout(to0);
-          apply(c2 && typeof c2.n === 'number' ? c2.n : ''); // 限频/断网：回退缓存，无缓存显裸 💬
-        });
-      return;
-    }
+    try {
+      var cached = JSON.parse(sessionStorage.getItem('qdu_gh_count') || 'null');
+      if (cached && typeof cached.n === 'number' && Date.now() - cached.t < 1800000) { apply(cached.n); return; }
+    } catch (e) { /* noop */ }
+    var c2 = null;
+    try { c2 = JSON.parse(sessionStorage.getItem('qdu_gh_count') || 'null'); } catch (e) { /* noop */ }
     var ctrl = new AbortController();
-    var timer = setTimeout(function () { ctrl.abort(); }, 6000);
-    fetch(base + '/api/comments/gh-count', { signal: ctrl.signal })
-      .then(function (r) { return r.json(); })
-      .then(function (d) {
-        clearTimeout(timer);
-        apply(d && d.ok && typeof d.total === 'number' ? d.total : '');
+    var to = setTimeout(function () { ctrl.abort(); }, 6000);
+    fetch('https://api.github.com/repos/IceofTea/QDU-Wiki/discussions?per_page=100', { signal: ctrl.signal })
+      .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(function (arr) {
+        clearTimeout(to);
+        var n = (Array.isArray(arr) ? arr : []).reduce(function (s, d) { return s + (Number(d.comments) || 0); }, 0);
+        apply(n);
+        try { sessionStorage.setItem('qdu_gh_count', JSON.stringify({ n: n, t: Date.now() })); } catch (e) { /* noop */ }
       })
-      .catch(function () { clearTimeout(timer); apply(''); });
+      .catch(function () {
+        clearTimeout(to);
+        apply(c2 && typeof c2.n === 'number' ? c2.n : ''); // 限频/断网：回退缓存，无缓存显裸 💬
+      });
   }
 
   function addTitleBadge() {

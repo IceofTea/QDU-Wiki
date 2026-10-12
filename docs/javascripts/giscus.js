@@ -28,16 +28,35 @@
   function mount() {
     var c = cfg();
     if (!c.repo || !c.repoId || !c.categoryId) return; // 未配置：静默
-    if (document.querySelector('.giscus-frame')) { tidyLocal(); return; }
+    // 防重复：以自建 wrap 为同步锚。旧实现查 .giscus-frame（giscus 异步插入的 iframe）——
+    // 网络慢/失败时它迟迟不来，MutationObserver 每次回调都新建一块「🌐 全网评论」→ 刷屏 bug。
+    var wraps = document.querySelectorAll('.giscus-wrap');
+    if (wraps.length > 1) {
+      for (var wi = 1; wi < wraps.length; wi++) {
+        if (wraps[wi].parentNode) wraps[wi].parentNode.removeChild(wraps[wi]);
+      }
+    }
+    if (wraps.length) { tidyLocal(); return; }
     // 只在正文页挂载（与 comments.js 同策略：找正文容器）
     var host = document.querySelector('.md-content__inner');
     if (!host) return;
+    // 管理员专属直达入口：Giscus 评论存于 GitHub Discussions（跨域 iframe 页内删不了），
+    // 仓库管理员（IceofTea）在 GitHub 有删除权——本浏览器登录过管理台才显示此链接。
+    var isAdmin = '';
+    try { isAdmin = localStorage.getItem('pending_admin_token') || ''; } catch (e) { /* noop */ }
+    var manage = isAdmin
+      ? '<a href="https://github.com/' + c.repo + '/discussions" target="_blank" rel="noopener" ' +
+        'title="Giscus 评论存于 GitHub：删除/管理评论请在 GitHub Discussion 中操作（仓库管理员有权限）" ' +
+        'style="margin-left:auto;font-size:12px;color:#888;text-decoration:none;white-space:nowrap">🗑 管理（GitHub）</a>'
+      : '';
     var sec = document.createElement('section');
     sec.className = 'giscus-wrap';
     sec.innerHTML =
-      '<div style="margin-top:26px;border-top:2px solid var(--md-primary-fg-color,#1b66c9);padding-top:12px">' +
-      '<div style="font-size:17px;font-weight:800;margin-bottom:4px">🌐 全网评论 <span style="font-size:11px;font-weight:400;color:#888">（GitHub 登录发言，全员可见）</span></div>' +
-      '<div class="giscus"></div></div>';
+      '<div style="display:flex;align-items:baseline;gap:10px;margin-top:26px;border-top:2px solid var(--md-primary-fg-color,#1b66c9);padding-top:12px">' +
+      '<div style="font-size:17px;font-weight:800">🌐 全网评论 <span style="font-size:11px;font-weight:400;color:#888">（GitHub 登录发言，全员可见）</span></div>' +
+      manage +
+      '</div>' +
+      '<div class="giscus"></div>';
     host.appendChild(sec);
     var s = document.createElement('script');
     s.src = 'https://giscus.app/client.js';

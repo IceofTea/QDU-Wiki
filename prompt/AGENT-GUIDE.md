@@ -769,6 +769,16 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-10-11（深夜）：giscus 标题刷屏恶性 bug 根治 + 管理员 GitHub 删除直达（多设备并行维护）
+
+- **用户报**：页面反复出现「🌐 全网评论」标题（×9 刷屏），刷新仍在，过一会儿自行恢复。
+- **根因**：`mount()` 防重复检查的是 `.giscus-frame`——**giscus client.js 异步插入的 iframe**。网络慢/被墙时它迟迟不来，而 MutationObserver（评论轮询/SSE 每次刷新 DOM 触发，400ms debounce）反复调 `mount()`，每次查不到 frame 就**新建一个标题块**；iframe 终于加载后防重复才生效——与"过一会儿又好了"完全吻合。
+- **修复**（giscus.js）：防重复改为以**自建 `.giscus-wrap` 为同步锚**（并主动清理已重复的多余 wrap）；`sw.js` CACHE **v3→v4** 强刷旧 JS 缓存。
+- **管理员删除 GitHub 评论的边界与入口**：Giscus 评论存于 GitHub Discussions（跨域 iframe，**页内无法注入删除**）；IceofTea 作为仓库 owner 在 GitHub 有删除权 → 标题栏新增**管理员专属「🗑 管理（GitHub）」直达链接**（检测 `pending_admin_token`，普通读者不可见）→ 跳 Discussions 列表页操作。本地评论区的页内 🛡 删除不受影响、照常可用。
+- **验证**：`node --check` ×2 + strict 构建过；浏览器双场景实测 **PASS**——连续 6 轮 DOM 变化压力下 wrap 数/标题数恒为 1，普通读者无管理链接、管理员出现管理链接。
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

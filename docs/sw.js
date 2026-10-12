@@ -2,8 +2,8 @@
 // 版本号变更即整体更新（发版时改 CACHE 值）。
 // v2：CORE 只留壳（manifest）——kb.json/graph.json 是每次构建都变的数据，
 //     走网络优先（下方 isData 分支），杜绝预缓存旧 kb 直达 404/旧数据。
-// v3：v2 的数据网络优先保留；强制刷新一轮旧 JS 缓存（comments/giscus 手机端曾命中 v1 旧版）
-var CACHE = 'qdu-wiki-v3';
+// v4：giscus 标题刷屏修复（mount 以自建 wrap 为防重复锚）——强制刷新一轮旧 JS 缓存
+var CACHE = 'qdu-wiki-v4';
 var CORE = ['manifest.webmanifest'];
 
 self.addEventListener('install', function (e) {

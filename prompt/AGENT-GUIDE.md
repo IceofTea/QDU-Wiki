@@ -775,7 +775,18 @@ python -m mkdocs build --strict
 - **根因**：`mount()` 防重复检查的是 `.giscus-frame`——**giscus client.js 异步插入的 iframe**。网络慢/被墙时它迟迟不来，而 MutationObserver（评论轮询/SSE 每次刷新 DOM 触发，400ms debounce）反复调 `mount()`，每次查不到 frame 就**新建一个标题块**；iframe 终于加载后防重复才生效——与"过一会儿又好了"完全吻合。
 - **修复**（giscus.js）：防重复改为以**自建 `.giscus-wrap` 为同步锚**（并主动清理已重复的多余 wrap）；`sw.js` CACHE **v3→v4** 强刷旧 JS 缓存。
 - **管理员删除 GitHub 评论的边界与入口**：Giscus 评论存于 GitHub Discussions（跨域 iframe，**页内无法注入删除**）；IceofTea 作为仓库 owner 在 GitHub 有删除权 → 标题栏新增**管理员专属「🗑 管理（GitHub）」直达链接**（检测 `pending_admin_token`，普通读者不可见）→ 跳 Discussions 列表页操作。本地评论区的页内 🛡 删除不受影响、照常可用。
-- **验证**：`node --check` ×2 + strict 构建过；浏览器双场景实测 **PASS**——连续 6 轮 DOM 变化压力下 wrap 数/标题数恒为 1，普通读者无管理链接、管理员出现管理链接。
+- **验证**：`node --check` ×2 + strict 构建过；浏览器双场景实测 **PASS**——连续 6 轮 DOM 变化压力下 wrap 数/标题数恒为 1，普通读者无管理链接、管理员出现管理链接
+
+---
+
+### 2026-10-12：GitHub 评论敏感词巡检（管理员事后监督链路）
+
+- **需求**：Giscus（GitHub 评论）能否做敏感词检测？——**架构边界**：提交在 giscus.app 跨域 iframe 内完成，**发送前无法拦截**；能做到的是**事后巡检**。
+- **实现**：
+  - **网关**（QDU v1.6.18 / FJNU v1.5.20 同源）：`GET /api/admin/gh-comments`（adminOk 鉴权）——REST 拉 `GH_WATCH_REPO`（默认 IceofTea/QDU-Wiki）最近 10 主帖 + 各帖 10 评论 → `hitWords` 站内敏感词表匹配 → 返回命中/原文/Discussion 直达链接；60s 内存缓存（匿名 REST 60 次/时限频兜底）、可选 `env GITHUB_TOKEN` 提额
+  - **前端**（giscus.js 管理员态）：标题栏「🔍 敏感词巡检」按钮（仅 `pending_admin_token` 可见）→ 点击拉网关结果 → 面板显示"✅ 无命中"或逐条"⚠️ 命中「词」+原文+[去 GitHub 删除 →]"
+- **处置闭环**：巡检命中 → 点条目跳 GitHub Discussion → 仓库 owner 删除（前一批次已加「🗑 管理（GitHub）」直达）
+- **验证**：curl 实测 `checked=9 flagged=0`（真实拉到 Discussions）+ 无 token 401；浏览器双场景 PASS（管理员面板出结果、非管理员无按钮）；三仓语法/构建全绿
 
 ---
 

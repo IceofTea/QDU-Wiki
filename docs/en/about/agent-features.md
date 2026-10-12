@@ -35,6 +35,21 @@ The thin blue bar at the top is your reading progress.
 enter the passphrase → opens the community console;
 or visit the gateway's `/console` or `/.g/9f3a` directly. Five wrong passphrases lock you out for 1 minute.
 
+### Public comments (GitHub Discussions) moderation cheat-sheet
+
+Public comments live on GitHub — the "🗑 Manage (GitHub)" link in the comment header jumps straight there; deletions made on GitHub disappear from this site immediately:
+
+| Goal | Action |
+| --- | --- |
+| Delete one reply | `⋯` on that comment → **Delete** (only repo collaborators see this) |
+| Delete a whole thread | discussion page `⋯` → **Delete discussion** |
+| Freeze a page's comments | discussion `⋯` → **Lock conversation** |
+| Block a user from commenting | their GitHub profile → **Block user** |
+| Report spam/abuse | comment `⋯` → **Report content violation** |
+
+> Note: Giscus opens a new discussion per page automatically — after deletion, the next comment on that page starts a **fresh thread**; use "Lock conversation" to prevent that.
+> Pre-post filtering is impossible (the iframe posts directly to GitHub), so the model is **delete + lock + block** after the fact; the admin-only "🔍 Sensitive-word scan" in the local comment section helps find suspicious content (requires the comment gateway online).
+
 ## 5. Data & privacy
 
 - Comment gateway configured → comments live on the self-hosted campus node (shared across users)

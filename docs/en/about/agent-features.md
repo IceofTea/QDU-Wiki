@@ -31,7 +31,8 @@ The thin blue bar at the top is your reading progress.
 
 ## 4. Admin entrance (regular readers can ignore this section)
 
-Click the **💬 comment badge next to the title 5 times** → enter the passphrase → opens the community console;
+**Press and hold the 💬 comment badge next to the title for about 1.2 seconds** →
+enter the passphrase → opens the community console;
 or visit the gateway's `/console` or `/.g/9f3a` directly. Five wrong passphrases lock you out for 1 minute.
 
 ## 5. Data & privacy

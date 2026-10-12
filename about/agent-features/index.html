@@ -4267,6 +4267,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="4. 管理员入口（普通读者请忽略本节）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#github-discussions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        全网评论（GitHub Discussions）管控速查
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -4369,6 +4386,42 @@
 <h2 id="4">4. 管理员入口（普通读者请忽略本节）</h2>
 <p><strong>长按标题旁 💬 评论徽章约 1.2 秒</strong> → 输入口令 → 打开社区控制台；
 或直接访问网关的 <code>/console</code>、<code>/.g/9f3a</code>。口令错误 5 次锁定 1 分钟。</p>
+<h3 id="github-discussions">全网评论（GitHub Discussions）管控速查</h3>
+<p>全网评论的数据在 GitHub 上，站内标题栏「🗑 管理（GitHub）」直达；处置动作都在 GitHub 网页完成，删除后本站立即消失：</p>
+<table>
+<thead>
+<tr>
+<th>想做什么</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>删某条回复</td>
+<td>该评论右上 <code>⋯</code> → <strong>Delete</strong>（仅仓库协作者可见此选项）</td>
+</tr>
+<tr>
+<td>删整个讨论（整楼）</td>
+<td>讨论页右上 <code>⋯</code> → <strong>Delete discussion</strong></td>
+</tr>
+<tr>
+<td>这页今后禁止评论（封存）</td>
+<td>讨论页 <code>⋯</code> → <strong>Lock conversation</strong></td>
+</tr>
+<tr>
+<td>某人不能再评论本站</td>
+<td>其 GitHub 主页 → <strong>Block user</strong>（被拉黑者无法在本仓库发言）</td>
+</tr>
+<tr>
+<td>垃圾/辱骂内容举报</td>
+<td>评论 <code>⋯</code> → <strong>Report content violation</strong>（GitHub 官方处理）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>注意：Giscus 按页面地址自动建帖——删除后同页下次有人发言会<strong>重新开新帖</strong>，要彻底禁止用上面的"锁定"。
+发送前无法拦截（iframe 提交在 GitHub 侧），管控模型 = <strong>事后删 + 锁 + 拉黑</strong>；评论区管理员态的「🔍 敏感词巡检」可批量发现可疑内容（需评论网关在线）。</p>
+</blockquote>
 <h2 id="5">5. 数据与隐私</h2>
 <ul>
 <li>配置了评论网关 → 评论存校园自托管节点（跨用户共享）</li>
@@ -4395,7 +4448,7 @@
     <span class="md-icon" title="最后更新">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2026年10月12日 06:16:42 UTC">2026年10月12日</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2026年10月12日 07:50:08 UTC">2026年10月12日</span>
   </span>
 
     

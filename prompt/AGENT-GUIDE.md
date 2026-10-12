@@ -800,6 +800,17 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-10-12（续2）：「输口令打不开管理台」根治——三断点全查 + 线上模拟双 PASS
+
+- **用户反馈**：Wiki 输 `qdu-agent-2026` 无法打开管理界面。三断点逐一实测：
+  1. `server/admin.html` 存在 ✓（/admin 本地 200）
+  2. **主因=线上没有配置社区网关地址**（`PUBLIC_API_DEFAULT`/`CONFIG_API` 空、LS 无 `qdu_api_base`）→ detectApi 返回空 → 暗门流程 `if (!base) return` **完全静默**——口令输完毫无反应。修复：base 空时给出路 alert（本地启动命令/线上填 PUBLIC_API_DEFAULT 指引；不判口令对错，不违反「错则静默」红线）
+  3. **login 200 后 `window.open` 链路曾失效**：先试"预开 about:blank + w.location 跨窗导航"方案——实测 login body 正确却两路皆哑（跨窗 closed/location 访问异常被静默 catch 吞），**废弃预开窗**，改**直接 `window.open(url)`**（5s 用户激活窗口内放行）+ **null 时当前页 `location.href` 直达**——实测弹窗真开 `http://localhost:8787/admin`（Console 页内容正常）
+- **顺手**：线上无网关时徽章直连 GitHub REST 计数（CORS 公开，sessionStorage 30 分钟缓存，限频回退缓存值再退裸 💬）——**线上模拟**（host-resolver 把域名映本地）双 PASS：徽章 `💬 5` + 无网关提示文案正确
+- **部署边界（给维护者）**：线上要全功能（网关系：删除/巡检/徽章走网关/管理台），需把 `server/index.mjs` 部署到有盘公网平台（如 onrender）并把地址填入 `comments.js` 的 `PUBLIC_API_DEFAULT`；未部署前线上为本地模式（Giscus 不受影响），徽章计数已可直连显示
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

@@ -30,6 +30,14 @@
   <p class="qq-group__tip">Scan with QQ · or search the group number above</p>
 </div>
 
+<div class="qq-group">
+  <span class="qq-group__badge">CAMPUS</span>
+  <p class="qq-group__name">青大都市第21区大湖…</p>
+  <div class="qq-group__id"><small>Group No.</small>1061280238</div>
+  <a href="../../pics/organization/organization-图1-青大都市第21区大湖群二维码.jpg" target="_blank" rel="noopener" title="View full-size image"><img class="qq-group__qr" src="../../pics/organization/organization-图1-青大都市第21区大湖群二维码.jpg" alt="QDU District 21 QQ group QR code (group 1061280238)" loading="lazy"></a>
+  <p class="qq-group__tip">Scan with QQ · or search the group number above</p>
+</div>
+
 </div>
 
 !!! warning "To be updated"

@@ -699,6 +699,20 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-10-14：新增「青大都市第21区大湖」QQ 群卡片（学生组织页展示）
+
+- **任务**：把维护者桌面上的 QQ 群二维码截图（青大都市第21区大湖…，群号 1061280238）重命名并移入站内图片规范目录，在学生组织页「兴趣交流群」区块展示。
+- **改动**：
+  - 移动图片：桌面 `51575d4b375dc21e63c7bb20bf9375c0.jpg` → `docs/pics/organization/organization-图1-青大都市第21区大湖群二维码.jpg`（`pics/organization/` 目录此前仅有 `.gitkeep`，本次为首张图）
+  - 修改：`docs/organization/index.md`、`docs/en/organization/index.md`（「兴趣交流群」区块各追加第 3 张 `.qq-group` 卡片：徽章「校园交流」/`CAMPUS`、群号 `1061280238`、二维码点击看原图）
+- **说明**：
+  - 图片按 `docs/about/guide.md` 的板块目录规范落位 `pics/organization/`；前两张群图历史上放在 `pics/share/`（share 页区块已撤），本次不动它们，避免无关重构。
+  - 卡片样式 `.qq-*` 是自适应 grid（`minmax(230px, 1fr)`），三张卡片自动排布，无需改 CSS。
+  - 群名按原图截断显示「青大都市第21区大湖…」；英文页群名保留中文原名（原图群名不完整，不臆译），alt 文本用英文描述。
+  - 构建 `python -m mkdocs build --strict` 通过；产物已核验（`site/pics/organization/` 含图，中英文页面均渲染新卡片与群号）。
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

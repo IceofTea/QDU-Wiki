@@ -30,6 +30,14 @@
   <p class="qq-group__tip">QQ 扫码加入 · 或搜索上方群号</p>
 </div>
 
+<div class="qq-group">
+  <span class="qq-group__badge">校园交流</span>
+  <p class="qq-group__name">青大都市第21区大湖…</p>
+  <div class="qq-group__id"><small>群号</small>1061280238</div>
+  <a href="../pics/organization/organization-图1-青大都市第21区大湖群二维码.jpg" target="_blank" rel="noopener" title="点击查看原图大图"><img class="qq-group__qr" src="../pics/organization/organization-图1-青大都市第21区大湖群二维码.jpg" alt="青大都市第21区大湖 QQ 群二维码（群号 1061280238）" loading="lazy"></a>
+  <p class="qq-group__tip">QQ 扫码加入 · 或搜索上方群号</p>
+</div>
+
 </div>
 
 !!! warning "待更新"

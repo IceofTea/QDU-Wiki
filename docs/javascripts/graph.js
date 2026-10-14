@@ -18,19 +18,30 @@
     'share': '文件共享', 'words': '有话送你', 'about': '关于Wiki',
     'friends': '友情链接', '主页': '主页'
   };
+  var CAT_NAMES_EN = {
+    'new': 'New Students', 'live': 'Campus Life', 'study': 'Academics',
+    'service': 'Services', 'college': 'Colleges', 'organization': 'Orgs',
+    'share': 'Sharing', 'words': 'Messages', 'about': 'About',
+    'friends': 'Links', '主页': 'Home'
+  };
 
+  function isEnPage() { return location.pathname.indexOf('/en/') !== -1; }
   function siteBase() {
-    var seg = location.pathname.split('/');
-    var root = seg.length > 1 && seg[1] ? '/' + seg[1] + '/' : '/';
+    // 剥掉页面自身路径回到站点根：线上 /QDU-Wiki/(en/)graph/ → /QDU-Wiki/；
+    // 本地 mkdocs serve /graph/ → /（旧实现取 seg[1] 会把 'graph' 当路径前缀，图谱数据 404）
+    var root = location.pathname.replace(/\/(en\/)?graph\/?$/, '/');
+    if (root.charAt(root.length - 1) !== '/') root += '/';
     return location.origin + root;
   }
   // 节点 id（md 路径）→ 站内目录式 URL。
   // 必须把 xxx/index 归位成 xxx/：拼成 xxx/index/ 时 GitHub Pages 会按目录找
   // xxx/index/index.html → 404（与青大智答直达链接同源的坑，见 check_kb_links）。
+  // EN 页节点跳英文版（全站页面均有 EN 镜像）；中文页行为不变。
   function pageUrl(id) {
-    if (id === 'index') return siteBase();
-    if (/\/index$/.test(id)) return siteBase() + id.slice(0, -'/index'.length) + '/';
-    return siteBase() + id + '/';
+    var pre = isEnPage() ? 'en/' : '';
+    if (id === 'index') return siteBase() + pre;
+    if (/\/index$/.test(id)) return siteBase() + pre + id.slice(0, -'/index'.length) + '/';
+    return siteBase() + pre + id + '/';
   }
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) {
@@ -132,8 +143,8 @@
     cats.forEach(function (cat) {
       var s = document.createElement('span');
       s.className = 'kg-leg';
-      s.innerHTML = '<i style="background:' + (CAT_COLORS[cat] || '#888') + '"></i>' +
-        esc(CAT_NAMES[cat] || cat) + ' ' + groups[cat].length;
+    s.innerHTML = '<i style="background:' + (CAT_COLORS[cat] || '#888') + '"></i>' +
+      esc((isEnPage() ? CAT_NAMES_EN[cat] : CAT_NAMES[cat]) || cat) + ' ' + groups[cat].length;
       s.addEventListener('click', function () { filterCat(cat === filterState.cat ? '' : cat); });
       legend.appendChild(s);
     });
@@ -191,11 +202,7 @@
     if (!root || root.dataset.done) return;
     root.dataset.done = '1';
     root.innerHTML = '<div class="kg-loading">图谱加载中…</div>';
-    var base = (function () {
-      var seg = location.pathname.split('/');
-      var r = seg.length > 1 && seg[1] ? '/' + seg[1] + '/' : '/';
-      return location.origin + r;
-    })();
+    var base = siteBase();
     fetch(base + 'assets/graph.json').then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();

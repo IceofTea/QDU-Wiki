@@ -699,6 +699,128 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-10-10（晚）：第四棒接力收尾——check_site_links 入 CI + i18n 白名单防 EN 404（多设备并行维护）
+
+- **任务**：接力任务文档（与 [`prompt/HANDOFF.md`](HANDOFF.md) 同源）§三 四个开放项收尾 + 前几棒半成品并入核验。本机三仓（`F:\000000\QSX20261480\disk\学习\wiki\*-agent` 工作副本）无未推送提交、工作区干净 → 按 §0 快进融合，零冲突、零遗漏、零删减；昨日 todo 的 p0-p3 逐项核验**实际早已全部闭环**（线上 deploy/e2e-browser/pages CI 均 success）。
+- **改动（本仓库）**：
+  - `.github/workflows/ci.yml`：`check_links` 之后、`gh-deploy` 之前插入 `python scripts/check_site_links.py`——站点产物级死链/锚点审计现在拦部署（此前仅本地手动跑）
+  - `docs/i18n/i18n.js`：新增 `ZH_ONLY` 白名单（`/QDU-Wiki/graph`、`/QDU-Wiki/college/marxism`、`/QDU-Wiki/about/agent-features` 三个无英文版页）。EN 模式原本会：①把侧栏/正文指向这些中文页的链接强转 `/en/...` → 404；②EN 用户落地中文页又被弹回 `/en/`。现在 `toEnHref` 遇白名单不改写、落地白名单页不弹回；`SIDEBAR_MAP`/`TAB_MAP` 补 Knowledge Graph / School of Marxism 英译（点击进中文页）
+  - `prompt/HANDOFF.md`（第四棒完成回写 + §三 处置结果表）、`prompt/AGENT-GUIDE.md`（本记录）
+- **说明**：
+  - 中英页面对齐实测：仅 `graph`/`college/marxism`/`about/agent-features` 三页无 EN 版（其余分类 zh/en 一一对应）；EN 内容页对它们只有纯文本提及（无 href），404 暴露面仅在导航栏
+  - 为什么不做 EN 版：维护者在 `en/college/index.md` 对马院标注「To be added」、`agent-features.md` 为长期隐藏页不挂 nav——白名单与其口径一致，content 不动
+  - 本机验证：`mkdocs build --strict` 通过、site 产物 `i18n/i18n.js` 已含白名单、`check_site_links` 88 页 11192 引用 0 死链 0 锚点失效、`check_kb_links` 943/943 可达
+  - **本机 Python 备忘**：默认 `python` = 3.6.8（跑不动 mkdocs/crawler 测试），一律用 **`py -3.13`**（mkdocs 1.6.1）
+  - 同批三仓版本：QDU-Nav **v1.6.12**（kb-nav 重生成 80→104 + 与 Wiki kb 交叉审计零失效）、FJNU-Nav **v1.5.12**（VisitStats i18n）
+
+---
+
+### 2026-10-10（深夜）：第四棒二期——三页英文版补齐 + sw 数据缓存改网络优先 + Nav 两仓防复发门禁（多设备并行维护）
+
+- **任务**：维护者要求「全部优化改进」——把当晚体检列出的 10 项（维稳 5 + 改进 5）全部落地。
+- **改动（本仓库）**：
+  - **EN 补齐**：新增 `docs/en/graph.md`、`docs/en/college/marxism.md`（137 行整页翻译）、`docs/en/about/agent-features.md`；`mkdocs.yml` EN nav 后置两入口（`Knowledge Graph`、`School of Marxism`，agent-features 维持不挂 nav 与中文版口径一致）；`docs/en/college/index.md` 马院行 `To be added` → 链接详情页
+  - **i18n.js 白名单收敛**：`ZH_ONLY` 清空（机制保留备用）——三页有英文版后，EN 模式链接照常强转 `/en/`，不再落中文页
+  - **sw.js v2**：`CORE` 只留 manifest 壳；`assets/kb.json`/`graph.json` 改**网络优先**（isData 分支）——根治「预缓存旧 kb + 静态 CACHE 名不换代」的旧数据窗口
+  - `prompt/AGENT-GUIDE.md`（本记录）、`prompt/HANDOFF.md`（四棒补记）
+- **改动（Nav 两仓同批，版本 QDU v1.6.13 / FJNU v1.5.14）**：integrity 新增 ⑤ kb-nav 新鲜度门禁（`KB_NAV_OUT` 临时重生成比对——FJNU 立即抓到库陈旧 59→83 零删减）+ ⑥ i18n zh/en 键对等双向门禁（QDU 补 3 个缺英文键后硬拦）；`COMMUNITY_DATA` 环境变量隔离测试数据；snapshot 4 次/天→1 次/天；`crosscheck-kbnav.mjs`/`sync-diff.mjs` 入库；e2e-browser 新增「375 全应用无横向溢出」
+- **验证**：`mkdocs build --strict` 通过；kb 943→**962** chunks、`check_kb_links` 962/962、`check_site_links` 91 页 11750 引用 **0 死链 0 锚点失效**、`check_links` 0 死链、`test_kb` PASS、`build_graph` 通过；Nav 两仓 integrity 17/18 项 PASS + 本地网关 E2E 全绿
+- **坑**：EN 页之间的中文页互链在 md 源里必须用 `../graph.md`（mkdocs 转 URL），写成 `../../graph/` 会被 md 级审计判死链（源文件相对路径解析，不是 URL 解析）。
+
+---
+
+### 2026-10-11：全面复盘修复——graph.js 路径推导 + 过时数据（多设备并行维护）
+
+- **任务**：维护者要求对三轮新功能「逐一排查，发现即刻改正」。Wiki 侧回炉发现并修复：
+  - **`graph.js` `siteBase()` 路径推导 bug**：旧实现取 `pathname.split('/')[1]` 当站点根——线上 `/QDU-Wiki/(en/)graph/` 正确，但**本地 `mkdocs serve` 预览**时第一段是 `graph`，图谱数据 fetch 404（中文页同样中招，既有 bug）。改为剥掉页面自身路径 `/\/(en\/)?graph\/?$/` 回根，线上/本地全场景正确
+  - **`pageUrl()` EN 跳转**：EN 图谱页点节点原本跳中文版——加 `en/` 前缀（全站页面均有 EN 镜像，`index` 特判 `/en/`）；图例分类名新增 `CAT_NAMES_EN` 按页语言切换
+  - **`docs/about/agent-features.md` 过时数据**：「基于 80 篇条目的本地 BM25 检索」——kb 早已 962 chunks，改为「基于全站条目」（EN 版本就已模糊化，本次对齐）
+- **验证**：`mkdocs build --strict` / `test_kb` 962 / `check_links` 0 死链 / `check_kb_links` 962/962 / `check_site_links` 0 锚点失效 / `build_graph` / `node --check graph.js` 全绿
+- **同批 Nav 两仓**：QDU **v1.6.14**（gen_kb_nav 逐行加固 + unit-agent 周日公式修正）、FJNU **v1.5.15**（首页 i18n 补全 16 键——词包 home 节键早备好但模板漏接，EN 首页 28 处夹生→0）
+- **复盘未见问题清单**（记录以免重复排查）：kb-nav 词条与 apps 源零错位；integrity 门禁已在两仓 `deploy.yml` 实跑拦部署；`roomsUnit/periodOption` 为无害死键；sw v2 缓存清理逻辑正确（activate 删旧 CACHE）；FJNU 应用排序纯重排零内容改动
+
+---
+
+### 2026-10-11（下午）：视觉走查——图谱本地 404 根因 + EN 打字机夹生（多设备并行维护）
+
+- **任务**：维护者要求三项目「逐一排查显示不美观处，优化到高级感」。用 Playwright 真机截图 22 张（390/1280 双视口）肉眼走查后定点修复。
+- **Wiki 侧改动**：
+  - **`graph.js` 图谱数据本地预览 100% 失败根因**：`boot()` 里**内联了一份旧 siteBase**（取 `pathname` 第一段）——上一轮只改了顶部函数没发现这处重复实现；线上前缀恰好对、本地 serve 把 `graph` 当前缀 → fetch 404「图谱数据加载失败」。改为 `var base = siteBase()` 一行根治，本地/线上全场景渲染 ✓（截图验收：移动端图谱完整出图）
+  - **`home-hero.js` EN 打字机夹生**：27 条中文校园梗短语在 EN 首页照打 → 新增 `PHRASES_EN` 10 条（正经+轻梗英文池），`/en/` 自动切换；中文梗池原样保留
+- **Nav 两仓同批**（QDU **v1.6.15** / FJNU **v1.5.16**）：私信空态竖排折行（小屏会话列表 132px+nowrap）、数据洞察柱被 min-width:220 文字区挤出卡片（flex 防挤出）、FJNU 顶栏截断（home 桌面专属+短名+ellipsis）、APK 标题一行、Wiki 卡按钮一行、FJNU hero-sub/Welcome 全 i18n（EN 夹生清零，DOM 断言验证）
+- **走查未动项**（记录取舍）：移动端表格横滚为 Material 标准行为（已有 overflow-x:auto）；墙帖「分区+类型」双徽章为合法组合；欢迎页 tour 弹层属正常首访引导；FJNU 底部导航 emoji 风格为既定设计
+- **验证**：Nav 两仓 build/integrity/unit×4/E2E（QDU 10、FJNU 11 含 375 扫描）全绿；Wiki strict+三审计全绿、`node --check` 两 JS 通过
+
+---
+
+### 2026-10-11（晚）：评论区大修——潜伏 bug 根治 + 自删/管理员删除 + 入口重做（多设备并行维护）
+
+- **用户反馈**：手机 hero 不居中+多余评论图标；无法楼中楼、无法删除自己的评论；追加需求：管理员（IceofTea）可删他人不合适的评论。
+- **三个真相**（Playwright 实测定位）：
+  1. **手机 hero 问题 = 旧 SW 缓存**：v1 SW 对 .js 缓存优先，手机仍跑旧 comments.js（无 hero 徽章排除版）→ `CACHE` bump **v3** 强刷
+  2. **"无法楼中楼" = 本地评论区被默认折叠**（giscus.js `qdu-folded`）且展开入口几乎不可见——功能链路（前端嵌套渲染+后端 parent）本来完好
+  3. **"无法删除" = 功能真缺**；实测还揪出**潜伏大 bug**：`bindEvents` 内 `var tip`（批注导航元素）遮蔽顶层 `tip()` → **本地主发表一直 TypeError**——一行改名 `annoTip` 根治
+- **改动**：
+  - **comments.js**：owner token + 本机 my-ids——我的评论「我」徽章+🗑删除（API/本地双路径，连子级）；**管理员态**（`pending_admin_token`）下他人评论显示 🛡 删除（`x-admin-token` 调 `/api/admin/moderate`）；POST 带 owner 但列表与本地存储均剔除 token；`qc-update` 事件广播条数；删除按钮三元补括号（曾致列表只剩按钮文本的拼接 bug）
+  - **giscus.js**：展开按钮重做——"💬 展开本地评论（楼中楼 · 批注 · 纠错）（N 条）"、primary 描边、手机全宽
+  - **sw.js**：CACHE v3
+  - **Nav 网关**（QDU **v1.6.16/17** / FJNU **v1.5.17/18** 字节级同源）：`/api/comments/delete` owner 鉴权自删 + POST 收 owner + GET/queue 剔 owner 防盗删 + **admin moderate 删除改多级子孙收敛**（旧版只删一层留悬空孙级）
+- **验证**：浏览器全流程 **9/9 PASS**（展开→发评→我标记→楼中楼→删除连子级→hero 无徽章）；管理员页内删除 PASS（🛡→确认→200→消失）；curl（他人删 403 / 自删 ok / admin 连删 0 残留 / 列表不泄露 owner）；mkdocs strict+三审计 0 死链；Nav 两仓 build/integrity/unit 全绿
+
+---
+
+### 2026-10-11（深夜）：giscus 标题刷屏恶性 bug 根治 + 管理员 GitHub 删除直达（多设备并行维护）
+
+- **用户报**：页面反复出现「🌐 全网评论」标题（×9 刷屏），刷新仍在，过一会儿自行恢复。
+- **根因**：`mount()` 防重复检查的是 `.giscus-frame`——**giscus client.js 异步插入的 iframe**。网络慢/被墙时它迟迟不来，而 MutationObserver（评论轮询/SSE 每次刷新 DOM 触发，400ms debounce）反复调 `mount()`，每次查不到 frame 就**新建一个标题块**；iframe 终于加载后防重复才生效——与"过一会儿又好了"完全吻合。
+- **修复**（giscus.js）：防重复改为以**自建 `.giscus-wrap` 为同步锚**（并主动清理已重复的多余 wrap）；`sw.js` CACHE **v3→v4** 强刷旧 JS 缓存。
+- **管理员删除 GitHub 评论的边界与入口**：Giscus 评论存于 GitHub Discussions（跨域 iframe，**页内无法注入删除**）；IceofTea 作为仓库 owner 在 GitHub 有删除权 → 标题栏新增**管理员专属「🗑 管理（GitHub）」直达链接**（检测 `pending_admin_token`，普通读者不可见）→ 跳 Discussions 列表页操作。本地评论区的页内 🛡 删除不受影响、照常可用。
+- **验证**：`node --check` ×2 + strict 构建过；浏览器双场景实测 **PASS**——连续 6 轮 DOM 变化压力下 wrap 数/标题数恒为 1，普通读者无管理链接、管理员出现管理链接
+
+---
+
+### 2026-10-12：GitHub 评论敏感词巡检（管理员事后监督链路）
+
+- **需求**：Giscus（GitHub 评论）能否做敏感词检测？——**架构边界**：提交在 giscus.app 跨域 iframe 内完成，**发送前无法拦截**；能做到的是**事后巡检**。
+- **实现**：
+  - **网关**（QDU v1.6.18 / FJNU v1.5.20 同源）：`GET /api/admin/gh-comments`（adminOk 鉴权）——REST 拉 `GH_WATCH_REPO`（默认 IceofTea/QDU-Wiki）最近 10 主帖 + 各帖 10 评论 → `hitWords` 站内敏感词表匹配 → 返回命中/原文/Discussion 直达链接；60s 内存缓存（匿名 REST 60 次/时限频兜底）、可选 `env GITHUB_TOKEN` 提额
+  - **前端**（giscus.js 管理员态）：标题栏「🔍 敏感词巡检」按钮（仅 `pending_admin_token` 可见）→ 点击拉网关结果 → 面板显示"✅ 无命中"或逐条"⚠️ 命中「词」+原文+[去 GitHub 删除 →]"
+- **处置闭环**：巡检命中 → 点条目跳 GitHub Discussion → 仓库 owner 删除（前一批次已加「🗑 管理（GitHub）」直达）
+- **验证**：curl 实测 `checked=9 flagged=0`（真实拉到 Discussions）+ 无 token 401；浏览器双场景 PASS（管理员面板出结果、非管理员无按钮）；三仓语法/构建全绿
+
+---
+
+### 2026-10-12（续）：徽章改 GitHub 计数 + 暗门改长按（用户反馈两项）
+
+- **反馈 1**：💬 徽章连点 5 次进不了暗门——**单击会平滑滚动到评论区**，页面滑走导致连点追不上。
+  **修复**：暗门改**长按徽章 1.2 秒**（pointerdown 计时，独立于滚动）；单击跳转评论区行为保留；长按触发后吞掉紧随的 click（`suppressClick`）。agent-features 中英说明同步改口。
+- **反馈 2**：徽章应显示 **GitHub 评论个数**（本地社区评论未上线，显示本地 0 无意义）。
+  **修复**：网关新增公开只读 `GET /api/comments/gh-count`（sum 近 100 帖 Discussion `comments` 字段，60s 缓存；实测 4 帖 5 条）；comments.js 四处徽章写本地数统一改走 `refreshGhBadge()`——无网关/失败时显示裸 `💬` 不误导（区标题 `qcCount` 仍为本地计数，职责分明）。
+- **验证**：curl `total=5`；浏览器三连 **PASS**——徽章 `💬 5`、单击滚动正常、长按弹「🛰️ 社区控制台」口令框（实测中曾因测试脚本未回顶部致徽章在视口外，回顶后命中 `BUTTON.qc-badge` 通过）。Nav 两仓：QDU **v1.6.19** / FJNU 并入 v1.5.20 节（package 让位并行批次）。
+
+---
+
+### 2026-10-12（续3）：冗余审查与精简——徽章计数单一化
+
+- **背景**：PAT 路线取消 + 数轮快速迭代后，用户要求审查冗余。结论三分：
+  - **删（死路径）**：`refreshGhBadge` 的"优先走网关 `gh-count`"分支 + 网关 `gh-count` 端点（QDU v1.6.20 / FJNU 同步、md5 一致）——**线上没有网关，该分支永远走不到**；本地走它也能直连，两套路维护一套无意义
+  - **留（有明确职责）**：`gh-comments` 敏感词巡检（唯一"批量发现"手段；词表在网关库，脱离网关即失去词表）、「🗑 管理（GitHub）」直达、FJNU 的 gh 端点（字节级同源纪律优先于"死代码"洁癖）、多暗门入口（防御性冗余）、本地评论整套（线上 localStorage 模式可用）
+  - **历史记录不回改**：CHANGELOG/AGENT-GUIDE 里 gh-count 的记录是历史事实，只追加不删除（追加式纪律）
+- **验证**：语法×3、QDU build/integrity、Wiki strict+0 死链、线上模拟徽章 `💬 5` 回归 PASS、双仓 community.mjs md5 一致
+
+---
+
+### 2026-10-12（续2）：「输口令打不开管理台」根治——三断点全查 + 线上模拟双 PASS
+
+- **用户反馈**：Wiki 输 `qdu-agent-2026` 无法打开管理界面。三断点逐一实测：
+  1. `server/admin.html` 存在 ✓（/admin 本地 200）
+  2. **主因=线上没有配置社区网关地址**（`PUBLIC_API_DEFAULT`/`CONFIG_API` 空、LS 无 `qdu_api_base`）→ detectApi 返回空 → 暗门流程 `if (!base) return` **完全静默**——口令输完毫无反应。修复：base 空时给出路 alert（本地启动命令/线上填 PUBLIC_API_DEFAULT 指引；不判口令对错，不违反「错则静默」红线）
+  3. **login 200 后 `window.open` 链路曾失效**：先试"预开 about:blank + w.location 跨窗导航"方案——实测 login body 正确却两路皆哑（跨窗 closed/location 访问异常被静默 catch 吞），**废弃预开窗**，改**直接 `window.open(url)`**（5s 用户激活窗口内放行）+ **null 时当前页 `location.href` 直达**——实测弹窗真开 `http://localhost:8787/admin`（Console 页内容正常）
+- **顺手**：线上无网关时徽章直连 GitHub REST 计数（CORS 公开，sessionStorage 30 分钟缓存，限频回退缓存值再退裸 💬）——**线上模拟**（host-resolver 把域名映本地）双 PASS：徽章 `💬 5` + 无网关提示文案正确
+- **部署边界（给维护者）**：线上要全功能（网关系：删除/巡检/徽章走网关/管理台），需把 `server/index.mjs` 部署到有盘公网平台（如 onrender）并把地址填入 `comments.js` 的 `PUBLIC_API_DEFAULT`；未部署前线上为本地模式（Giscus 不受影响），徽章计数已可直连显示
+
+---
+
 ### 2026-10-14：新增「青大都市第21区大湖」QQ 群卡片（学生组织页展示）
 
 - **任务**：把维护者桌面上的 QQ 群二维码截图（青大都市第21区大湖…，群号 1061280238）重命名并移入站内图片规范目录，在学生组织页「兴趣交流群」区块展示。

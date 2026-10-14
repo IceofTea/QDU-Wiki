@@ -31,6 +31,19 @@
     '暑假的被子会孕育生命',
     '青大不仅有浮山行，还有寂静岭'
   ];
+  // EN 页专用池：正经+轻梗（中文梗池保留给中文页，/en/ 下不再夹生）
+  var PHRASES_EN = [
+    'Your campus, decoded',
+    'From freshman to QDU pro in one guide',
+    'Fushan · Jinjialing · Songshan — three campuses, one map',
+    'Read the handbook, skip the maze',
+    'Ask the Wiki, get the source',
+    'Built by students, for students',
+    'Start with the guide, end with the answer',
+    'Every page linked, every claim traceable',
+    'Knowledge graph: the whole site in one view',
+    'Morning lecture, afternoon library, evening dorm life — covered'
+  ];
   var TYPE_SPEED = 90;
   var DELETE_SPEED = 55;
   var HOLD = 3200;
@@ -52,7 +65,8 @@
   }
 
   function nextPhrase() {
-    if (pool.length === 0) pool = shuffle(PHRASES.slice());
+    var list = location.pathname.indexOf('/en/') !== -1 ? PHRASES_EN : PHRASES;
+    if (pool.length === 0) pool = shuffle(list.slice());
     return pool.shift();
   }
 

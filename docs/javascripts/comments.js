@@ -13,6 +13,8 @@
 
   var LS_KEY = 'qdu_wiki_comments_v1';
   var LS_NAME_KEY = 'qdu_wiki_commenter';
+  var LS_OWNER_KEY = 'qdu_wiki_cowner_v1'; // 作者凭证：删除自己的评论时向服务端证明身份（不随列表下发）
+  var LS_MYIDS_KEY = 'qdu_wiki_my_cids_v1'; // 本机发过的评论 id：渲染「我」标记与删除按钮（跨设备各自记录）
   var LS_API_KEY = 'qdu_api_base'; // 与 Nav 站 wall/apiBase.js 同键：数据管家页设置的网关地址 Wiki 同步生效
   var CONFIG_API = ''; // 部署评论网关后填入其地址（如 https://your-gateway.onrender.com），留空 = 本地模式
   var PUBLIC_API_DEFAULT = ''; // 公网网关上线后填入缺省地址，手机/静态站直连线上版
@@ -102,7 +104,7 @@
         var cnt = document.getElementById('qcCount')
         if (cnt) cnt.textContent = comments.length + ' 条'
         var badge = document.getElementById('qcBadge')
-        if (badge) badge.textContent = '\uD83D\uDCAC ' + comments.length
+        refreshGhBadge();
       }
     }).catch(function () { /* noop */ })
   }
@@ -122,7 +124,7 @@
           var cnt = document.getElementById('qcCount');
           if (cnt) cnt.textContent = comments.length + ' 条';
           var badge = document.getElementById('qcBadge');
-          if (badge) badge.textContent = '💬 ' + comments.length;
+          refreshGhBadge();
         }
       }).catch(function () { /* noop */ });
     }, 15000);
@@ -189,6 +191,7 @@
   function postComment(c) {
     var path = pagePath();
     c.path = path;
+    c.owner = c.owner || myOwner();
     if (mode === 'api') {
       return fetch(apiBase + '/api/comments', {
         method: 'POST',
@@ -200,11 +203,15 @@
         return r.json();
       }).then(function (d) {
         if (!d || !d.ok) throw new Error((d && d.error) || 'bad');
-        // 同步一份到本地（离线也能看到自己发的）
+        rememberMyId(d.comment.id);
+        // 同步一份到本地（离线也能看到自己发的）——剔除 owner 凭证不落存储
+        var saved = {};
+        for (var k in d.comment) saved[k] = d.comment[k];
+        delete saved.owner;
         var db = localRead();
-        db[path] = (db[path] || []).concat([d.comment]);
+        db[path] = (db[path] || []).concat([saved]);
         localWrite(db);
-        return d.comment;
+        return saved;
       }).catch(function () {
         mode = 'local';
         return localPost(c);
@@ -219,7 +226,12 @@
     c.id = 'L' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     c.ts = Date.now();
     c.likes = 0;
-    db[path] = (db[path] || []).concat([c]);
+    rememberMyId(c.id);
+    // 存储副本剔除 owner 凭证（token 不落盘，仅内存用于本次流程）
+    var rec = {};
+    for (var k in c) rec[k] = c[k];
+    delete rec.owner;
+    db[path] = (db[path] || []).concat([rec]);
     localWrite(db);
     // 写后回读校验：浏览器拒绝存储时给明确提示，而不是“假装成功”
     var ok = false;
@@ -251,6 +263,36 @@
     return Promise.resolve({ ok: true });
   }
 
+  /** 删除自己的评论（连同其楼中楼子孙）：API 模式走 owner 鉴权接口，本地模式直接清存储 */
+  function deleteComment(id) {
+    if (mode === 'api') {
+      return fetch(apiBase + '/api/comments/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id, owner: myOwner() }),
+        signal: timeout(8000)
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        if (!d || !d.ok) throw new Error((d && d.error) || '删除失败');
+        return d;
+      });
+    }
+    // 本地模式：从存储剔除该评论及其子孙
+    var db = localRead();
+    var path = pagePath();
+    var list = db[path] || [];
+    var doomed = { id: true };
+    var grew = true;
+    while (grew) {
+      grew = false;
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].parent && doomed[list[i].parent] && !doomed[list[i].id]) { doomed[list[i].id] = true; grew = true; }
+      }
+    }
+    db[path] = list.filter(function (x) { return !doomed[x.id]; });
+    localWrite(db);
+    return Promise.resolve({ ok: true });
+  }
+
   function timeout(ms) {
     var c = new AbortController();
     setTimeout(function () { c.abort(); }, ms);
@@ -277,6 +319,52 @@
   }
   function setName(n) {
     try { localStorage.setItem(LS_NAME_KEY, n) } catch (e) { /* noop */ }
+  }
+  /** 作者凭证（本浏览器稳定随机串）：仅用于删除自己的评论，服务端 GET 不回传 */
+  function myOwner() {
+    try {
+      var v = localStorage.getItem(LS_OWNER_KEY);
+      if (!v) {
+        v = 'o' + Date.now().toString(36) + Math.random().toString(36).slice(2, 14);
+        localStorage.setItem(LS_OWNER_KEY, v);
+      }
+      return v;
+    } catch (e) { return 'o-anon-' + (navigator.userAgent || '').length; }
+  }
+  function isMine(c) {
+    if (!c) return false;
+    try {
+      var arr = JSON.parse(localStorage.getItem(LS_MYIDS_KEY) || '[]');
+      return arr.indexOf(c.id) >= 0;
+    } catch (e) { return false; }
+  }
+  function rememberMyId(id) {
+    try {
+      var arr = JSON.parse(localStorage.getItem(LS_MYIDS_KEY) || '[]');
+      if (arr.indexOf(id) < 0) {
+        arr.push(id);
+        if (arr.length > 200) arr = arr.slice(-200);
+        localStorage.setItem(LS_MYIDS_KEY, JSON.stringify(arr));
+      }
+    } catch (e) { /* noop */ }
+  }
+  /** 管理员态：暗门登录管理台后 pending_admin_token 已写入本浏览器（与 admin 控制台同凭证） */
+  function adminTok() {
+    try { return localStorage.getItem('pending_admin_token') || ''; } catch (e) { return ''; }
+  }
+  /** 管理员删除他人评论：走 /api/admin/moderate（x-admin-token 头鉴权） */
+  function adminDeleteComment(id) {
+    var tok = adminTok();
+    if (!tok) return Promise.reject(new Error('未登录管理台'));
+    return fetch(apiBase + '/api/admin/moderate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': tok },
+      body: JSON.stringify({ type: 'comments', id: id, action: 'delete' }),
+      signal: timeout(8000)
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || !d.ok) throw new Error((d && d.error) || '删除失败');
+      return d;
+    });
   }
 
   /* ---------- AI 归纳（抽取式摘要 · 纯前端） ---------- */
@@ -402,6 +490,36 @@
       '</div>';
   }
 
+  /** 标题徽章 = GitHub（Giscus）全网评论数：本地社区评论尚未上线，显示本地 0 无意义。
+   *  直连 GitHub REST（CORS 公开，匿名 60 次/时/IP，sessionStorage 缓存 30 分钟减频，
+   *  限频时回退缓存值再退裸 💬）——不依赖评论网关，线上/本地同一行为。 */
+  function refreshGhBadge() {
+    var apply = function (n) {
+      var el = document.getElementById('qcBadge');
+      if (el) el.textContent = (typeof n === 'number') ? ('💬 ' + n) : '💬';
+    };
+    try {
+      var cached = JSON.parse(sessionStorage.getItem('qdu_gh_count') || 'null');
+      if (cached && typeof cached.n === 'number' && Date.now() - cached.t < 1800000) { apply(cached.n); return; }
+    } catch (e) { /* noop */ }
+    var c2 = null;
+    try { c2 = JSON.parse(sessionStorage.getItem('qdu_gh_count') || 'null'); } catch (e) { /* noop */ }
+    var ctrl = new AbortController();
+    var to = setTimeout(function () { ctrl.abort(); }, 6000);
+    fetch('https://api.github.com/repos/IceofTea/QDU-Wiki/discussions?per_page=100', { signal: ctrl.signal })
+      .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(function (arr) {
+        clearTimeout(to);
+        var n = (Array.isArray(arr) ? arr : []).reduce(function (s, d) { return s + (Number(d.comments) || 0); }, 0);
+        apply(n);
+        try { sessionStorage.setItem('qdu_gh_count', JSON.stringify({ n: n, t: Date.now() })); } catch (e) { /* noop */ }
+      })
+      .catch(function () {
+        clearTimeout(to);
+        apply(c2 && typeof c2.n === 'number' ? c2.n : ''); // 限频/断网：回退缓存，无缓存显裸 💬
+      });
+  }
+
   function addTitleBadge() {
     var h1 = document.querySelector('.md-content h1') || document.querySelector('h1');
     if (!h1 || document.querySelector('.qc-badge')) return;
@@ -413,39 +531,53 @@
     b.className = 'qc-badge';
     b.id = 'qcBadge';
     b.textContent = '💬 …';
+    var suppressClick = false;
     b.addEventListener('click', function () {
+      if (suppressClick) { suppressClick = false; return; } // 长按暗门刚触发：吞掉紧随的点击
       if (rootEl) rootEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
     h1.appendChild(b);
+    refreshGhBadge();
 
-    /* 隐秘暗门：连点评论徽章 5 次 → 输入口令 → 打开社区控制台（管理员专属，外人无感知） */
-    var taps = 0;
-    var timer = null;
-    b.addEventListener('click', function () {
-      taps++;
-      clearTimeout(timer);
-      timer = setTimeout(function () { taps = 0; }, 1400);
-      if (taps >= 5) {
-        taps = 0;
-        var t = prompt('🛰️ 社区控制台\n请输入管理口令：');
-        if (!t) return;
-        // 先验后开：口令错/无网关一律静默，不向普通用户证实入口存在
-        var base = detectApi();
-        if (!base) return;
-        var ctrl = new AbortController();
-        var timer = setTimeout(function () { ctrl.abort(); }, 6000);
-        fetch(base + '/api/admin/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: t }),
-          signal: ctrl.signal
-        }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); }).then(function (ret) {
-          clearTimeout(timer);
-          if (!ret.ok || (!ret.d.token && !ret.d.ok)) return;
-          try { localStorage.setItem('pending_admin_token', t); } catch (e) { /* noop */ }
-          window.open(base.replace(/\/+$/, '') + '/admin', '_blank', 'noopener');
-        }).catch(function () { clearTimeout(timer); /* 静默 */ });
+    /* 隐秘暗门：长按评论徽章约 1.2 秒 → 输入口令 → 打开社区控制台（管理员专属，外人无感知）。
+       旧「连点 5 次」会被单击的自动滚动打断（一点就滑走、连点追不上），弃用；
+       长按计时独立于滚动，单击跳转评论区的行为保留。 */
+    var pressTimer = null;
+    function openConsole() {
+      var t = prompt('🛰️ 社区控制台\n请输入管理口令：');
+      if (!t) return;
+      var base = detectApi();
+      if (!base) {
+        // 无法验证口令（无网关可查）：给管理员出路提示，不判口令对错、不暴露入口细节
+        alert('未检测到评论网关——管理台需要社区网关在线。\n本地：在仓库根启动 node server/index.mjs 后访问 http://localhost:8787/admin\n线上：在本文件 PUBLIC_API_DEFAULT 填入已部署网关地址');
+        return;
       }
+      // 先验后开：口令错一律静默（红线）
+      var ctrl = new AbortController();
+      var to = setTimeout(function () { ctrl.abort(); }, 6000);
+      fetch(base + '/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: t }),
+        signal: ctrl.signal
+      }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); }).then(function (ret) {
+        clearTimeout(to);
+        if (!ret.ok || (!ret.d.token && !ret.d.ok)) return; // 静默
+        try { localStorage.setItem('pending_admin_token', t); } catch (e) { /* noop */ }
+        var url = base.replace(/\/+$/, '') + '/admin';
+        // 新标签打开（登录后 5s 用户激活窗口内通常放行）；被弹窗拦截则当前页直达，保底可达
+        var opened = null;
+        try { opened = window.open(url, '_blank'); } catch (e) { opened = null; }
+        if (!opened) location.href = url;
+      }).catch(function () { clearTimeout(to); /* 静默 */ });
+    }
+    b.addEventListener('pointerdown', function () {
+      suppressClick = false;
+      clearTimeout(pressTimer);
+      pressTimer = setTimeout(function () { suppressClick = true; openConsole(); }, 1200);
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) {
+      b.addEventListener(ev, function () { clearTimeout(pressTimer); });
     });
   }
 
@@ -460,7 +592,7 @@
       var cnt = document.getElementById('qcCount');
       if (cnt) cnt.textContent = comments.length + ' 条';
       var badge = document.getElementById('qcBadge');
-      if (badge) badge.textContent = '💬 ' + comments.length;
+      refreshGhBadge();
       var modeEl = document.getElementById('qcMode');
       if (modeEl) {
         modeEl.textContent = mode === 'api'
@@ -475,6 +607,7 @@
   function commentRow(c, depth) {
     var isAnno = c.type === 'para';
     var isFix = c.type === 'correction';
+    var mine = isMine(c);
     var initial = esc((c.author || '匿')[0]);
     var kids = comments.filter(function (x) { return x.parent === c.id; });
     var reactions = c.reactions || {};
@@ -493,19 +626,21 @@
         '  <button type="button" class="qc-submit" id="qcReplyOk">回复</button>' +
         '</div></div>';
     }
-    var html = '<div class="qc-item' + (isFix ? ' fix' : '') + (isAnno ? ' anno' : '') + (depth ? ' child' : '') + '">' +
+    var html = '<div class="qc-item' + (isFix ? ' fix' : '') + (isAnno ? ' anno' : '') + (depth ? ' child' : '') + (mine ? ' mine' : '') + '">' +
       '<div class="qc-avatar">' + initial + '</div>' +
       '<div class="qc-main">' +
       '  <div class="qc-meta"><b>' + esc(c.author) + '</b>' +
+      (mine ? '<span class="qc-tag me">我</span>' : '') +
       (isFix ? '<span class="qc-tag fix">🚩 纠错</span>' : '') +
       (isAnno ? '<span class="qc-tag anno">📌 段落批注</span>' : '') +
       (c.parent ? '<span class="qc-tag reply">↩ 回复' + esc(c.replyTo || '') + '</span>' : '') +
-      '  <span class="qc-time">' + fmtTime(c.ts) + '</span></div>' +
+      '  <span class="qc-time" title="' + new Date(c.ts || Date.now()).toLocaleString() + '">' + fmtTime(c.ts) + '</span></div>' +
       (isAnno ? '<div class="qc-quote">「' + esc((c.quote || '').slice(0, 80)) + '」</div>' : '') +
       '  <div class="qc-content">' + esc(c.content) + '</div>' +
       '  <div class="qc-foot">' +
       '    <button type="button" class="qc-like" data-id="' + esc(c.id) + '">👍 <span>' + (c.likes || 0) + '</span></button>' +
       '    <button type="button" class="qc-replybtn" data-id="' + esc(c.id) + '" data-author="' + esc(c.author) + '">↩ 回复' + (kids.length ? ' (' + kids.length + ')' : '') + '</button>' +
+      ((mine || (mode === 'api' && adminTok())) ? '<button type="button" class="qc-del' + (mine ? '' : ' admin') + '" data-id="' + esc(c.id) + '" title="' + (mine ? '删除这条评论（含其下的回复）' : '管理员删除（含其下回复）') + '">' + (mine ? '🗑 删除' : '🛡 删除') + '</button>' : '') +
       '    <button type="button" class="qc-report" data-id="' + esc(c.id) + '" title="举报这条内容">🚩 举报</button>' +
       '    <span class="qc-reacts">' + reactChips + '</span>' +
       '  </div>' + replyForm +
@@ -543,6 +678,40 @@
     Array.prototype.forEach.call(box.querySelectorAll('.qc-report'), function (btn) {
       btn.addEventListener('click', function () { reportComment(btn.getAttribute('data-id')); });
     });
+    Array.prototype.forEach.call(box.querySelectorAll('.qc-del'), function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-id');
+        var obj = comments.find(function (x) { return x.id === id; });
+        var adminDel = obj && !isMine(obj) && mode === 'api' && adminTok();
+        if (!window.confirm(adminDel
+          ? '以管理员身份删除这条评论？其下的回复也会一并删除。'
+          : '删除这条评论？其下的回复也会一并删除，且不可恢复。')) return;
+        var p = adminDel ? adminDeleteComment(id) : deleteComment(id);
+        p.then(function () {
+          // 内存与本地缓存同步剔除（含子孙）
+          var doomed = { };
+          doomed[id] = true;
+          var grew = true;
+          while (grew) {
+            grew = false;
+            comments.forEach(function (x) {
+              if (x.parent && doomed[x.parent] && !doomed[x.id]) { doomed[x.id] = true; grew = true; }
+            });
+          }
+          comments = comments.filter(function (x) { return !doomed[x.id]; });
+          var db = localRead();
+          var path = pagePath();
+          if (db[path]) {
+            db[path] = db[path].filter(function (x) { return !doomed[x.id]; });
+            localWrite(db);
+          }
+          renderList();
+          syncBadges();
+        }).catch(function (e) {
+          alert((e && e.message) || '删除失败');
+        });
+      });
+    });
     Array.prototype.forEach.call(box.querySelectorAll('.qc-react'), function (btn) {
       btn.addEventListener('click', function () {
         reactComment(btn.getAttribute('data-id'), btn.getAttribute('data-e'));
@@ -567,7 +736,9 @@
     var cnt = document.getElementById('qcCount');
     if (cnt) cnt.textContent = comments.length + ' 条';
     var badge = document.getElementById('qcBadge');
-    if (badge) badge.textContent = '💬 ' + comments.length;
+    refreshGhBadge();
+    // 通知外层（giscus.js 折叠按钮等）更新本地评论计数
+    try { window.dispatchEvent(new CustomEvent('qc-update', { detail: { n: comments.length } })); } catch (e) { /* noop */ }
   }
 
   /* ── 发送楼中楼回复（走评论接口，parent 指向被回复评论） ── */
@@ -642,8 +813,9 @@
           renderList();
         });
       });
-      var tip = document.getElementById('qcAnnoTip');
-      if (tip) tip.addEventListener('click', function () {
+      // 注意：勿用 tip 作局部变量名——会遮蔽顶层 tip() 提示函数（曾致主发表 TypeError）
+      var annoTip = document.getElementById('qcAnnoTip');
+      if (annoTip) annoTip.addEventListener('click', function () {
         var first = document.querySelector('p.qdu-anno');
         if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
         else alert('本页暂无段落批注——划选正文任意句子即可添加');
@@ -844,6 +1016,11 @@
     '.qc-annotip:hover{opacity:1;text-decoration:underline}' +
     '.qc-item.child{margin-left:34px;border-left:2px solid rgba(27,102,201,.35);background:rgba(27,102,201,.03)}' +
     '.qc-tag.reply{background:rgba(163,113,247,.15);color:#a371f7}' +
+    '.qc-tag.me{background:rgba(163,113,247,.18);color:#8250df;font-weight:700}' +
+    '.qc-item.mine{border-left:3px solid rgba(163,113,247,.55)}' +
+    '.qc-del{font-size:12px;border:1px solid var(--md-default-fg-color--lightest,#e5e5e5);background:transparent;border-radius:999px;padding:3px 10px;cursor:pointer;color:var(--md-default-fg-color--light,#999);font-family:inherit}' +
+    '.qc-del:hover{border-color:#e11d48;color:#e11d48}' +
+    '.qc-del.admin{border-color:rgba(225,29,72,.5);color:#e11d48;font-weight:700}' +
     '.qc-replybtn{font-size:12px;border:1px solid var(--md-default-fg-color--lightest,#e5e5e5);background:transparent;border-radius:999px;padding:3px 10px;cursor:pointer;color:var(--md-default-fg-color--light,#888);font-family:inherit}' +
     '.qc-replybtn:hover{border-color:#a371f7;color:#a371f7}' +
     '.qc-reacts{display:inline-flex;gap:5px;margin-left:auto;flex-wrap:wrap}' +

@@ -129,6 +129,7 @@ nav:
       - Computer Science: en/college/computer_science_and_technology.md
       - Mechanical & Electrical: en/college/mechanical_and_electrical_engineering.md
       - Chemistry: en/college/chemistry_and_chemical_engineering.md
+      - School of Marxism: en/college/marxism.md
     - Student Orgs:
       - Clubs & Organizations: en/organization/index.md
     - File Sharing: en/share/index.md
@@ -142,6 +143,8 @@ nav:
     - Links:
       - en/friends/index.md
       - Application: en/friends/guide.md
+    # 新页面一律后置（维护者约定）：Knowledge Graph 英文版 2026-10-10 第四棒补
+    - Knowledge Graph: en/graph.md
 extra_css:
   - stylesheets/extra.css
   - stylesheets/print.css

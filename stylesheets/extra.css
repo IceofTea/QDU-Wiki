@@ -2157,3 +2157,90 @@ body.pop-open {
 .fx-quote{font-size:12px;color:#888;border-left:2px solid var(--md-primary-fg-color,#1b66c9);padding-left:8px;margin:6px 0}
 .fx-content{font-size:14px;line-height:1.7;white-space:pre-wrap;word-break:break-word}
 
+
+
+/* ============ 表格工具（table-tools.js）：点表头排序 + 关键字筛选 ============ */
+.qdu-table-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 10px 0 6px;
+  font-size: 12px;
+}
+.qdu-table-filter {
+  flex: 1 1 160px;
+  min-width: 120px;
+  padding: 5px 10px;
+  border: 1px solid var(--md-default-fg-color--lightest, #e0e0e0);
+  border-radius: 999px;
+  font-size: 12px;
+  font-family: inherit;
+  background: var(--md-default-bg-color, #fff);
+  color: var(--md-default-fg-color, #333);
+}
+.qdu-table-filter:focus {
+  outline: none;
+  border-color: var(--md-primary-fg-color, #1b66c9);
+  box-shadow: 0 0 0 2px var(--md-primary-fg-color--transparent, rgba(27, 102, 201, 0.12));
+}
+.qdu-table-info { color: #888; white-space: nowrap; }
+.qdu-table-reset {
+  border: 1px solid var(--md-default-fg-color--lightest, #e0e0e0);
+  background: transparent;
+  color: var(--md-primary-fg-color, #1b66c9);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.qdu-table-reset:hover { border-color: var(--md-primary-fg-color, #1b66c9); }
+td.qdu-row-hidden, th.qdu-row-hidden { display: none; }
+tr.qdu-row-hidden { display: none; }
+.md-typeset th.qdu-sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+.md-typeset th.qdu-sortable:hover { color: var(--md-primary-fg-color, #1b66c9); }
+.md-typeset th.qdu-sort-asc::after { content: ' ▲'; font-size: 10px; opacity: 0.7; }
+.md-typeset th.qdu-sort-desc::after { content: ' ▼'; font-size: 10px; opacity: 0.7; }
+.md-typeset table.qdu-table-empty::after {
+  content: '没有匹配的行';
+  display: block;
+  padding: 12px 4px;
+  color: #999;
+  font-size: 13px;
+}
+
+/* ============ 引用此页（cite-page.js） ============ */
+.qdu-cite {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 22px 0 6px;
+  padding: 10px 14px;
+  border: 1px dashed var(--md-default-fg-color--lightest, #e0e0e0);
+  border-radius: 10px;
+  font-size: 12.5px;
+  color: #888;
+}
+.qdu-cite-icon { font-size: 14px; }
+.qdu-cite-label { font-weight: 600; color: var(--md-default-fg-color, #444); }
+.qdu-cite-btn {
+  border: 1px solid var(--md-primary-fg-color, #1b66c9);
+  color: var(--md-primary-fg-color, #1b66c9);
+  background: transparent;
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.qdu-cite-btn:hover { background: var(--md-primary-fg-color--transparent, rgba(27, 102, 201, 0.08)); }
+.qdu-cite-tip { color: #16a34a; }
+.qdu-cite-tip.ok { font-weight: 700; }
+
+@media screen and (max-width: 600px) {
+  .qdu-table-tools { font-size: 11.5px; }
+  .qdu-table-filter { flex: 1 1 100%; min-width: 0; }
+  .qdu-cite { font-size: 12px; }
+}

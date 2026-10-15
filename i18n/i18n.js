@@ -2,7 +2,8 @@
 (function () {
   'use strict';
   var SK = 'qdu_lang';
-  var cur = localStorage.getItem(SK) || 'zh';
+  var cur = 'zh';
+  try { cur = localStorage.getItem(SK) || 'zh'; } catch (e) { /* 存储被禁用：默认中文 */ }
   var isEN = location.pathname.indexOf('/en/') !== -1;
 
   // 无英文版的中文页白名单：EN 模式不改写指向它们的链接，也不把人弹回 /en/。

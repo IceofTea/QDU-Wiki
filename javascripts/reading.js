@@ -9,9 +9,18 @@
   var FS_STEPS = [15, 16.5, 18];
   var LH_STEPS = [1.65, 1.9];
 
+  /** 安全读取本机偏好：隐私模式/禁用存储下 getItem 会抛 SecurityError，兜底为默认值 */
+  function lsNum(key, dflt) {
+    try {
+      return parseFloat(localStorage.getItem(key) || '') || dflt;
+    } catch (e) {
+      return dflt;
+    }
+  }
+
   function apply() {
-    var fs = parseFloat(localStorage.getItem(LS_FS) || '') || FS_STEPS[1];
-    var lh = parseFloat(localStorage.getItem(LS_LH) || '') || LH_STEPS[0];
+    var fs = lsNum(LS_FS, FS_STEPS[1]);
+    var lh = lsNum(LS_LH, LH_STEPS[0]);
     try {
       document.querySelectorAll('.md-typeset').forEach(function (el) {
         el.style.fontSize = fs + 'px';
@@ -34,8 +43,8 @@
     bar.addEventListener('click', function (e) {
       var b = e.target.closest('button');
       if (!b) return;
-      var fs = parseFloat(localStorage.getItem(LS_FS) || '') || FS_STEPS[1];
-      var lh = parseFloat(localStorage.getItem(LS_LH) || '') || LH_STEPS[0];
+      var fs = lsNum(LS_FS, FS_STEPS[1]);
+      var lh = lsNum(LS_LH, LH_STEPS[0]);
       if (b.dataset.a === 'fs-') fs = Math.max(FS_STEPS[0], fs - 1.5);
       else if (b.dataset.a === 'fs+') fs = Math.min(FS_STEPS[2], fs + 1.5);
       else lh = lh === LH_STEPS[0] ? LH_STEPS[1] : LH_STEPS[0];

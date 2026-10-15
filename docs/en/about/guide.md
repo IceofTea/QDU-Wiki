@@ -61,9 +61,9 @@ Find GitHub difficult and just want to add a piece of information? You can direc
     ```
 
     !!! example "Example"
-        - Reference in `docs/study/system.md`: `![2026æ ¡å](../../../pics/study/study-å?-æ ¡å.png)`
-        - Reference the same image in `docs/new/preparation.md`: `![2026æ ¡å](../../../pics/study/study-å?-æ ¡å.png)`
-        - Reference in `docs/index.md`: `![2026æ ¡å](pics/study/study-å?-æ ¡å.png)`
+        - Reference in `docs/study/calendar.md`: `![2026校历](../../pics/study/study-图1-校历.png)`
+        - Reference the same image in `docs/new/preparation.md`: `![2026校历](../../pics/study/study-图1-校历.png)`
+        - Reference in `docs/index.md`: `![2026校历](pics/study/study-图1-校历.png)`
 
 **Notes:**
 

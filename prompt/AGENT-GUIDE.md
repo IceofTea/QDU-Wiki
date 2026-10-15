@@ -868,6 +868,18 @@ python -m mkdocs build --strict
 - **为什么不直接翻译那些专名**：图片/附件路径含中文是**磁盘事实**，改了文件名才能改链接，属于无关重构且易致 404；群名与黑话词条名是**原始专名**，强行英译会失真——两者都不动，用白名单显式声明而不是放宽检测。
 - **验证**：`mkdocs build --strict` 通过；kb **962** 条链接全可达（路径失效 0 / 锚点失效 0 / 标题错位 0 / 非规范 URL 0）；`check_links` 90 页死链 **0**；`check_site_links` 91 页 11754 个引用死链 **0**、锚点失效 **0**；新门禁 `--strict` 退出 **0**（缺英文页 0 篇、中文残留 0 行）。
 
+### 2026-10-15（续2）：英文页乱码修复 + 前端健壮性 + 两个实用前端功能（表格工具 / 引用此页）
+
+- **修复真实缺陷**：
+  1. `docs/en/about/guide.md` 的图片命名示例三行是**乱码**（`2026æ ¡å` / `study-å? -æ ¡å.png`），且路径深度多了一级（`../../../pics/` → 从 `docs/en/about/` 出发应回退两级）。因处于行内代码块内，`check_i18n_en.py` 的中文残留检查看不到它（专名白名单会跳过行内代码）。已按磁盘真实文件名修正为 `2026校历` / `study-图1-校历.png`，并把示例指向真实引用页 `docs/study/calendar.md`（原写 `study/system.md`，实际引用校历图的是 `calendar.md`）。
+  2. `docs/i18n/i18n.js` 与 `docs/javascripts/reading.js` 存在**裸 localStorage 读取**（语言偏好、字号/行距偏好）：隐私模式或禁用站点数据时 `getItem` 会抛 `SecurityError`，会让 i18n 引擎与阅读条初始化失败。已包 try/catch，reading.js 抽出 `lsNum(key, dflt)` 助手替代 4 处重复的裸读取。
+- **新增 `docs/javascripts/table-tools.js`（表格工具）**：文档站表格很多（培养方案、奖学金档位、电话表、快递点…），静态表只能靠眼睛扫。现自动为正文表格注入工具条——**点表头升/降序排序**（数字列按数值、文本列按 `localeCompare(zh-Hans-CN, {numeric:true})`，`tbody` 原行搬移不重建 DOM）、**关键字筛选**（实时隐藏不匹配行）、**「共 n 行 / 匹配 m / n」计数**与空态提示、**重置**按钮；跳过 `.no-table-tools` 与不足 3 行的表；对单表异常做 try/catch 隔离，不影响其它表；`MutationObserver` 兜底 instant-loading 的局部换页。
+- **新增 `docs/javascripts/cite-page.js`（引用此页）**：学生写论文/实践报告常要引用本站资料，格式各异。现于正文末尾注入小卡片，一键复制规范引用串「标题 · 站点名 · 发布日期 · 访问日期 + URL」；`navigator.clipboard` 失败（http / 旧浏览器 / 无权限）自动回退 `textarea + execCommand`；复制成功给出 2.2s 的「已复制」反馈；纯前端零依赖、零网络请求。
+- **接入**：`mkdocs.yml` 的 `extra_javascript` 追加两个脚本（放在 `friend-cards.js` 之后）；`extra.css` 新增表格工具与引用卡样式（含 ≤600px 移动端适配：筛选框独占一行）。
+- **验证**：
+  - `mkdocs build --strict` 通过；`test_kb` chunk=962；`check_links` 90 页死链 0；`check_site_links` 91 页 11936 个引用、死链 0、锚点失效 0；`check_i18n_en --strict` 0 残留。
+  - **真实浏览器走查（Chromium，复用本机既有浏览器）6/6 PASS**：表格工具条注入 ✓；点表头后**行序真的变化**（学生处→保卫处并出现升序标记）✓；筛选 `zzz-不存在-zzz` → 「匹配 0」且重置按钮出现、重置后恢复「共 n 行」✓；校历页 `.qdu-cite` 与复制按钮存在 ✓；点击后反馈「已复制」✓；全程零 JS 运行时错误 ✓。
+
 ---
 
 ## 八、写给 Agent 的话

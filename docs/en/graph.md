@@ -4,4 +4,4 @@ A single graph over the basic relationships of all **41** encyclopedia pages on 
 
 <div id="kgRoot"></div>
 
-*Generated automatically from the live site by `scripts/build_kb.py` / `scripts/build_graph.py` during CI and refreshed with every knowledge update — no manual upkeep needed. Pages are listed in code, not by hand. The Chinese page is at [知识图谱](../graph.md).*
+*Generated automatically from the live site by `scripts/build_kb.py` / `scripts/build_graph.py` during CI and refreshed with every knowledge update — no manual upkeep needed. Pages are listed in code, not by hand. The Chinese version of this page is [Knowledge Graph](../graph.md).*

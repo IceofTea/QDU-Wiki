@@ -853,6 +853,23 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-10-15（续）：中英对照体检门禁 + 英文页漏译二次清零
+
+- **动机**：同日自检人工补了 10 处英文页漏译，但**没有门禁**——同类问题（机器翻译长尾、新增页面漏译）必然回潮。本轮把它变成可执行的门禁。
+- **新脚本** `scripts/check_i18n_en.py`（零依赖、Python 标准库）：
+  1. **英文页覆盖率**：中文页在 `docs/en/` 下逐一同名比对，输出缺失清单；
+  2. **英文页中文残留**：CJK 扫描，自动排除围栏代码块 / 行内代码 / Markdown 链接与 HTML 属性里的**真实中文文件名**（图片、PDF、附件名必须与磁盘一致，翻译会致 404）；
+  3. **专名白名单**：`en/words/index.md`（校园黑话词条名本身就是专有名词，如「炎黄YH」「玉环YH」）、`en/organization/index.md`（QQ 群名按原图原文保留）、贡献者昵称等加粗专名——列入白名单避免误伤。
+  - 默认非严格（只出报告、退出 0）；`--strict` 有发现即退出 1。
+- **首扫结果与实际缺陷**：**9 篇 / 18 行**，逐条定级后 **7 处合理专名**（白名单收录）、**2 处真漏译已修**：
+  - `docs/en/graph.md`：`The Chinese page is at [知识图谱](../graph.md)` → `The Chinese version of this page is [Knowledge Graph](../graph.md)`
+  - `docs/en/about/agent-features.md`：`prefixed with [纠错]` → `prefixed with the site's \`纠错\` (correction) tag`（该前缀是站内真实 UI 词，保留原词并给英文注释）
+- **接进 CI 硬门禁**：`.github/workflows/ci.yml` 在 `check_site_links` 之后、`gh-deploy` 之前插入 `python scripts/check_i18n_en.py --strict`（死链之外再加一道「中英对照」门禁）。
+- **为什么不直接翻译那些专名**：图片/附件路径含中文是**磁盘事实**，改了文件名才能改链接，属于无关重构且易致 404；群名与黑话词条名是**原始专名**，强行英译会失真——两者都不动，用白名单显式声明而不是放宽检测。
+- **验证**：`mkdocs build --strict` 通过；kb **962** 条链接全可达（路径失效 0 / 锚点失效 0 / 标题错位 0 / 非规范 URL 0）；`check_links` 90 页死链 **0**；`check_site_links` 91 页 11754 个引用死链 **0**、锚点失效 **0**；新门禁 `--strict` 退出 **0**（缺英文页 0 篇、中文残留 0 行）。
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

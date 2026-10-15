@@ -418,3 +418,49 @@ python scripts/check_kb_links.py; python scripts/check_links.py; python scripts/
 
 > **遗留（待用户定夺）**：FJNU 预算模块（`billImport`/`Budget`/`BudgetPro`/`BudgetSim` 等）与 QDU 漂移较大，本轮只修其中确定的 pdfjs 缺陷、未整体移植——涉及 i18n 级联与真机 UI 行为验证，需单独任务处理。
 
+---
+
+## 〇.15、预算算法定夺 + 中英对照门禁（2026-10-15 · 第五棒）★
+
+> 权威版见本文件；同步回写 `prompt/AGENT-GUIDE.md`。
+
+### 1. 「FJNU 预算模块要不要整包移植 QDU」→ **不移植，改抽共享算法内核**
+
+**判定过程**：逐行比对了 `billImport.js` / `Budget.vue` / `BudgetPro.vue` / `BudgetSim.vue` 四文件在两仓的差异（QDU 672 行 diff / BudgetPro 222 / BudgetSim 307 / billImport 231）。
+
+**结论一：账单解析器 QDU 明显更优，FJNU 是旧版。**
+| 差异点 | QDU | FJNU（旧） |
+| --- | --- | --- |
+| 收入分类 | 独立 `INCOME_KEYWORDS` + `guessIncomeCat` | **无**，收入分支误用支出分类器 `guessCat` → 「退款」会被判成「衣帽鞋」 |
+| 关键词表 | 含品牌词（美团/瑞幸/星巴克/塔斯尼…） | 仅基础词 |
+| 跨行转账剔除 | 泛化 `/用户/` | **硬编码真实人名 `/卓恒立/`**（个人信息入库，属缺陷） |
+
+**结论二：真正的生活费算法缺陷是两仓**共有**的，QDU 只是 UI/工程化更完整。**
+旧「账单校准」两仓完全同源，均为「近 3 个有支出月份的**简单算术平均**」，有 6 个统计缺陷：
+1. **把进行中的当月算进均值** → 月中查看系统性低估；
+2. **简单算术平均** → 某月买电脑即被拉高，零鲁棒；
+3. **分类占比按「各月占比再平均」** → 只记 1 笔的月份与记满一月的月份等权，占比失真；
+4. **无样本充分性/置信度** → 1 个月数据也敢给「健康」结论；
+5. **参考区间硬编码**（`REF_LO/REF_HI`）→ 与估算器/分配器两套数字各说各话；
+6. **无趋势外推** → 答不出「照这个速度这个月会花多少」。
+
+**因此正解不是让 FJNU 向 QDU 靠拢，而是**抽出共享算法内核，让两边同时升级**：**
+- 新增 `src/utils/budgetEngine.js`（纯函数 · 零依赖 · 34 导出 · Node 可直接单测），**两仓字节级一致**（SHA256 相同，`sync-diff` 干净）；一个缺陷六处全修：剔除进行中当月 + 跑量外推、Tukey 剔离群 + 截尾均值（小样本降级中位数）、总支出加权占比、样本置信度分级、参考区间与估算器同源、线性回归 vs Holt 按 MAPE 择优预测。
+- 新增能力：**订阅体检**（同商户 ≥60% 月份且 MAD/中位数 < 20% → 提醒核对自动续费）、**占比一键配平**（最大余额法，尊重 min/max）、**剩余生活费日限额**（超支/收紧/放松三种节奏）。
+- `billImport.js` **以 QDU 版为基线并补齐两者短板**：合并 FJNU 缺陷修复 + 新增独立收入词表（已在 QDU 版）、微信交易类型映射、统一 `NEUTRAL_PATTERNS`、金额解析支持括号/负号/货币符号、日期支持 `yyyy/mm/dd` 与 `yyyymmdd`、xlsx **多工作表定位**、`recordFingerprint()` 幂等去重、**银行通用流水**（工行/农行/招行/交行 单列或借贷双列）；**删掉 FJNU 硬编码人名**改为泛化判定。两仓 `billImport.js` 亦字节级一致。
+- **不移植 i18n**：FJNU 的 `Budget*` 仍保持现有硬编码中文形态（低风险），只接引擎；QDU 侧补 60+ 个 i18n 键（zh/en 双向门禁拦过）。这样既拿到算法收益，又避开「整包移植波及 i18n 级联 + 真机 UI 走查」的高风险面。
+
+**验收（两仓都过）**：`npm run build` 通过（QDU Budget 分包 127→146KB、FJNU 120→142KB，pdfjs 仍独立成块）；`e2e-integrity` QDU 17/17、FJNU 18/18（含 zh/en 键对等双向）；`unit-grow/agent/wall/im` 51+24+47+53 全过；`audit-refs` 0/0；新增 `scripts/test_budgetengine.mjs` 22 项 + `test_billimport.mjs` 扩至 8 项，全绿。
+**版本**：QDU-Nav **v1.7.0** · FJNU-Nav **v1.7.0**（两仓正式 bump minor；README/CHANGELOG/AGENTS/Contributors 已同步）。
+
+### 2. QDU-Wiki：新增「中英对照体检」硬门禁
+
+**动机**：§0.14 那轮人工补了 10 处英文页漏译，但没有门禁 → 同类问题会随新增页面反复回潮。
+
+- 新增 `scripts/check_i18n_en.py`：①**英文页覆盖率**（45 篇中文页 ↔ 英文版缺失清单）；②**英文页中文残留**（按 CJK 扫描，自动排除围栏代码块/行内代码/Markdown 链接与 HTML 属性里的真实中文文件名）；③**专名白名单**（`en/words/index.md` 校园黑话词条名、`en/organization/index.md` QQ 群名按图原文保留、贡献者昵称等），避免误伤。
+- 实际扫出 **9 篇 / 18 行**，逐条定级：**7 处为合理专名/真实文件名**（白名单收录）；**2 处为真漏译，已修**——`en/graph.md` 链接文案 `[知识图谱]` → `[Knowledge Graph]`、`en/about/agent-features.md` 的 `[纠错]` → 加英文注释 `纠错 (correction) tag`。
+- **接进 CI 硬门禁**（`check_site_links` 之后、`gh-deploy` 之前，`--strict`）；本地默认非严格只出报告。
+- **验证**：`mkdocs build --strict` 通过；kb 962 条链接全可达（路径/锚点/标题错位/非规范 URL 各 0）；`check_links` 90 页死链 0；`check_site_links` 91 页 11754 引用死链 0、锚点失效 0；新门禁 `--strict` 退出 0。
+
+> **两条红线沿用**：CJK 文件禁用 PowerShell `Get-Content/Set-Content` 读写；`python` 本机即 3.13.9（Anaconda），但**不要**手写 `py -3.13`（本机无 `py` launcher）。
+

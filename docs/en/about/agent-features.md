@@ -18,7 +18,7 @@
 | Post a comment | Comment box at the bottom of each page; nickname optional (anonymous); **automatic sensitive-word check** before sending |
 | **Select-to-annotate** | Highlight any sentence in the article → "✏️ Annotate selection" → after submitting, that paragraph is highlighted with a 📌 badge |
 | Threads | Every comment has "↩ Reply" forming floors; 👍 reactions supported |
-| Corrections | "🚩 Something wrong?" → content prefixed with [纠错] enters the maintenance agent's todo list, verified within 24h |
+| Corrections | "🚩 Something wrong?" → content prefixed with the site's `纠错` (correction) tag enters the maintenance agent's todo list, verified within 24h |
 | Real-time | **15-second polling** in server mode — other people's comments appear on your screen automatically |
 | Mode | 🟢 Server (shared across users) / 🟡 Local (only you); the banner always shows which |
 

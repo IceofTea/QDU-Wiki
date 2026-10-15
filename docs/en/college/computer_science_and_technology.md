@@ -44,7 +44,7 @@ The College of Computer Science and Technology is one of QDU's key science and e
 
 For the full process, see [Party Membership](../study/party.md). Briefly for our college: **Good grades, good grades, good grades**. Exam course ranking in top 50% is mandatory; the higher the better. Even if you're a class officer, student council member, or close with teachers, poor grades will definitely prevent "priority development" — you'll have to wait until senior year.
 
-Party membership quota ratios are generally higher for undergraduates than graduates, based on the college's overall indicators. Generally, fewer quotas are given to juniors, with more for即将毕业的 seniors. For CS and Software Engineering, the same major gets fewer than 10 development quotas per semester for juniors, roughly averaging within 10% of the major's students having the opportunity to become full members. Including probationary members, this ratio reaches about 15%.
+Party membership quota ratios are generally higher for undergraduates than graduates, based on the college's overall indicators. Generally, fewer quotas are given to juniors, with more for seniors about to graduate. For CS and Software Engineering, the same major gets fewer than 10 development quotas per semester for juniors, roughly averaging within 10% of the major's students having the opportunity to become full members. Including probationary members, this ratio reaches about 15%.
 
 To develop early and become a full member before graduation, you need to simultaneously meet "excellent academic performance" and "cadre experience + substantial volunteer service hours" — missing either means waiting until senior year. There's also a possibility of excellent students getting a development opportunity in spring of junior year to boost their postgraduate recommendation applications, but priority goes to those with cadre experience.
 
@@ -106,10 +106,10 @@ Comprehensive development quality counts 10% — seems small, but in the top 5% 
 
 ### Important Notes
 
-- Students who放弃 recommendation quotas must sign written放弃承诺书, with spots filled sequentially by comprehensive score ranking
+- Students who give up their recommendation quotas must sign a written waiver, with spots filled sequentially by comprehensive score ranking
 - Those who obtained recommendation qualification but are disciplined or cannot graduate normally will have qualification **revoked by Ministry of Education**
 - Falsification in application materials results in immediate disqualification
-- Relatives participating in the selection must **actively回避**
+- Relatives participating in the selection must **actively recuse themselves**
 - The process is subject to college and university-level public disclosure, with university discipline commission supervision
 
 ## Career

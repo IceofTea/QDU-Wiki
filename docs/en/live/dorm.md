@@ -250,4 +250,4 @@ A: You can air your quilt on the **balcony** or **downstairs railing**.
 - University bedding quality is acceptable; can be purchased as a set or brought from home; dimensions recommended to follow university specifications
 - **Laundry**: Generally, there are laundry areas outside dormitories; for airing quilts, use balcony or downstairs railing
 - **Storage**: Wardrobes have no dividers; storage supplies can be purchased separately
-- **Bedding**: University can provide unified set (cotton quilt, mattress,羊毛垫, quilt cover×2, bed sheet×2, mosquito net, pillow core, pillow towel×2, pillow case×2, summer quilt, bedding bag); only full set purchase or full set from home
+- **Bedding**: University can provide unified set (cotton quilt, mattress, wool pad, quilt cover×2, bed sheet×2, mosquito net, pillow core, pillow towel×2, pillow case×2, summer quilt, bedding bag); only full set purchase or full set from home

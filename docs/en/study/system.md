@@ -67,7 +67,7 @@ Qingdao University's tuition follows a **credit-based fee structure**.
 - Except for special programs such as Sino-foreign cooperative education, tuition for other programs is **paid once per semester**, with the amount related to the number of credits taken that semester
 - The number of courses varies each semester, so the tuition amount also differs each semester
 - Ultimately, over four years of graduation, **the total tuition paid is fixed**
-- The "average per academic year XXXX yuan" in the admissions brochure is an averaged figure for convenience
+- The "average tuition per academic year" in the admissions brochure is an averaged figure for convenience
 - Generally, tuition for a four-year program is around 25,000 yuan; medical programs are slightly more expensive
 
 ## Class Schedule

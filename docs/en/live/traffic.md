@@ -118,7 +118,7 @@ The university provides shuttle buses between the two campuses (inter-campus bus
 
 **Cinemas**: MixC CGV Xingjuhui, Huacheng Cinema, Broadway Cinema, Maikailé 8th floor, Wanda CBD
 
-**KTV**: K姿, Grammy (multiple branches)
+**KTV**: K-Style, Grammy (multiple branches)
 
 ### Jinjialing Campus
 

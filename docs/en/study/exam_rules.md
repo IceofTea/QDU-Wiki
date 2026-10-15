@@ -19,7 +19,7 @@
 
 - Arrive **15 minutes early** with valid identification, sit in the designated seat, and place your ID on the desk for verification
 - Those who have lost their identification must have their department issue a written certificate (with photo, counselor's signature, and department seal); otherwise, they cannot take the exam
-- Books, notes, scratch paper,垫物, calculators, mobile phones, and other communication devices are not permitted in the exam room (unless the exam has special provisions)
+- Books, notes, scratch paper, pads, calculators, mobile phones, and other communication devices are not permitted in the exam room (unless the exam has special provisions)
 - If the above items are found on your desk, in your desk compartment, or within arm's reach after the exam begins, **they will all be treated as violations**
 - Answer sheets must be written in blue or black ink pen or fountain pen; answer sheets are filled in with 2B pencil
 - During the exam, you may not borrow stationery from others without permission; answer sheets and answer paper must not be placed on neighboring desks

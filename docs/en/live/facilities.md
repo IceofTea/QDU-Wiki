@@ -49,7 +49,7 @@ Swipe campus card to use. Bathrooms have **partitions and shower curtains**, can
 
 | Location | Opening Hours | Notes |
 |------|----------|------|
-| **East Campus**: Next to Supermarket 1 | 12:00-19:00 | Swipe card to use, 2 yuan per use, charged by water flow, less than 2 yuan refunded,超过2元 water stops, take out card and swipe again to continue |
+| **East Campus**: Next to Supermarket 1 | 12:00-19:00 | Swipe card to use, 2 yuan per use, charged by water flow, less than 2 yuan refunded; if it exceeds 2 yuan, the water stops, take out card and swipe again to continue |
 | **West Campus**: Next to Dining Hall 2 (with partition) | 13:30-19:00 | **Closed on Tuesdays** |
 
 ### Bathing Tips

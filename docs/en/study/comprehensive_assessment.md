@@ -67,4 +67,4 @@ Violations of dormitory management regulations resulting in criticism or adverse
 - All bonus items require submitting certificate copies; award certificates must bear the "Qingdao University" or department seal to be valid
 - Team projects: For those with ranked positions, the first-ranked person receives full points, others receive 1/2; for unranked team projects, all members receive full points
 - **Fraud during the comprehensive assessment process results in a moral score of zero**
-- Comprehensive scores are保留 to two decimal places
+- Comprehensive scores are kept to two decimal places

@@ -51,7 +51,7 @@ You cannot arrive 1-2 days early. You must register according to the school's or
 10. **Portrait photo**: Go to a photo studio for a student ID photo, prepare red, blue, and white background versions
 
 !!! tip "Photo Tips"
-    No specific background color requirement for ID photos. Prepare both 1-inch and 2-inch sizes.最好不要戴眼镜 for ID photos. Keep digital copies safe.
+    No specific background color requirement for ID photos. Prepare both 1-inch and 2-inch sizes. It is best not to wear glasses for ID photos. Keep digital copies safe.
 
 ## Student Loans
 

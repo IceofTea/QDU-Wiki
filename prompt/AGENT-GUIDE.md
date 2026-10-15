@@ -835,6 +835,24 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-10-15：全面自检——英文页漏译补齐 + 学费页占位清理
+
+- **任务**：对全站做一次维护性自检，清理客观缺陷（不动有意保留的内容）。
+- **改动**：
+  - 补译 `docs/en/` 各页残留中文片段共 10 处（机器翻译未覆盖的长尾），译法对齐 `docs/i18n/en.json` 已收录条目：
+    - `en/college/computer_science_and_technology.md`：`即将毕业的` → `about to graduate`；`放弃 / 放弃承诺书` → `give up … a written waiver`；`主动回避` → `actively recuse themselves`
+    - `en/live/dorm.md`：`羊毛垫` → `wool pad`；`en/live/facilities.md`：`超过 2 元` → `if it exceeds 2 yuan`；`en/live/traffic.md`：`K姿` → `K-Style`
+    - `en/new/preparation.md`：`最好不要戴眼镜` → `It is best not to wear glasses`
+    - `en/study/comprehensive_assessment.md`：`保留` → `kept`；`en/study/exam.md`：`主动回避` → `proactively recuse themselves`；`en/study/exam_rules.md`：`垫物` → `pads`
+  - 清理学费页占位：`docs/study/system.md` / `docs/en/study/system.md` 中「平均每学年 XXXX 元」的占位改为「平均每学年学费」（招生简章原数字未核实，按红线不臆造金额）。
+- **说明**：
+  - 首页「开发者的话」（署名 DeepSeek V4 Flash）与 README「致谢」属维护者有意保留的 AI 自述内容，未改。
+  - `docs/about/agent-features.md` 有意不入 nav（`mkdocs.yml` 已注明属预期），未改。
+  - 全站扫描结论：admonition 全部闭合、无标题跳级、无半角逗号混排、表格列数一致、中英文件各 45 篇对等。
+- **验证**：`mkdocs build --strict` 通过；`check_links` / `check_site_links` / `check_kb_links` / `test_kb` 全绿。
+
+---
+
 ## 八、写给 Agent 的话
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：

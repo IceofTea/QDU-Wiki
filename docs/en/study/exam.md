@@ -151,7 +151,7 @@ Students with special academic expertise must submit the "Special Academic Exper
 - When higher-ranked students waive their recommendation quota, they must sign a written waiver, and quotas are **filled sequentially** by comprehensive score ranking
 - Those who have obtained recommendation eligibility but receive disciplinary action or cannot graduate normally before graduation will have their **qualification revoked** by the university and reported to the Ministry of Education
 - Fabrication of application materials results in immediate disqualification upon discovery and strict disciplinary action
-- Those with immediate family members participating in the current year's selection must **proactively回避**; non-immediate family members must proactively report
+- Those with immediate family members participating in the current year's selection must **proactively recuse themselves**; non-immediate family members must proactively report
 - The recommendation process involves department and university-level public announcements, subject to supervision by the university's Discipline Inspection Commission (Supervision Office) throughout the process, with real-name reporting accepted
 
 ## Physical Education Classes and Fitness Tests

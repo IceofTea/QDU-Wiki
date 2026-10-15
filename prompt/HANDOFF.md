@@ -283,3 +283,138 @@ python scripts/check_kb_links.py; python scripts/check_links.py; python scripts/
 - Wiki 页眉/页脚、导航、平台信息源等细节以 `prompt/AGENT-GUIDE.md` 为准（每次维护后追加记录）
 - QDU-Nav `apps.js` 的分组顺序由 `appGroups` 数组显式定义（**不是**数组出现顺序），组内顺序 = 数组顺序
 - FJNU 的 Vercount 会自建 `busuanzi_value_site_pv/site_uv` 两个 span → `ensureHost` 必须逐个补齐（否则漏 `page_pv` 卡 loading）
+
+---
+
+## 〇.9、第四棒完成回写（2026-10-10 晚 · 工作机 F:\000000\QSX20261480\disk\学习\wiki\*-agent）★
+
+> **权威版已随仓入库**：`QDU-Wiki/prompt/HANDOFF.md`（commit `4e1194e`）——本文件为桌面同步副本，后续以仓内版为准。
+
+**① §0 五步并入**：本机三仓无本地独有提交、工作区干净 → 快进融合，零冲突、零遗漏、零删减。
+**② 昨日 p0-p3 逐项核验**：实际早已全部闭环（QDU/FJNU deploy+e2e-browser、Wiki pages CI 线上均 success），仅 todo 状态未回写。
+**③ §三 四个开放项全部处置**：
+
+| # | 开放项 | 处置 |
+| --- | --- | --- |
+| 1 | Wiki check_site_links 入 CI / EN graph 404 | ✅ ci.yml 门禁拦部署；`docs/i18n/i18n.js` ZH_ONLY 白名单（graph/马院/agent-features）+ 防 EN 弹回 + 侧栏英译 |
+| 2 | QDU CDP 固化 / kb-nav 交叉审计 | ⚠️ CDP 原件在第二棒设备 temp 不可恢复 → 已由入库 e2e-browser.mjs+e2e.yml 承接；✅ kb-nav 自 v1.4.0 首次重生成 80→104 条（零删减）+ 出处交叉审计 0 失效 + faq 出处改正式页名（宿舍→住宿、医院→医疗） |
+| 3 | FJNU VisitStats i18n | ✅ t() 化 + zh/en visitStats 9 键（参照 QDU bsz* 模式）；回补 Contributors v1.5.11 缺行 |
+| 4 | 半成品并入 | ✅ 快进融合完成（见①） |
+
+**④ 三仓终态（已推送并部署）**：
+| 仓库 | 终态 | 推送 |
+| --- | --- | --- |
+| QDU-Nav | **v1.6.12** `17129d1` | https://github.com/IceofTea/QDU-Nav ✓ |
+| FJNU-Nav | **v1.5.12** `f69cc97` | origin=icyteacn ✓（红线：严禁手写 IceofTea URL） |
+| QDU-Wiki | `4e1194e`（无版本号） | https://github.com/IceofTea/QDU-Wiki ✓ |
+
+**⑤ 本机备忘**：默认 `python`=3.6.8 跑不动 mkdocs/爬虫测试 → 一律 `py -3.13`（mkdocs 1.6.1）；QDU 单测 `py -3.13 -m unittest discover -s tests`（18/18）。
+
+---
+
+## 〇.10、第四棒二期回写（2026-10-10 深夜 · 「全部优化改进」10 项落地）★
+
+> 权威版见仓内 `QDU-Wiki/prompt/HANDOFF.md` 四棒补记（commit `b0c1c6f`）。
+
+| # | 项 | 落地 |
+| --- | --- | --- |
+| 1 | kb-nav 新鲜度门禁 | integrity ⑤：`KB_NAV_OUT` 临时重生成比对——**FJNU 立即抓到库陈旧**（59→83 条零删减） |
+| 2 | i18n 键对等门禁 | integrity ⑥：zh/en 双向同构硬拦（QDU 补 3 个缺英文键） |
+| 3 | community.json 隔离 | 网关支持 `COMMUNITY_DATA` 环境变量，测试写副本（已 gitignore） |
+| 4 | Wiki sw.js | v2：CORE 只留壳，kb/graph.json 改网络优先 |
+| 5 | snapshot 降频 | 4 次/天 → 1 次/天（两仓） |
+| 6 | 交叉审计固化 | `scripts/crosscheck-kbnav.mjs`（WIKI_KB 可选） |
+| 7 | Wiki EN 补齐 | graph/马院（整页翻译）/agent-features 三页英文版 + nav 后置 + 白名单清空（机制保留） |
+| 8 | 环境纪律 | py -3.13 / origin 推送 / gen_kb_nav / COMMUNITY_DATA 写进两仓 AGENTS 红线 |
+| 9 | 校本漏同步盘点 | `scripts/sync-diff.mjs`（共通 213 · FJNU 独有 90 多为 android/ · QDU 独有 61） |
+| 10 | 375 扫描 | e2e-browser 11 号检查「375 全应用无横向溢出」（两仓本地 E2E 均绿） |
+
+**终态**：QDU-Nav **v1.6.13** `5c16f9c` · FJNU-Nav **v1.5.14** `4a230fe` · QDU-Wiki `b0c1c6f`；三仓 deploy/ci/pages 全 success。kb 943→962、check_site_links 0 死链。
+
+---
+
+## 〇.11、复盘修复回写（2026-10-11 ·「逐一排查，发现即刻改正」）★
+
+> 权威版见 `QDU-Wiki/prompt/HANDOFF.md` 同日 AGENT-GUIDE 记录。本轮发现并修复 6 个真实问题：
+
+| 仓 | 问题（复盘发现） | 修复 |
+| --- | --- | --- |
+| FJNU | **首页 i18n 夹生**：词包 home 节键早已备好但模板漏接，EN 模式约 28 处硬编码中文 | 16 键补全并全部接线（问候/APK卡/校区卡/关于标签…），EN 首页夹生→0 |
+| QDU+FJNU | **unit-agent「明天」用例周日必挂**：期望公式 `(today%7)+1===8` 永假（实现正确、单测 bug，逢周日才爆） | 公式改 `(today%7)+1`，24/0 |
+| QDU+FJNU | gen_kb_nav 三数组下标对齐隐患（desc 含撇号即错位且门禁抓不到） | 改逐行解析，重生成 byte 一致纯防患 |
+| Wiki | **graph.js 本地预览 404**：siteBase 取 `seg[1]` 把 `graph` 当路径前缀（线上碰巧正确） | 剥页面自身路径回根，线上/本地全场景正确 |
+| Wiki | EN 图谱页节点跳中文版、图例分类名只有中文 | pageUrl 加 `en/` 前缀 + CAT_NAMES_EN |
+| Wiki | agent-features「基于 80 篇条目」过时（kb 已 962） | 改「全站条目」 |
+
+复盘未见问题（已记录避免重复排查）：kb-nav 词条零错位；integrity 门禁已在 deploy.yml 实跑；roomsUnit/periodOption 无害死键；sw v2 清理正确；FJNU 排序纯重排。
+
+**终态**：QDU-Nav **v1.6.14** `a101dfb` · FJNU-Nav **v1.5.15** `2c2dd3c` · QDU-Wiki `46f3960`；三仓 deploy/ci/pages 全 success。
+
+---
+
+## 〇.12、视觉走查回写（2026-10-11 下午 ·「真机截图肉眼审查」）★
+
+> 22 张真机截图（390/1280 双视口）走查三项目，发现即修 10+ 处。权威版见 `prompt/AGENT-GUIDE.md` 同日记录。
+
+| 仓 | 发现（截图实证） | 修复 |
+| --- | --- | --- |
+| Wiki | **图谱页 100%「数据加载失败」（本地预览）**：boot() 内联旧 base（上轮漏改的重复实现） | `var base = siteBase()` 一行根治，移动端图谱完整出图 |
+| Wiki | EN 首页打字机打**中文梗短语**（夹生） | 新增 PHRASES_EN 英文池，/en/ 自动切换（中文梗池保留） |
+| FJNU | **顶栏「FJI…」截断**（brand+6按钮溢出 390px） | home 按钮桌面专属 + site.name 短名 + ellipsis + ghost-btn 收紧 → 「FJNU 校园」完整显示 |
+| FJNU | **私信空态竖排折行**（右栏仅剩 ~140px） | @640 会话列表 132px + 空态 nowrap 一行 |
+| FJNU | 数据洞察**柱状图被挤出卡片**（文字 min-width:220 撑爆） | min-width:0 + bars flex-shrink:0 |
+| FJNU | APK 标题折行；hero-sub/Welcome 页 EN 夹生 | nowrap+ellipsis；Welcome 全词包化（EN DOM 断言清零） |
+| QDU | 私信空态同款竖排；Wiki 卡按钮 3+1 孤行；顶栏同源挤压 | 同款修复 + 按钮紧凑化一行 |
+
+走查取舍记录：移动端表格横滚=Material 标准行为；墙帖分区+类型双徽章=合法组合；tour 弹层=正常首访引导；底栏 emoji=既定设计——均不改。
+
+**终态**：QDU-Nav **v1.6.15** `4a81157` · FJNU-Nav **v1.5.16** `be0469a` · QDU-Wiki `0fe8304`；三仓 deploy/ci/pages 全 success；E2E QDU 10/10、FJNU 11/11（含 375 扫描）。
+
+---
+
+## 〇.13、评论区大修回写（2026-10-11 晚 · 楼中楼/自删/管理员删除）★
+
+> 权威版见 `prompt/AGENT-GUIDE.md` 同日晚条目。用户反馈"无法楼中楼/无法删除"→实测揪出**三个真相**+**两个潜伏 bug**：
+
+| 发现 | 修复 |
+| --- | --- |
+| 手机 hero 不居中+多余图标 = **旧 SW 缓存旧 comments.js** | CACHE v3 强刷 |
+| "无法楼中楼" = **本地评论区默认折叠**且入口不可见 | 展开按钮重做（"💬 展开本地评论（楼中楼·批注·纠错）（N 条）"、手机全宽） |
+| **潜伏 bug①**：`var tip` 遮蔽顶层 `tip()` → 本地主发表一直 TypeError | 改名 annoTip 一行根治 |
+| **潜伏 bug②**：删除按钮三元缺括号 → 列表只剩按钮文本 | 补括号 |
+| "无法删除" = 功能真缺 | **自删**（owner token 鉴权+连子级+GET 防盗删）；**管理员删除**（🛡按钮 x-admin-token→/api/admin/moderate，级联加固多级收敛） |
+
+**验证**：浏览器全流程 9/9 PASS + 管理员页内删除 PASS + curl 四连（403/自删/连删0残留/无owner泄漏）。
+
+**终态**：QDU-Nav **v1.6.17** `bb7d663` · FJNU-Nav **v1.5.18** `24040fa` · QDU-Wiki `d775d92`；三仓 deploy/ci/pages 全 success。
+
+**追加（同日深夜 · giscus 刷屏恶性 bug）**：`mount()` 防重复误查异步 iframe（`.giscus-frame`），网络慢时 MutationObserver 反复新建「🌐 全网评论」块（×9 刷屏，过会儿自愈）→ 改以自建 `.giscus-wrap` 为同步锚+清重，SW **v4** 强刷；管理员「🗑 管理（GitHub）」直达链接上线（仅 `pending_admin_token` 可见，跨域 iframe 页内删不了 GitHub 评论，去 Discussion 操作）。实测 6 轮 DOM 压力下恒 1 块。**QDU-Wiki `df696a3`**（ci/pages success）。
+
+**追加（10-12 · GitHub 评论敏感词巡检）**：架构边界——Giscus 提交在 iframe 内**发送前拦不住**，做的是**事后巡检**：网关 `GET /api/admin/gh-comments`（管理员鉴权）拉 Discussions 最新 10 帖+评论 → 站内 `hitWords` 匹配（60s 缓存/可选 GITHUB_TOKEN 提额）；Wiki giscus 管理员态「🔍 敏感词巡检」按钮 → 面板"✅无命中"或逐条"⚠️命中+原文+[去 GitHub 删除→]"。curl checked=9 flagged=0 + 401 鉴权 + 浏览器双场景 PASS。**QDU-Nav v1.6.18 `e762496` · FJNU `024f9fa`（只提交我方 4 文件，让开并行课表批次、版本让位 v1.5.20）· QDU-Wiki `47770d8`**。
+
+**追加（10-12 · 徽章计数 + 暗门长按，用户两项反馈）**：① 💬 徽章"连点 5 次"被单击自动滚动打断 → 暗门改**长按 1.2 秒**（单击跳评论区保留，长按触发后吞 click）；② 徽章改显 **GitHub 全网评论数**（本地评论未上线显 0 无意义）——网关公开端点 `GET /api/comments/gh-count`（sum 近 100 帖 Discussion 评论数，60s 缓存，实测 5 条）× comments.js 四处徽章统一 `refreshGhBadge()`（无网关显裸 💬 不误导；区标题 qcCount 仍为本地计数）。实测三连 PASS（徽章 `💬 5`/单击滚动/长按弹框）。**QDU v1.6.19 `b6118b9` · FJNU `845fa64`（并入 v1.5.20 节，不动并行批次的 package/工作区）· QDU-Wiki `0f7dae6`**。中英 agent-features 暗门说明已同步改口。
+
+**追加（10-12 · 「输口令打不开管理台」根治）**：三断点实测——`server/admin.html` 存在 ✓；**主因=线上未配社区网关地址**（PUBLIC_API_DEFAULT 空）→ 暗门完全静默 → 现给出路 alert（本地启动命令/线上配置指引，不判口令对错）；login 200 后开窗链路失效（预开窗跨窗导航被静默 catch 吞）→ **弃预开窗改直接 window.open + null 时当前页直达**，实测弹窗真开 `/admin`（Console 内容正常）；线上徽章改**直连 GitHub REST 计数**（sessionStorage 30min 缓存+限频回退）。线上模拟双 PASS（徽章 `💬 5`+无网关提示）。**QDU-Wiki `8bf539e`**（ci/pages 验收 success）。部署边界：线上全功能需把 `server/index.mjs` 部署公网并填 `PUBLIC_API_DEFAULT`；未部署前线上为本地模式（Giscus 不受影响）。
+
+**追加（10-12 · 冗余审查与精简）**：PAT 路线按用户决定取消，GitHub 评论管控=「站内一键直达 + GitHub 网页删/锁/拉黑」（速查表已入 agent-features 中英版 `fca8c74`）。审查三分：**删**——`gh-count` 端点+徽章网关计数分支（线上无网关=死路径，徽章统一前端直连，回归 PASS）；**留**——gh-comments 巡检（唯一批量发现，词表在网关）、🗑 管理直达、FJNU gh 端点（同源纪律）、多暗门（防御冗余）；历史记录追加式不回改。**QDU v1.6.20 `a3b182d`（净删18行）· FJNU `325f1d7`（与并行课表批次正常交替）· QDU-Wiki `9fa82d1`**；三仓 CI 全 success。
+
+---
+
+## 〇.14、全面自检回写（2026-10-15 · 三仓缺陷修复 + 本机清理）★
+
+> 权威版见仓内 `prompt/AGENT-GUIDE.md` 同日记录。本轮对全部历史任务做了一次全面自检，并修复三仓各一处确定缺陷。
+
+| 仓 | 问题（自检发现） | 修复 |
+| --- | --- | --- |
+| QDU-Nav | **中行 PDF 账单导入缺陷**：`billImport.js` 静态引入 `pdfjs-dist` 且 worker 指向 CDN **3.11.174**，而主库已是 **v6.3.289**——v6 以 `new Worker(url,{type:'module'})` 加载 worker，版本/协议不匹配，PDF 解析不可靠；静态引入还把解析库整包塞进 Budget 分包 | pdfjs 改「PDF 分支按需动态 import」（新增 `src/utils/pdfjsLoader.js`）+ worker 经 Vite `?url` 打包**同版本本地资源**；Budget 分包 **599KB→127KB**。**v1.6.21 `c9bbd5c`** |
+| FJNU-Nav | 同款 pdfjs 缺陷（与 QDU 同源） | 同法修复（`billImport.js` + 新增 `pdfjsLoader.js`）+ `package.json` version 与 site.js 对齐（原 1.6.8）；Budget 分包 **605KB→120KB**。**v1.6.11 `7ebfb68`** |
+| QDU-Wiki | **英文页残留中文漏译 10 处**（机器翻译长尾）+ 学费页「平均每学年 XXXX 元」占位 | 按 `docs/i18n/en.json` 已收录译法逐处补齐；占位改为「平均每学年学费」（原数字未核实，按红线不臆造）。**`4218804`** |
+
+**本机清理**：卸载冗余 `VS BuildTools 2022`（根因：`Start-Process -ArgumentList` 传含空格路径未自带引号 → 安装器把 `--installPath` 解析成 `F:\Microsoft` 而失败；加引号重跑退出码 0），F 盘回收约 4.13GB；PDF 默认打开方式确认为 Edge（5 个 WPS 计划任务全 Disabled、`wpscloudsvr` 未运行）。
+
+**验证**：QDU-Nav build + integrity 17/17 + unit×4（24/51/53/47）+ audit 0-0 + py 18/18；FJNU-Nav build + integrity 18/18 + unit×4 + audit 0-0 + py 17/17；QDU-Wiki `mkdocs build --strict` + kb 962 条链接全可达 + 死链/锚点 0。
+
+> **台账分叉已修**：本轮发现桌面副本与仓内 `HANDOFF.md` 已分叉——仓内缺 §0.9–§0.13（此前几轮只回写到桌面副本）。已将 §0.9–§0.13 回填仓内权威版，并两处同步追加本条 §0.14。
+
+> **遗留（待用户定夺）**：FJNU 预算模块（`billImport`/`Budget`/`BudgetPro`/`BudgetSim` 等）与 QDU 漂移较大，本轮只修其中确定的 pdfjs 缺陷、未整体移植——涉及 i18n 级联与真机 UI 行为验证，需单独任务处理。
+

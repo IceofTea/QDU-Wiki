@@ -1,4 +1,7 @@
 # Second Classroom
+!!! note "Contact details"
+    Phone numbers and addresses below are compiled from public pages of the university / colleges. Numbers may change; **verify on the official website before you go**.
+
 
 !!! tip "Policy Basis"
     This page is compiled from the university's "Second Classroom Transcript" system implementation measures (including participation hour allocations, participation/exchange and approval operation instructions). If there are any changes, please refer to the latest documents from the Youth League Committee.

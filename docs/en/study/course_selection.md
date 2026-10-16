@@ -1,4 +1,7 @@
 # Course Selection Guide
+!!! note "Contact details"
+    Phone numbers and addresses below are compiled from public pages of the university / colleges. Numbers may change; **verify on the official website before you go**.
+
 
 !!! tip "Policy Basis"
     This page is compiled from the "Qingdao University Undergraduate-Graduate Integrated Teaching Management Platform Course Selection Operation Guide." The original document contains interface screenshots; only text steps are retained here.

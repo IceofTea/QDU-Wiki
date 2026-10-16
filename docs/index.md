@@ -1,3 +1,6 @@
+!!! note "数据口径"
+    本页人数、专业数、排名等为**公开信息整理**，统计时间以文中标注为准；如与学校最新公布不一致，**以官方为准**。
+
 ﻿<div class="hero">
 
 <div class="hero-bg" data-seasonal role="img" aria-label="校园四季"></div>

@@ -1,4 +1,7 @@
 # Innovation Practice Credits
+!!! note "Contact details"
+    Phone numbers and addresses below are compiled from public pages of the university / colleges. Numbers may change; **verify on the official website before you go**.
+
 
 !!! tip "Policy Basis"
     This page is compiled from the "Qingdao University Undergraduate Innovation Practice Credit Recognition and Management Measures" (Document No. QDU-Jiao [2024] 22), issued on January 17, 2025, replacing the former Document No. QDU-Jiao [2015] 1; scoring standards refer to the "Qingdao University Undergraduate Innovation Practice Credit Scoring Standards" and the "Professional Level Examination Scoring Table." If there are any changes, please refer to the latest documents from the Academic Affairs Office.

@@ -1,4 +1,7 @@
 # Undergraduate Handbook
+!!! note "Contact details"
+    Phone numbers and addresses below are compiled from public pages of the university / colleges. Numbers may change; **verify on the official website before you go**.
+
 
 !!! warning "Content based on the 2022 Student Handbook"
     This article is compiled from the **2022 "Qingdao University Student Handbook"** (containing various regulatory documents, mostly from 2017–2022). Policies on enrollment status, degrees, financial aid, etc. **may be adjusted yearly**. This article is for understanding the general framework; **please refer to the university's currently valid documents for specifics**.

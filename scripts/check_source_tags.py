@@ -52,7 +52,9 @@ YEAR = re.compile(r"(?:19|20)\d{2}")
 # 「已标注出处/口径」的标记
 SOURCE_MARK = re.compile(
     r"来源|数据来源|出自|出处|以官方为准|以当年为准|以现行|以学校|以.{0,6}为准|"
-    r"〔\s*20\d{2}\s*〕|仅供参考|参考|依据|见.{0,8}(?:文件|通知|公告|附件)"
+    r"〔\s*20\d{2}\s*〕|仅供参考|参考|依据|见.{0,8}(?:文件|通知|公告|附件)|"
+    r"subject to|the official .{0,20}prevails|verify on the official|official website|"
+    r"compiled from public"
 )
 # 跳过：示例/占位/引用块/贡献者署名/格式行
 SKIP_LINE = re.compile(r"(?i)```|<!--|!\s?\[|^\s*\|?\s*:?-{3,}|\bTODO\b|示例|举例|占位|XXXX|待补充|贡献|编辑于|更新于|^\s*>")

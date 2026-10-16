@@ -1,4 +1,7 @@
 # Campus Activities
+!!! note "Contact details"
+    Phone numbers and addresses below are compiled from public pages of the university / colleges. Numbers may change; **verify on the official website before you go**.
+
 
 !!! warning "Content based on 2023 documents"
     This article is compiled from the competition regulations and schedule of Qingdao University's 2023 Sports Meet. The events, time, and location of the annual sports meet may be adjusted; this article is for understanding the process and event rules, **specific information is subject to the competition regulations of that year**.

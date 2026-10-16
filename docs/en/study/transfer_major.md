@@ -1,4 +1,7 @@
 # Major Transfer
+!!! note "Contact details"
+    Phone numbers and addresses below are compiled from public pages of the university / colleges. Numbers may change; **verify on the official website before you go**.
+
 
 !!! warning "Content Based on 2023 Policy Documents"
     This page is compiled from Qingdao University's **2023** major transfer work documents (policy release, registration and admission notices, and grade-specific transfer regulations). Major transfer policies **may be adjusted annually**, and different grades follow different documents. This page is for reference only. **Please refer to the latest notice from the Academic Affairs Office for the current year**.

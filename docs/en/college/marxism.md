@@ -1,4 +1,7 @@
 # School of Marxism
+!!! note "Contact details"
+    Phone numbers and addresses below are compiled from public pages of the university / colleges. Numbers may change; **verify on the official website before you go**.
+
 
 !!! quote "Note"
     This page was contributed by **Xiao Gong**, Class of 2023, Ideological & Political Education major, School of Marxism (Oct 2026).

@@ -1,4 +1,7 @@
 # Network Services
+!!! note "Contact details"
+    Phone numbers and addresses below are compiled from public pages of the university / colleges. Numbers may change; **verify on the official website before you go**.
+
 
 !!! warning "To be updated"
     Some information on this page may be outdated or unverified. Contributions via GitHub are welcome.

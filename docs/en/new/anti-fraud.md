@@ -1,4 +1,7 @@
 # Anti-Fraud Guide
+!!! note "Contact details"
+    Phone numbers and addresses below are compiled from public pages of the university / colleges. Numbers may change; **verify on the official website before you go**.
+
 
 ## Pickup Safety Tips
 

@@ -1,4 +1,7 @@
 # 计算机科学技术学院
+!!! note "以文件为准"
+    文中金额、比例、名额等**以当年文件为准**，本页仅作了解参考。
+
 
 !!! quote "备注"
     本页由 [@炎黄YH](https://github.com/IceofTea)、[@玉环YH](https://github.com/BandieraRosa) 贡献。

@@ -7,6 +7,24 @@
 (function () {
   'use strict';
 
+  /* 本地预览 / 自动化测试绝不打点：Vercount 的分桶规则在服务端，对我们是黑盒，
+     发布前又必须在本地反复预览与跑测试 —— 与其依赖第三方规则，不如这里直接返回。 */
+  var IS_LOCAL = (function () {
+    try {
+      var proto = location.protocol;
+      if (proto === 'file:' || proto === 'blob:') return true;
+      var h = (location.hostname || '').toLowerCase();
+      if (!h) return true;
+      if (h === 'localhost' || h === '127.0.0.1' || h === '::1' || h === '[::1]') return true;
+      if (h.slice(-6) === '.local') return true;
+      if (/^192\.168\./.test(h) || /^10\./.test(h) || /^172\.(1[6-9]|2\d|3[01])\./.test(h)) return true;
+      return false;
+    } catch (e) {
+      return true;
+    }
+  })();
+  if (IS_LOCAL) return;
+
   var STORAGE_KEY = 'qdu-wiki-visit-v1';
   var VERC0UNT_SRC = 'https://vercount.one/js';
   var API_URL = 'https://events.vercount.one/api/v2/log';

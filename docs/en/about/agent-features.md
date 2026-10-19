@@ -9,7 +9,13 @@
    jumps straight to the matching feature on the navigation site (cross-site, opens in a new tab). The Nav URL is the school-swap target — after a swap it automatically points to the new school.
 2. **Encyclopedia Q&A (layer 2)**: local BM25 retrieval over the site's entries (`kb.json`),
    answers come with "view source" — zero external APIs, works offline, **every answer is traceable**.
-3. **Fallback guidance (layer 3)**: if nothing matches, you get a hint — **never a fabricated answer**.
+   Matching results surface a **key sentence** and **highlight matched query terms**.
+3. **Fallback guidance (layer 3)**: if nothing matches, you get a hint — **never a fabricated answer**;
+   one click can **delegate your exact words to the Nav agent** to keep helping you (new tab).
+   Missed queries are recorded **only in your own browser** (`wiki_agent_miss`),
+   so maintainers can spot the gaps — **nothing is uploaded**.
+
+> Follow-ups like "more?" or "what about canteens" keep paging or retargeting the search; `Esc` closes the panel anytime.
 
 ## 2. Page comments & paragraph annotations (what community co-building really means)
 

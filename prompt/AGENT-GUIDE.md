@@ -909,6 +909,20 @@ python -m mkdocs build --strict
   `check_links` / `check_site_links` 死链 0、锚点失效 0；`check_i18n_en --strict` 0 残留。
 - **纪律不变**：本脚本仍**不入 CI、退出码恒 0、不修改任何文件**——只是把「该交代的口径」落实到内容里，零构建风险。
 
+### 2026-10-18：青大智答输出质量与安全加固（chat-widget 升级）
+
+- **任务**：提升「青大智答」的智能性与交互体验，并排查跨站/隐私与 XSS 隐患。
+- **改动**：
+  - `docs/javascripts/chat-widget.js`：①新增 `escHtml`/`hl`/`keySentence`——所有知识库字段（标题 `t`、面包屑 `p`、摘要 `s`、父级 `c`）进 `innerHTML` 前统一转义，命中查询词（≥2 字）在转义后包 `<mark>` 高亮，杜绝查询词注入 HTML（原为直接拼接，存在 XSS 面）；②命中结果抽取**关键句**（按句读切分、取含词最多的一句）置顶展示；③无结果时把原话截 40 字、最多 40 条记本机 `localStorage['wiki_agent_miss']`（不上传），并渲染「委托给导航站智能体」按钮（`agentHref(rawQ)` 带原话跨站续办）；④注册 `Esc` 键关闭面板；⑤`lastCtx` 增存 `tokens`，翻页渲染 `renderMore` 同样转义+高亮。
+  - `docs/stylesheets/extra.css`：新增 `.chat-result__key`（关键句卡，蓝左缘）与 `.chat-result mark`（命中词高亮）。
+  - `docs/sw.js`：`CACHE` 版本 `qdu-wiki-v4 → v5`——静态资源是缓存优先，必须提版本让旧 `chat-widget.js` 失效。
+  - `docs/about/agent-features.md` + `docs/en/about/agent-features.md`：补记关键句/高亮/未命中委托/miss 仅本机/Esc 等行为（中英双语同步）。
+- **说明**：
+  - miss 记录只写本机 localStorage，作维护者了解话术缺口的线索，不上传任何服务器。
+  - `renderJump()`（办事意图卡）展示的均为代码内静态文案与应用注册表名称，无外部输入注入面，保持原样。
+- **验证**：`node --check` 通过；`mkdocs build --strict` 通过；`build_kb`（962 chunk）→ `test_kb` 3 PASS → `check_kb_links` 962/962 → `check_links` 0 死链 → `check_site_links` 91 页 11754 引用 0 死链 0 锚点失效。
+- 同批三仓：QDU-Nav **v1.7.10** / FJNU-Nav **v1.7.20**（Agent 复合指令+存储键中立化，详见两仓 AGENTS.md 更新日志）。
+
 ---
 
 ## 八、写给 Agent 的话

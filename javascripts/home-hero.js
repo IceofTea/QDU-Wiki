@@ -254,7 +254,16 @@
     });
   }
 
+  // instant navigation 返回主页时 DOM 重建会重放 hero 入场动画（整页闪烁），
+  // 模块级标记在本会话内持续存在：首次渲染播动画，之后一律跳过
+  var heroAnimated = false;
+
   function setup() {
+    var hero = document.querySelector('.hero');
+    if (hero) {
+      if (heroAnimated) hero.classList.add('hero-no-anim');
+      else heroAnimated = true;
+    }
     startTyping();
     fillNumbers();
     initHeroBook();

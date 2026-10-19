@@ -163,6 +163,7 @@ extra_javascript:
   - javascripts/friend-cards.js
   - javascripts/table-tools.js
   - javascripts/cite-page.js
+  - javascripts/recents.js
   - i18n/i18n.js
 markdown_extensions:
   - md_in_html

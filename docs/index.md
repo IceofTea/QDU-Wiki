@@ -51,6 +51,7 @@
     <div class="hero-page-inner">
       <p class="hero-eyebrow">QUICK NAVIGATION</p>
       <h2 class="hero-page-title">快速入口</h2>
+      <div class="recent-reads" id="recent-reads" hidden></div>
       <div class="hero-quick">
         <button type="button" class="hero-quick__item" data-href="new/preparation/" data-icon="🎒" data-title="新生手册" data-desc="入学准备、证件资料、防诈骗、军训指南、联系方式，从入学报到到校园生活一网打尽。">
           <span class="hero-quick__icon">🎒</span>

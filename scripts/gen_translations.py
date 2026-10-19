@@ -1,6 +1,6 @@
 import os, json, re
 
-base = r'D:\2025海之子计算机复试电子资料\福star\学习\wiki\QDU-Wiki\docs'
+base = r'docs'
 pages_map = {
     '/': 'index.md',
     '/about/': 'about/index.md',

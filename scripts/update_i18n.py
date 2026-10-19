@@ -2,19 +2,19 @@ import json
 import re
 
 # Read current en.json
-with open(r'D:\2025海之子计算机复试电子资料\福star\学习\wiki\QDU-Wiki\docs\i18n\en.json', 'r', encoding='utf-8') as f:
+with open(r'docs\i18n\en.json', 'r', encoding='utf-8') as f:
     en = json.load(f)
 
 # Read all markdown files
 files = {
-    '/new/preparation/': r'D:\2025海之子计算机复试电子资料\福star\学习\wiki\QDU-Wiki\docs\new\preparation.md',
-    '/new/anti-fraud/': r'D:\2025海之子计算机复试电子资料\福star\学习\wiki\QDU-Wiki\docs\new\anti-fraud.md',
-    '/live/eat/': r'D:\2025海之子计算机复试电子资料\福star\学习\wiki\QDU-Wiki\docs\live\eat.md',
-    '/live/dorm/': r'D:\2025海之子计算机复试电子资料\福star\学习\wiki\QDU-Wiki\docs\live\dorm.md',
-    '/live/traffic/': r'D:\2025海之子计算机复试电子资料\福star\学习\wiki\QDU-Wiki\docs\live\traffic.md',
-    '/study/system/': r'D:\2025海之子计算机复试电子资料\福star\学习\wiki\QDU-Wiki\docs\study\system.md',
-    '/service/network/': r'D:\2025海之子计算机复试电子资料\福star\学习\wiki\QDU-Wiki\docs\service\network.md',
-    '/service/card/': r'D:\2025海之子计算机复试电子资料\福star\学习\wiki\QDU-Wiki\docs\service\card.md',
+    '/new/preparation/': r'docs\new\preparation.md',
+    '/new/anti-fraud/': r'docs\new\anti-fraud.md',
+    '/live/eat/': r'docs\live\eat.md',
+    '/live/dorm/': r'docs\live\dorm.md',
+    '/live/traffic/': r'docs\live\traffic.md',
+    '/study/system/': r'docs\study\system.md',
+    '/service/network/': r'docs\service\network.md',
+    '/service/card/': r'docs\service\card.md',
 }
 
 md_contents = {}
@@ -748,7 +748,7 @@ global_new = {
 en['global'].update(global_new)
 
 # Write updated en.json
-output_path = r'D:\2025海之子计算机复试电子资料\福star\学习\wiki\QDU-Wiki\docs\i18n\en.json'
+output_path = r'docs\i18n\en.json'
 with open(output_path, 'w', encoding='utf-8') as f:
     json.dump(en, f, ensure_ascii=False, indent=2)
 

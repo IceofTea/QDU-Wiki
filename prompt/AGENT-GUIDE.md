@@ -711,7 +711,7 @@ python -m mkdocs build --strict
   - 为什么不做 EN 版：维护者在 `en/college/index.md` 对马院标注「To be added」、`agent-features.md` 为长期隐藏页不挂 nav——白名单与其口径一致，content 不动
   - 本机验证：`mkdocs build --strict` 通过、site 产物 `i18n/i18n.js` 已含白名单、`check_site_links` 88 页 11192 引用 0 死链 0 锚点失效、`check_kb_links` 943/943 可达
   - **本机 Python 备忘**：默认 `python` = 3.6.8（跑不动 mkdocs/crawler 测试），一律用 **`py -3.13`**（mkdocs 1.6.1）
-  - 同批三仓版本：QDU-Nav **v1.6.12**（kb-nav 重生成 80→104 + 与 Wiki kb 交叉审计零失效）、FJNU-Nav **v1.5.12**（VisitStats i18n）
+  - 同批三仓版本：QDU-Nav **v1.6.12**（kb-nav 重生成 80→104 + 与 Wiki kb 交叉审计零失效）、姊妹导航仓 **v1.5.12**（VisitStats i18n）
 
 ---
 
@@ -723,7 +723,7 @@ python -m mkdocs build --strict
   - **i18n.js 白名单收敛**：`ZH_ONLY` 清空（机制保留备用）——三页有英文版后，EN 模式链接照常强转 `/en/`，不再落中文页
   - **sw.js v2**：`CORE` 只留 manifest 壳；`assets/kb.json`/`graph.json` 改**网络优先**（isData 分支）——根治「预缓存旧 kb + 静态 CACHE 名不换代」的旧数据窗口
   - `prompt/AGENT-GUIDE.md`（本记录）、`prompt/HANDOFF.md`（四棒补记）
-- **改动（Nav 两仓同批，版本 QDU v1.6.13 / FJNU v1.5.14）**：integrity 新增 ⑤ kb-nav 新鲜度门禁（`KB_NAV_OUT` 临时重生成比对——FJNU 立即抓到库陈旧 59→83 零删减）+ ⑥ i18n zh/en 键对等双向门禁（QDU 补 3 个缺英文键后硬拦）；`COMMUNITY_DATA` 环境变量隔离测试数据；snapshot 4 次/天→1 次/天；`crosscheck-kbnav.mjs`/`sync-diff.mjs` 入库；e2e-browser 新增「375 全应用无横向溢出」
+- **改动（Nav 两仓同批，版本 QDU v1.6.13 / 姊妹仓 v1.5.14）**：integrity 新增 ⑤ kb-nav 新鲜度门禁（`KB_NAV_OUT` 临时重生成比对——姊妹仓 立即抓到库陈旧 59→83 零删减）+ ⑥ i18n zh/en 键对等双向门禁（QDU 补 3 个缺英文键后硬拦）；`COMMUNITY_DATA` 环境变量隔离测试数据；snapshot 4 次/天→1 次/天；`crosscheck-kbnav.mjs`/`sync-diff.mjs` 入库；e2e-browser 新增「375 全应用无横向溢出」
 - **验证**：`mkdocs build --strict` 通过；kb 943→**962** chunks、`check_kb_links` 962/962、`check_site_links` 91 页 11750 引用 **0 死链 0 锚点失效**、`check_links` 0 死链、`test_kb` PASS、`build_graph` 通过；Nav 两仓 integrity 17/18 项 PASS + 本地网关 E2E 全绿
 - **坑**：EN 页之间的中文页互链在 md 源里必须用 `../graph.md`（mkdocs 转 URL），写成 `../../graph/` 会被 md 级审计判死链（源文件相对路径解析，不是 URL 解析）。
 
@@ -736,8 +736,8 @@ python -m mkdocs build --strict
   - **`pageUrl()` EN 跳转**：EN 图谱页点节点原本跳中文版——加 `en/` 前缀（全站页面均有 EN 镜像，`index` 特判 `/en/`）；图例分类名新增 `CAT_NAMES_EN` 按页语言切换
   - **`docs/about/agent-features.md` 过时数据**：「基于 80 篇条目的本地 BM25 检索」——kb 早已 962 chunks，改为「基于全站条目」（EN 版本就已模糊化，本次对齐）
 - **验证**：`mkdocs build --strict` / `test_kb` 962 / `check_links` 0 死链 / `check_kb_links` 962/962 / `check_site_links` 0 锚点失效 / `build_graph` / `node --check graph.js` 全绿
-- **同批 Nav 两仓**：QDU **v1.6.14**（gen_kb_nav 逐行加固 + unit-agent 周日公式修正）、FJNU **v1.5.15**（首页 i18n 补全 16 键——词包 home 节键早备好但模板漏接，EN 首页 28 处夹生→0）
-- **复盘未见问题清单**（记录以免重复排查）：kb-nav 词条与 apps 源零错位；integrity 门禁已在两仓 `deploy.yml` 实跑拦部署；`roomsUnit/periodOption` 为无害死键；sw v2 缓存清理逻辑正确（activate 删旧 CACHE）；FJNU 应用排序纯重排零内容改动
+- **同批 Nav 两仓**：QDU **v1.6.14**（gen_kb_nav 逐行加固 + unit-agent 周日公式修正）、姊妹仓 **v1.5.15**（首页 i18n 补全 16 键——词包 home 节键早备好但模板漏接，EN 首页 28 处夹生→0）
+- **复盘未见问题清单**（记录以免重复排查）：kb-nav 词条与 apps 源零错位；integrity 门禁已在两仓 `deploy.yml` 实跑拦部署；`roomsUnit/periodOption` 为无害死键；sw v2 缓存清理逻辑正确（activate 删旧 CACHE）；姊妹仓 应用排序纯重排零内容改动
 
 ---
 
@@ -747,9 +747,9 @@ python -m mkdocs build --strict
 - **Wiki 侧改动**：
   - **`graph.js` 图谱数据本地预览 100% 失败根因**：`boot()` 里**内联了一份旧 siteBase**（取 `pathname` 第一段）——上一轮只改了顶部函数没发现这处重复实现；线上前缀恰好对、本地 serve 把 `graph` 当前缀 → fetch 404「图谱数据加载失败」。改为 `var base = siteBase()` 一行根治，本地/线上全场景渲染 ✓（截图验收：移动端图谱完整出图）
   - **`home-hero.js` EN 打字机夹生**：27 条中文校园梗短语在 EN 首页照打 → 新增 `PHRASES_EN` 10 条（正经+轻梗英文池），`/en/` 自动切换；中文梗池原样保留
-- **Nav 两仓同批**（QDU **v1.6.15** / FJNU **v1.5.16**）：私信空态竖排折行（小屏会话列表 132px+nowrap）、数据洞察柱被 min-width:220 文字区挤出卡片（flex 防挤出）、FJNU 顶栏截断（home 桌面专属+短名+ellipsis）、APK 标题一行、Wiki 卡按钮一行、FJNU hero-sub/Welcome 全 i18n（EN 夹生清零，DOM 断言验证）
-- **走查未动项**（记录取舍）：移动端表格横滚为 Material 标准行为（已有 overflow-x:auto）；墙帖「分区+类型」双徽章为合法组合；欢迎页 tour 弹层属正常首访引导；FJNU 底部导航 emoji 风格为既定设计
-- **验证**：Nav 两仓 build/integrity/unit×4/E2E（QDU 10、FJNU 11 含 375 扫描）全绿；Wiki strict+三审计全绿、`node --check` 两 JS 通过
+- **Nav 两仓同批**（QDU **v1.6.15** / 姊妹仓 **v1.5.16**）：私信空态竖排折行（小屏会话列表 132px+nowrap）、数据洞察柱被 min-width:220 文字区挤出卡片（flex 防挤出）、姊妹仓 顶栏截断（home 桌面专属+短名+ellipsis）、APK 标题一行、Wiki 卡按钮一行、姊妹仓 hero-sub/Welcome 全 i18n（EN 夹生清零，DOM 断言验证）
+- **走查未动项**（记录取舍）：移动端表格横滚为 Material 标准行为（已有 overflow-x:auto）；墙帖「分区+类型」双徽章为合法组合；欢迎页 tour 弹层属正常首访引导；姊妹仓 底部导航 emoji 风格为既定设计
+- **验证**：Nav 两仓 build/integrity/unit×4/E2E（QDU 10、姊妹仓 11 含 375 扫描）全绿；Wiki strict+三审计全绿、`node --check` 两 JS 通过
 
 ---
 
@@ -764,7 +764,7 @@ python -m mkdocs build --strict
   - **comments.js**：owner token + 本机 my-ids——我的评论「我」徽章+🗑删除（API/本地双路径，连子级）；**管理员态**（`pending_admin_token`）下他人评论显示 🛡 删除（`x-admin-token` 调 `/api/admin/moderate`）；POST 带 owner 但列表与本地存储均剔除 token；`qc-update` 事件广播条数；删除按钮三元补括号（曾致列表只剩按钮文本的拼接 bug）
   - **giscus.js**：展开按钮重做——"💬 展开本地评论（楼中楼 · 批注 · 纠错）（N 条）"、primary 描边、手机全宽
   - **sw.js**：CACHE v3
-  - **Nav 网关**（QDU **v1.6.16/17** / FJNU **v1.5.17/18** 字节级同源）：`/api/comments/delete` owner 鉴权自删 + POST 收 owner + GET/queue 剔 owner 防盗删 + **admin moderate 删除改多级子孙收敛**（旧版只删一层留悬空孙级）
+  - **Nav 网关**（QDU **v1.6.16/17** / 姊妹仓 **v1.5.17/18** 字节级同源）：`/api/comments/delete` owner 鉴权自删 + POST 收 owner + GET/queue 剔 owner 防盗删 + **admin moderate 删除改多级子孙收敛**（旧版只删一层留悬空孙级）
 - **验证**：浏览器全流程 **9/9 PASS**（展开→发评→我标记→楼中楼→删除连子级→hero 无徽章）；管理员页内删除 PASS（🛡→确认→200→消失）；curl（他人删 403 / 自删 ok / admin 连删 0 残留 / 列表不泄露 owner）；mkdocs strict+三审计 0 死链；Nav 两仓 build/integrity/unit 全绿
 
 ---
@@ -783,7 +783,7 @@ python -m mkdocs build --strict
 
 - **需求**：Giscus（GitHub 评论）能否做敏感词检测？——**架构边界**：提交在 giscus.app 跨域 iframe 内完成，**发送前无法拦截**；能做到的是**事后巡检**。
 - **实现**：
-  - **网关**（QDU v1.6.18 / FJNU v1.5.20 同源）：`GET /api/admin/gh-comments`（adminOk 鉴权）——REST 拉 `GH_WATCH_REPO`（默认 IceofTea/QDU-Wiki）最近 10 主帖 + 各帖 10 评论 → `hitWords` 站内敏感词表匹配 → 返回命中/原文/Discussion 直达链接；60s 内存缓存（匿名 REST 60 次/时限频兜底）、可选 `env GITHUB_TOKEN` 提额
+  - **网关**（QDU v1.6.18 / 姊妹仓 v1.5.20 同源）：`GET /api/admin/gh-comments`（adminOk 鉴权）——REST 拉 `GH_WATCH_REPO`（默认 IceofTea/QDU-Wiki）最近 10 主帖 + 各帖 10 评论 → `hitWords` 站内敏感词表匹配 → 返回命中/原文/Discussion 直达链接；60s 内存缓存（匿名 REST 60 次/时限频兜底）、可选 `env GITHUB_TOKEN` 提额
   - **前端**（giscus.js 管理员态）：标题栏「🔍 敏感词巡检」按钮（仅 `pending_admin_token` 可见）→ 点击拉网关结果 → 面板显示"✅ 无命中"或逐条"⚠️ 命中「词」+原文+[去 GitHub 删除 →]"
 - **处置闭环**：巡检命中 → 点条目跳 GitHub Discussion → 仓库 owner 删除（前一批次已加「🗑 管理（GitHub）」直达）
 - **验证**：curl 实测 `checked=9 flagged=0`（真实拉到 Discussions）+ 无 token 401；浏览器双场景 PASS（管理员面板出结果、非管理员无按钮）；三仓语法/构建全绿
@@ -796,15 +796,15 @@ python -m mkdocs build --strict
   **修复**：暗门改**长按徽章 1.2 秒**（pointerdown 计时，独立于滚动）；单击跳转评论区行为保留；长按触发后吞掉紧随的 click（`suppressClick`）。agent-features 中英说明同步改口。
 - **反馈 2**：徽章应显示 **GitHub 评论个数**（本地社区评论未上线，显示本地 0 无意义）。
   **修复**：网关新增公开只读 `GET /api/comments/gh-count`（sum 近 100 帖 Discussion `comments` 字段，60s 缓存；实测 4 帖 5 条）；comments.js 四处徽章写本地数统一改走 `refreshGhBadge()`——无网关/失败时显示裸 `💬` 不误导（区标题 `qcCount` 仍为本地计数，职责分明）。
-- **验证**：curl `total=5`；浏览器三连 **PASS**——徽章 `💬 5`、单击滚动正常、长按弹「🛰️ 社区控制台」口令框（实测中曾因测试脚本未回顶部致徽章在视口外，回顶后命中 `BUTTON.qc-badge` 通过）。Nav 两仓：QDU **v1.6.19** / FJNU 并入 v1.5.20 节（package 让位并行批次）。
+- **验证**：curl `total=5`；浏览器三连 **PASS**——徽章 `💬 5`、单击滚动正常、长按弹「🛰️ 社区控制台」口令框（实测中曾因测试脚本未回顶部致徽章在视口外，回顶后命中 `BUTTON.qc-badge` 通过）。Nav 两仓：QDU **v1.6.19** / 姊妹仓 并入 v1.5.20 节（package 让位并行批次）。
 
 ---
 
 ### 2026-10-12（续3）：冗余审查与精简——徽章计数单一化
 
 - **背景**：PAT 路线取消 + 数轮快速迭代后，用户要求审查冗余。结论三分：
-  - **删（死路径）**：`refreshGhBadge` 的"优先走网关 `gh-count`"分支 + 网关 `gh-count` 端点（QDU v1.6.20 / FJNU 同步、md5 一致）——**线上没有网关，该分支永远走不到**；本地走它也能直连，两套路维护一套无意义
-  - **留（有明确职责）**：`gh-comments` 敏感词巡检（唯一"批量发现"手段；词表在网关库，脱离网关即失去词表）、「🗑 管理（GitHub）」直达、FJNU 的 gh 端点（字节级同源纪律优先于"死代码"洁癖）、多暗门入口（防御性冗余）、本地评论整套（线上 localStorage 模式可用）
+  - **删（死路径）**：`refreshGhBadge` 的"优先走网关 `gh-count`"分支 + 网关 `gh-count` 端点（QDU v1.6.20 / 姊妹仓 同步、md5 一致）——**线上没有网关，该分支永远走不到**；本地走它也能直连，两套路维护一套无意义
+  - **留（有明确职责）**：`gh-comments` 敏感词巡检（唯一"批量发现"手段；词表在网关库，脱离网关即失去词表）、「🗑 管理（GitHub）」直达、姊妹仓 的 gh 端点（字节级同源纪律优先于"死代码"洁癖）、多暗门入口（防御性冗余）、本地评论整套（线上 localStorage 模式可用）
   - **历史记录不回改**：CHANGELOG/AGENT-GUIDE 里 gh-count 的记录是历史事实，只追加不删除（追加式纪律）
 - **验证**：语法×3、QDU build/integrity、Wiki strict+0 死链、线上模拟徽章 `💬 5` 回归 PASS、双仓 community.mjs md5 一致
 
@@ -921,7 +921,19 @@ python -m mkdocs build --strict
   - miss 记录只写本机 localStorage，作维护者了解话术缺口的线索，不上传任何服务器。
   - `renderJump()`（办事意图卡）展示的均为代码内静态文案与应用注册表名称，无外部输入注入面，保持原样。
 - **验证**：`node --check` 通过；`mkdocs build --strict` 通过；`build_kb`（962 chunk）→ `test_kb` 3 PASS → `check_kb_links` 962/962 → `check_links` 0 死链 → `check_site_links` 91 页 11754 引用 0 死链 0 锚点失效。
-- 同批三仓：QDU-Nav **v1.7.10** / FJNU-Nav **v1.7.20**（Agent 复合指令+存储键中立化，详见两仓 AGENTS.md 更新日志）。
+- 同批三仓：QDU-Nav **v1.7.10** / 姊妹导航仓 **v1.7.20**（Agent 复合指令+存储键中立化，详见两仓 AGENTS.md 更新日志）。
+
+### 2026-10-19 · chat-widget 新交互三件套 + 异校字样全仓清零
+
+- **需求**：智答功能继续扩容（新增而非优化）；QDU 两仓内不得残留姊妹校字样。
+- **改动**：
+  - `chat-widget.js` 新增**本页速查**：打开面板时读取当前页 `.md-content h2/h3` 小节标题，生成「📖 本页速查」快捷问题 chips（≤4 条，去重去短），零网络开销、即开即用。
+  - 新增**语音输入**：`SpeechRecognition` 可用时输入栏显示 🎤，聆听中红色脉冲态（`.chat-voice--on`，extra.css 新增样式），识别文本直接发问；不支持则按钮保持 hidden。
+  - 修笔误：相关条目翻到底时的提示语残留英文单词 `' related'` → 「相关条目已全部列出」。
+  - `docs/about/agent-features.md` + `docs/en/about/agent-features.md`：补记新交互（中英双语同步）。
+  - `docs/sw.js`：`CACHE` `qdu-wiki-v5 → v6`（chat-widget 变更必须提版本让旧缓存失效）。
+- **异校字样清零**（应维护者「QDU 两仓不得出现姊妹校字样」要求）：关于页致谢名单保留姊妹校缩写（维护者后批注可保留），其余 `prompt/` 维护文档、一次性脚本内嵌过期绝对路径（含姊妹品牌目录名）全部中性化——脚本路径改为仓库相对 `docs`，维护日志中的异校名词替换为「姊妹仓/姊妹导航仓/另一高校」等中性称呼，保留历史事实结构。
+- **验证**：`mkdocs build --strict` 通过；`build_kb`（972 chunk）→ `test_kb` 3 PASS → `check_kb_links` 972/972 → `check_links` 0 死链 → `check_site_links` 91 页 11936 引用 0 死链 0 锚点失效 → `check_i18n_en --strict` 英文页缺 0 / 中文残留 0。全仓扫描姊妹校相关字样（不区分大小写）：命中 0（致谢名单除外）。
 
 ---
 

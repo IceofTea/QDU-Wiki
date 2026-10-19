@@ -17,6 +17,15 @@
 
 > Follow-ups like "more?" or "what about canteens" keep paging or retargeting the search; `Esc` closes the panel anytime.
 
+**New interactions (2026-10-19)**:
+
+- **📖 On-page quick asks**: opening the assistant reads this page's section
+  headings into one-tap question chips — zero network cost.
+- **🎤 Voice input**: a mic button appears when the browser supports
+  SpeechRecognition (hidden otherwise).
+- **🕘 Recent asks**: your last 5 questions, stored only in localStorage.
+- **⬇ Export dialogue**: one click downloads the session as txt.
+
 ## 2. Page comments & paragraph annotations (what community co-building really means)
 
 | Feature | How to use |

@@ -1549,6 +1549,30 @@ body.pop-open {
 }
 .chat-send:active { transform: translateY(0) scale(0.97); }
 
+.chat-voice {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+}
+.chat-voice:hover { border-color: rgba(255, 217, 160, 0.55); background: rgba(255, 255, 255, 0.12); }
+.chat-voice--on {
+  border-color: rgba(244, 63, 94, 0.75);
+  background: rgba(244, 63, 94, 0.25);
+  animation: chatVoicePulse 1.2s infinite;
+}
+@keyframes chatVoicePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(244, 63, 94, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .chat-voice--on { animation: none; } }
+
 /* 消息 */
 .chat-msg {
   display: flex;

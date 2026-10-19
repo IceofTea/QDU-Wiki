@@ -553,7 +553,7 @@
     if (!next.length) {
       var done = document.createElement('div');
       done.className = 'chat-empty';
-      done.textContent = ' related 已全部列出（共 ' + lastCtx.results.length + ' 条），换个问法试试。';
+      done.textContent = '相关条目已全部列出（共 ' + lastCtx.results.length + ' 条），换个问法试试。';
       addMsg('bot', done);
       addFollowChips(['换一种问法', '今日简报']);
       return;
@@ -653,6 +653,35 @@
       chips.appendChild(b);
     });
     addMsg('bot', chips);
+    // 本页速查：从当前页 h2/h3 提取小节标题作快捷提问（零网络、即时可用）
+    try {
+      var heads = document.querySelectorAll('.md-content h2, .md-content h3');
+      var seen = Object.create(null);
+      var pageQs = [];
+      for (var hi = 0; hi < heads.length && pageQs.length < 4; hi++) {
+        var tt = (heads[hi].innerText || '').replace(/[#¶\s]+$/, '').trim();
+        if (!tt || tt.length < 4 || tt.length > 22 || seen[tt]) continue;
+        seen[tt] = true;
+        pageQs.push(tt);
+      }
+      if (pageQs.length) {
+        var pw = document.createElement('div');
+        pw.className = 'chat-chips';
+        var pcap = document.createElement('span');
+        pcap.className = 'chat-chips__cap';
+        pcap.textContent = '📖 本页速查';
+        pw.appendChild(pcap);
+        pageQs.forEach(function (tq) {
+          var b = document.createElement('button');
+          b.className = 'chat-chip';
+          b.type = 'button';
+          b.textContent = tq;
+          b.addEventListener('click', function () { ask(tq); });
+          pw.appendChild(b);
+        });
+        addMsg('bot', pw);
+      }
+    } catch (e) { /* noop */ }
     // 历史提问快捷入口（本机最近 5 问，有记录才出现）
     try {
       var hist = getHistory().slice(0, 5);
@@ -738,6 +767,7 @@
       '</div>' +
       '<div class="chat-panel__body"></div>' +
       '<div class="chat-panel__foot">' +
+      '  <button class="chat-voice" type="button" aria-label="语音输入" title="语音输入" hidden>🎤</button>' +
       '  <input class="chat-input" type="text" enterkeyhint="send" maxlength="100" placeholder="输入问题，回车发送" autocomplete="off">' +
       '  <button class="chat-send" aria-label="发送">发送</button>' +
       '</div>';
@@ -760,6 +790,25 @@
     inputEl.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') ask(inputEl.value);
     });
+    // 语音输入（浏览器 SpeechRecognition 可用时才显示按钮）
+    var voiceBtn = panelEl.querySelector('.chat-voice');
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SR && voiceBtn) {
+      var rec = new SR();
+      rec.lang = 'zh-CN';
+      rec.interimResults = false;
+      voiceBtn.hidden = false;
+      rec.onresult = function (e) {
+        inputEl.value = e.results[0][0].transcript;
+        ask(inputEl.value);
+      };
+      rec.onend = function () { voiceBtn.classList.remove('chat-voice--on'); };
+      rec.onerror = function () { voiceBtn.classList.remove('chat-voice--on'); };
+      voiceBtn.addEventListener('click', function () {
+        if (voiceBtn.classList.contains('chat-voice--on')) { rec.stop(); return; }
+        try { rec.start(); voiceBtn.classList.add('chat-voice--on'); } catch (e) { /* noop */ }
+      });
+    }
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && panelEl && !panelEl.hidden) close();
     });

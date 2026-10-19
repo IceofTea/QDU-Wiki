@@ -2297,8 +2297,6 @@ tr.qdu-row-hidden { display: none; }
 .hero.hero-no-anim .hero-page-inner,
 .hero.hero-no-anim .hero-quick__item { animation: none !important; }
 
-/* 顶部阅读进度条（recents.js） */
-#qduProgress{position:fixed;top:0;left:0;height:2.5px;width:0;z-index:99;background:linear-gradient(90deg,#7c3aed,#2563eb);transition:width .12s linear;pointer-events:none;border-radius:0 2px 2px 0}
 /* 首页「继续阅读」条 */
 .recent-reads{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 12px}
 .recent-reads__label{font-size:12px;color:#8ab4f8;letter-spacing:.1em;font-weight:700}

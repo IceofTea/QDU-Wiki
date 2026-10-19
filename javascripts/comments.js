@@ -1084,7 +1084,9 @@
     document.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     document.addEventListener('keydown', function (e) {
-      if (/^(INPUT|TEXTAREA)$/.test((e.target.tagName || ''))) return;
+      // Ctrl/⌘/Alt 组合键（如 Ctrl+C 复制）与可编辑区域一律放行，不触发站点快捷键
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (/^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName || '')) || e.target.isContentEditable) return;
       var k = e.key;
       if (k === 'j') window.scrollBy({ top: window.innerHeight * 0.85, behavior: 'smooth' });
       else if (k === 'k') window.scrollBy({ top: -window.innerHeight * 0.85, behavior: 'smooth' });

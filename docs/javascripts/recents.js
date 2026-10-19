@@ -35,28 +35,7 @@
       list.map(function (r) { return '<a class="recent-chip" href="' + r.path + '">' + esc(r.title) + '</a>' }).join('');
   }
 
-  /* 顶部阅读进度条：fixed 元素不受 instant navigation 的 DOM 替换影响 */
-  var bar = null, ticking = false;
-  function mountBar() {
-    if (bar) return;
-    bar = document.createElement('div');
-    bar.id = 'qduProgress';
-    document.body.appendChild(bar);
-    var onScroll = function () {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(function () {
-        ticking = false;
-        var h = document.documentElement;
-        var max = h.scrollHeight - h.clientHeight;
-        bar.style.width = max > 0 ? Math.min(100, (h.scrollTop / max) * 100) + '%' : '0';
-      });
-    };
-    addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-  }
-
-  function setup() { mountBar(); renderHome(); record(); }
+  function setup() { renderHome(); record(); }
 
   document.addEventListener('DOMContentLoaded', setup);
   document.addEventListener('DOMContentSwitch', setup);

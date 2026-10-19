@@ -365,7 +365,8 @@
     iso.slice(0, 30).forEach(function (n) {
       var a = document.createElement('a');
       a.href = pageUrl(n.id);
-      a.textContent = n.id;
+      a.textContent = nodeName(n);
+      a.title = n.id;
       isoBox.appendChild(a);
     });
     stat.innerHTML = en

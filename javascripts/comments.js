@@ -424,11 +424,15 @@
   }
 
   /* ---------- UI ---------- */
+  /* 评论区前端开关：评论/批注/纠错需要网关承载，暂无后端 → 代码整体保留但页面不挂载。
+     恢复展示只需把本开关置 true；阅读增强（进度条/快捷键）不受影响。 */
+  var COMMENTS_UI = false;
   var rootEl = null;
   var comments = [];
   var busy = false;
 
   function mount() {
+    if (!COMMENTS_UI) return;
     if (document.querySelector('.qdu-comments')) return;
     var host = document.querySelector('.md-content__inner');
     var art = articleEl();
@@ -1068,7 +1072,8 @@
     document.head.appendChild(css);
     var kbd = document.createElement('div');
     kbd.id = 'qdu-kbd';
-    kbd.innerHTML = '⌨ 快捷键<br>j / k 上下滚动<br>s 顶部 · / 搜索<br>c 评论区 · t 顶部';
+    kbd.innerHTML = '⌨ 快捷键<br>j / k 上下滚动<br>s / · 聚焦搜索' +
+      (COMMENTS_UI ? '<br>c 评论区' : '') + '<br>t 回顶部';
     document.body.appendChild(kbd);
     var hideT = null;
     function showKbd() {
@@ -1092,7 +1097,7 @@
       else if (k === 'k') window.scrollBy({ top: -window.innerHeight * 0.85, behavior: 'smooth' });
       else if (k === 't') window.scrollTo({ top: 0, behavior: 'smooth' });
       else if (k === 's') { var se = document.querySelector('.md-search input'); if (se) { e.preventDefault(); se.focus(); } }
-      else if (k === 'c') { var c = document.querySelector('.qdu-comments'); if (c) c.scrollIntoView({ behavior: 'smooth' }); showKbd(); }
+      else if (k === 'c' && COMMENTS_UI) { var c = document.querySelector('.qdu-comments'); if (c) c.scrollIntoView({ behavior: 'smooth' }); showKbd(); }
       else if (k === '/') { var se2 = document.querySelector('.md-search input'); if (se2) { e.preventDefault(); se2.focus(); } }
       else if (k === '?') showKbd();
     });

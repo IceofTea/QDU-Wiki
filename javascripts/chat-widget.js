@@ -583,9 +583,46 @@
     else addFollowChips(['换一种问法', '今日简报']);
   }
 
+  /* ---------- 整页总结：本机抽取（H2 清单 + 导语 + 段落数），零网络 ---------- */
+  function summarizePage() {
+    var art = document.querySelector('.md-content__inner .md-content__article') ||
+              document.querySelector('.md-content__inner') || document.querySelector('article');
+    if (!art) return '当前页面没有可总结的正文。';
+    var h1 = art.querySelector('h1');
+    var title = h1 ? (h1.innerText || '').trim() : (document.title || '本页');
+    var heads = art.querySelectorAll('h2');
+    var paras = art.querySelectorAll('p');
+    var out = '📄 「' + title + '」共 ' + paras.length + ' 段';
+    if (heads.length) {
+      var names = [];
+      for (var i = 0; i < heads.length && names.length < 8; i++) {
+        var t = (heads[i].innerText || '').replace(/[#¶\s]+$/, '').trim();
+        if (t) names.push('「' + t.slice(0, 18) + '」');
+      }
+      if (names.length) out += '，讲了 ' + names.length + ' 块：' + names.join('、');
+    }
+    for (var j = 0; j < paras.length; j++) {
+      var tx = (paras[j].innerText || '').trim();
+      if (tx.length >= 30) { out += '\n导语：' + tx.slice(0, 90) + (tx.length > 90 ? '…' : ''); break; }
+    }
+    out += '\n想细看哪一节，点上方「本页速查」或直接问我。';
+    return out;
+  }
+
   function ask(q) {
     q = (q || '').trim();
     if (!q) return;
+    // 整页总结拦截：本机抽取，不进检索流程
+    if (/总结|概要|讲了什么|说了什么/.test(q) && /本页|这页|这篇|文章|页面|内容/.test(q)) {
+      pushHistory(q);
+      addUserMsg(q);
+      inputEl.value = '';
+      var sm = document.createElement('div');
+      sm.className = 'chat-answer';
+      sm.innerText = summarizePage();
+      addMsg('bot', sm);
+      return;
+    }
     // 追问拦截（短输入优先不断上下文；强意图由后续流程自然处理）
     if (/^(还有呢|还有吗|再来点|更多|还有什么)$/.test(q)) {
       pushHistory(q);
@@ -664,13 +701,20 @@
         seen[tt] = true;
         pageQs.push(tt);
       }
-      if (pageQs.length) {
+      var artEl = document.querySelector('.md-content__inner');
+      if (artEl && artEl.querySelector('h1, h2')) {
         var pw = document.createElement('div');
         pw.className = 'chat-chips';
         var pcap = document.createElement('span');
         pcap.className = 'chat-chips__cap';
         pcap.textContent = '📖 本页速查';
         pw.appendChild(pcap);
+        var sumBtn = document.createElement('button');
+        sumBtn.className = 'chat-chip';
+        sumBtn.type = 'button';
+        sumBtn.textContent = '📄 整页总结';
+        sumBtn.addEventListener('click', function () { ask('总结本页内容'); });
+        pw.appendChild(sumBtn);
         pageQs.forEach(function (tq) {
           var b = document.createElement('button');
           b.className = 'chat-chip';

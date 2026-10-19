@@ -2285,3 +2285,14 @@ tr.qdu-row-hidden { display: none; }
   .qdu-table-filter { flex: 1 1 100%; min-width: 0; }
   .qdu-cite { font-size: 12px; }
 }
+/* instant navigation 返回首页时跳过 hero 入场动画（配合 home-hero.js 的 hero-no-anim 标记），修复整页卡片闪烁 */
+.hero.hero-no-anim .hero-bg,
+.hero.hero-no-anim .hero-eyebrow,
+.hero.hero-no-anim .hero-title,
+.hero.hero-no-anim .hero-subtitle,
+.hero.hero-no-anim .hero-type,
+.hero.hero-no-anim .hero-stats,
+.hero.hero-no-anim .hero-cta,
+.hero.hero-no-anim .hero-visits,
+.hero.hero-no-anim .hero-page-inner,
+.hero.hero-no-anim .hero-quick__item { animation: none !important; }

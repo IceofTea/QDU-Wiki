@@ -2289,12 +2289,12 @@ tr.qdu-row-hidden { display: none; }
 .recent-chip:hover{background:rgba(255,255,255,.16);transform:translateY(-1px);color:#fff}
 
 /* 知识图谱 v2：力导向布局 + 可交互画布 */
-.kg-svg{width:100%;height:auto;background:var(--md-default-bg-color,#fafafa);border:1px solid var(--md-default-fg-color--lightest,#eee);border-radius:12px;touch-action:none;cursor:grab;user-select:none}
+.kg-svg{width:100%;height:auto;background:var(--md-default-bg-color,#fafafa);border:1px solid var(--md-default-fg-color--lightest,#eee);border-radius:12px;touch-action:pan-y;cursor:grab;user-select:none}
 .kg-svg:active{cursor:grabbing}
 .kg-edge{fill:none;stroke:#94a3b8;stroke-width:1.2;opacity:.55;transition:opacity .15s,stroke .15s}
 .kg-edge.hot{stroke:#1b66c9;stroke-width:2.4;opacity:1}
 .kg-edge.dim{opacity:.08}
-.kg-node{cursor:pointer;transition:opacity .15s}
+.kg-node{cursor:pointer;transition:opacity .15s;touch-action:none}
 .kg-node.dim{opacity:.15}
 .kg-node .kg-halo{fill:transparent;stroke:transparent;transition:stroke .15s}
 .kg-node:hover .kg-halo{fill:rgba(27,102,201,.10)}

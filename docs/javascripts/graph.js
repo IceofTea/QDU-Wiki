@@ -48,6 +48,17 @@
     var last = parts[parts.length - 1];
     return last === 'index' ? (parts.length > 1 ? parts[parts.length - 2] : '主页') : last;
   }
+  /* 节点显示名：优先用 build_graph.py 提取的页面 H1 中文标题（n.t），
+     其次 mkdocs nav 段名，最后回退路径段；不再裸显英文路径 */
+  var NAV_TITLES = {
+    'new': '新生手册', 'live': '生活指南', 'study': '学习学业',
+    'service': '校园服务', 'college': '学院详情', 'organization': '学生组织',
+    'share': '文件共享', 'words': '有话送你', 'about': '关于Wiki',
+    'friends': '友情链接', 'index': '主页'
+  };
+  function nodeName(n) {
+    return n.t || NAV_TITLES[n.id] || shortName(n.id);
+  }
 
   /* ---------- 力导向布局：斥力 O(n²) + 连边弹簧 + 分类锚点吸引 ---------- */
   function forceLayout(nodes, edges, W, H) {
@@ -200,7 +211,7 @@
       t.setAttribute('y', r + 13);
       t.setAttribute('text-anchor', 'middle');
       t.setAttribute('class', 'kg-label');
-      t.textContent = shortName(n.id);
+      t.textContent = nodeName(n);
       g.appendChild(halo); g.appendChild(c); g.appendChild(t);
       vp.appendChild(g);
       nodeEls[n.id] = g;
@@ -217,7 +228,7 @@
           el.classList.toggle('dim', !(el.dataset.a === n.id || el.dataset.b === n.id));
         });
         tip.hidden = false;
-        tip.innerHTML = '<b>' + esc(shortName(n.id)) + '</b>' +
+        tip.innerHTML = '<b>' + esc(nodeName(n)) + '</b>' +
           '<span class="kg-tip-meta">' + esc((en ? CAT_NAMES_EN[n.cat] : CAT_NAMES[n.cat]) || n.cat) +
           ' · ' + (n.n || 0) + (en ? ' chunks' : ' 知识块') + ' · ' + (deg[n.id] || 0) + (en ? ' links' : ' 互链') + '</span>' +
           '<span class="kg-tip-go">' + (en ? 'Click to open →' : '点击进入 →') + '</span>';
@@ -295,7 +306,7 @@
       Object.keys(nodeEls).forEach(function (id) {
         var g = nodeEls[id], n = data.nodes.find(function (x) { return x.id === id; });
         var okCat = !filterState.cat || g.dataset.cat === filterState.cat;
-        var nm = shortName(id).toLowerCase();
+        var nm = nodeName(n).toLowerCase();
         var okQ = !filterState.q || nm.indexOf(filterState.q) >= 0 || id.toLowerCase().indexOf(filterState.q) >= 0;
         g.classList.toggle('dim', !(okCat && okQ));
       });
@@ -315,7 +326,7 @@
     input.addEventListener('keydown', function (e) {
       if (e.key !== 'Enter') return;
       var hit = data.nodes.find(function (n) {
-        return shortName(n.id).toLowerCase().indexOf(filterState.q) >= 0 || n.id.toLowerCase().indexOf(filterState.q) >= 0;
+        return nodeName(n).toLowerCase().indexOf(filterState.q) >= 0 || n.id.toLowerCase().indexOf(filterState.q) >= 0;
       });
       if (hit && filterState.q) location.href = pageUrl(hit.id);
     });

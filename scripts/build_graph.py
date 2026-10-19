@@ -24,7 +24,25 @@ except Exception:
 
 LINK_RE = re.compile(r"(?<!!)\[([^\]]+)\]\(([^)]+)\)")
 FENCE_RE = re.compile(r"```.*?```", re.DOTALL)
+H1_RE = re.compile(r"^#\s+(.+?)\s*$", re.MULTILINE)
 SKIP_PREFIX = ("http://", "https://", "mailto:", "#", "data:")
+
+
+def page_title(md: Path, pid: str) -> str:
+    """节点中文标题 = 页面首个 H1；缺失时回退目录名。"""
+    try:
+        text = md.read_text(encoding="utf-8")
+        m = H1_RE.search(FENCE_RE.sub("", text))
+        if m:
+            t = re.sub(r"[#*`]+", "", m.group(1)).strip()
+            t = re.sub(r"\{[^}]*\}", "", t).strip()  # 去掉 attr_list 残留
+            if t:
+                return t
+    except Exception:
+        pass
+    if pid == "index":
+        return "主页"
+    return pid.split("/")[-2] if pid.endswith("/index") else pid.split("/")[-1]
 
 
 def page_id(md: Path) -> str:
@@ -65,6 +83,7 @@ def main() -> int:
         if "en" not in p.parts and "share" not in p.parts
     )
     ids = {page_id(p) for p in pages}
+    path_of = {page_id(p): p for p in pages}
     # 分类取一级目录名（与 kb chunk.c 口径对齐：中文名映射）
     cat_of = {}
     for p in pages:
@@ -102,7 +121,8 @@ def main() -> int:
         except Exception:
             pass
     nodes = [
-        {"id": pid, "cat": cat_of[pid], "n": chunks.get(pid, 1)}
+        {"id": pid, "cat": cat_of[pid], "n": chunks.get(pid, 1),
+         "t": page_title(path_of[pid], pid)}
         for pid in sorted(ids)
     ]
     out = {"pages": len(nodes), "links": len(edges), "nodes": nodes,

@@ -4341,9 +4341,16 @@
    直达导航站对应功能（跨站联动，新标签打开）。导航站地址是换校落点，
    换校后自动指向新校导航。</li>
 <li><strong>百科问答（第二层）</strong>：基于全站条目的本地 BM25 检索（<code>kb.json</code>），
-   答案附「查看原文」——零外部接口、离线可用、<strong>每条可溯源</strong>。</li>
-<li><strong>兜底建议（第三层）</strong>：未命中给引导语，<strong>不编造答案</strong>。</li>
+   答案附「查看原文」——零外部接口、离线可用、<strong>每条可溯源</strong>。
+   命中结果会抽取<strong>关键句</strong>展示，命中的查询词<strong>高亮标注</strong>。</li>
+<li><strong>兜底建议（第三层）</strong>：未命中给引导语，<strong>不编造答案</strong>；
+   可一键把原话<strong>委托给导航站办事智能体</strong>继续处理（新标签打开）。
+   未命中的原话只记录在<strong>你自己浏览器</strong>里（<code>wiki_agent_miss</code>），
+   供维护者了解缺口，<strong>不会上传</strong>。</li>
 </ol>
+<blockquote>
+<p>追问「还有呢 / 那食堂呢」可翻页或换关键词继续检索；<code>Esc</code> 随时关闭面板。</p>
+</blockquote>
 <h2 id="2">2. 页面评论与段落批注（社区共建的真正含义）</h2>
 <table>
 <thead>
@@ -4448,7 +4455,7 @@
     <span class="md-icon" title="最后更新">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2026年10月12日 07:50:08 UTC">2026年10月12日</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2026年10月19日 01:56:09 UTC">2026年10月19日</span>
   </span>
 
     

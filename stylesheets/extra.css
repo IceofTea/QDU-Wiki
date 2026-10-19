@@ -1740,6 +1740,23 @@ body.pop-open {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+.chat-result__key {
+  margin: 6px 0 0;
+  padding: 5px 9px;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  border-left: 3px solid #1b66c9;
+  border-radius: 0 8px 8px 0;
+  background: rgba(27, 102, 201, 0.07);
+  word-break: break-word;
+}
+.chat-result mark,
+.chat-answer mark {
+  background: rgba(255, 179, 107, 0.45);
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 1px;
+}
 .chat-result__go {
   display: inline-flex;
   align-items: center;

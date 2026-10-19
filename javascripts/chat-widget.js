@@ -197,6 +197,46 @@
     return arr.slice(0, topK);
   }
 
+  /* ---------- 命中词高亮 + 关键句抽取 ---------- */
+  function escHtml(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  /** 在可信文本上把命中的查询词包 <mark>（先转义，防止查询词注入标记） */
+  function hl(snip, tokens) {
+    var s = escHtml(snip);
+    (tokens || []).forEach(function (tk) {
+      var e = escHtml(tk);
+      if (tk && tk.length >= 2 && e) s = s.split(e).join('<mark>' + e + '</mark>');
+    });
+    return s;
+  }
+  /** 关键句：把摘要按句切分，挑含命中词最多的一句（多句时才展示） */
+  function keySentence(snip, tokens) {
+    var parts = String(snip || '').split(/[。！？!?；;\n]+/).map(function (x) { return x.trim(); }).filter(Boolean);
+    if (parts.length < 2) return '';
+    var best = '', bestN = 0;
+    parts.forEach(function (p) {
+      var n = 0;
+      (tokens || []).forEach(function (tk) { if (tk && p.indexOf(tk) >= 0) n++; });
+      if (n > bestN) { bestN = n; best = p; }
+    });
+    return bestN >= 1 ? best : '';
+  }
+  /** 未命中话术记录（本机 localStorage，供维护时补词条用，不出本机） */
+  function logMiss(q) {
+    try {
+      var t = String(q || '').trim().slice(0, 40);
+      if (!t) return;
+      var arr = JSON.parse(localStorage.getItem('wiki_agent_miss') || '[]');
+      var hit = null;
+      for (var i = 0; i < arr.length; i++) if (arr[i].q === t) hit = arr[i];
+      if (hit) { hit.n = (hit.n || 1) + 1; }
+      else arr.unshift({ q: t, n: 1 });
+      arr.sort(function (a, b) { return b.n - a.n; });
+      localStorage.setItem('wiki_agent_miss', JSON.stringify(arr.slice(0, 40)));
+    } catch (e) { /* noop */ }
+  }
+
   /* ---------- 消息渲染 ---------- */
   function addMsg(kind, htmlEl) {
     var wrap = document.createElement('div');
@@ -245,12 +285,33 @@
     body.scrollTop = body.scrollHeight;
   }
 
-  function renderAnswer(results, rawQ) {
+  function renderAnswer(results, rawQ, tokens) {
     if (!results.length) {
+      logMiss(rawQ);
+      var box = document.createElement('div');
+      box.className = 'chat-answer';
       var empty = document.createElement('div');
       empty.className = 'chat-empty';
-      empty.textContent = '没在 Wiki 里找到直接相关的内容，换个关键词试试；要办事可以说「空教室」「今日简报」等，会直达导航站智能体。';
-      addMsg('bot', empty);
+      empty.textContent = '没在 Wiki 里找到直接相关的内容（已记下这个问题，维护时会补词条）。换个关键词试试，或把原话带给导航站智能体——它能办事、也接社区问答。';
+      box.appendChild(empty);
+      var wrap = document.createElement('div');
+      wrap.className = 'chat-golink';
+      var goNow = document.createElement('a');
+      goNow.className = 'chat-btn-main';
+      goNow.href = agentHref(rawQ);
+      goNow.target = '_self';
+      goNow.textContent = '🤖 把这个问题交给导航站智能体';
+      var openBtn = document.createElement('a');
+      openBtn.className = 'chat-btn-ghost';
+      openBtn.href = agentHref(rawQ);
+      openBtn.target = '_blank';
+      openBtn.rel = 'noopener';
+      openBtn.textContent = '↗ 新标签打开';
+      wrap.appendChild(goNow);
+      wrap.appendChild(openBtn);
+      box.appendChild(wrap);
+      addMsg('bot', box);
+      addFollowChips(CHIPS.slice(0, 3));
       return;
     }
 
@@ -275,13 +336,15 @@
       '<div class="chat-step done">✅ 生成直达入口 · 附出处可溯源</div>';
     box.appendChild(steps);
 
-    // 主结果：同页预览直达（不单开标签）
+    // 主结果：同页预览直达（不单开标签）；💡 关键句为句级抽取 + 命中词高亮
     var topChunk = results[0][1];
+    var key = keySentence(topChunk.s, tokens);
     var go = document.createElement('div');
     go.className = 'chat-result chat-result--top chat-result--go';
-    go.innerHTML = '<div class="chat-result__title">🚀 直达《' + topChunk.t + '》</div>' +
-      '<div class="chat-result__crumb">' + (topChunk.c === topChunk.p ? topChunk.p : topChunk.c + ' › ' + topChunk.p) + '</div>' +
-      '<p class="chat-result__snip">' + topChunk.s + '</p>';
+    go.innerHTML = '<div class="chat-result__title">🚀 直达《' + escHtml(topChunk.t) + '》</div>' +
+      '<div class="chat-result__crumb">' + escHtml(topChunk.c === topChunk.p ? topChunk.p : topChunk.c + ' › ' + topChunk.p) + '</div>' +
+      (key ? '<p class="chat-result__key">💡 ' + hl(key, tokens) + '</p>' : '') +
+      '<p class="chat-result__snip">' + hl(topChunk.s, tokens) + '</p>';
     var golink = document.createElement('div');
     golink.className = 'chat-golink';
     // 主操作：当前页面直接跳转
@@ -313,9 +376,9 @@
       card.href = pageUrl(chunk.u);
       card.target = '_blank';
       card.rel = 'noopener';
-      card.innerHTML = '<div class="chat-result__title">' + chunk.t + '</div>' +
-        '<div class="chat-result__crumb">' + (chunk.c === chunk.p ? chunk.p : chunk.c + ' › ' + chunk.p) + '</div>' +
-        '<p class="chat-result__snip">' + chunk.s + '</p>' +
+      card.innerHTML = '<div class="chat-result__title">' + escHtml(chunk.t) + '</div>' +
+        '<div class="chat-result__crumb">' + escHtml(chunk.c === chunk.p ? chunk.p : chunk.c + ' › ' + chunk.p) + '</div>' +
+        '<p class="chat-result__snip">' + hl(chunk.s, tokens) + '</p>' +
         '<span class="chat-result__go">查看原文 →</span>';
       box.appendChild(card);
     });
@@ -509,9 +572,9 @@
       card.href = pageUrl(chunk.u);
       card.target = '_blank';
       card.rel = 'noopener';
-      card.innerHTML = '<div class="chat-result__title">' + chunk.t + '</div>' +
-        '<div class="chat-result__crumb">' + (chunk.c === chunk.p ? chunk.p : chunk.c + ' › ' + chunk.p) + '</div>' +
-        '<p class="chat-result__snip">' + chunk.s + '</p>' +
+      card.innerHTML = '<div class="chat-result__title">' + escHtml(chunk.t) + '</div>' +
+        '<div class="chat-result__crumb">' + escHtml(chunk.c === chunk.p ? chunk.p : chunk.c + ' › ' + chunk.p) + '</div>' +
+        '<p class="chat-result__snip">' + hl(chunk.s, lastCtx.tokens) + '</p>' +
         '<span class="chat-result__go">查看原文 →</span>';
       box.appendChild(card);
     });
@@ -561,8 +624,8 @@
       }
       lastMs = (performance.now() - t0) / 1000;
       if (typing.parentNode) typing.remove();
-      lastCtx = { q: q, results: results, shown: 3 }; // 全量 8 条进上下文，首答只展前 3
-      renderAnswer(results.slice(0, 3), q);
+      lastCtx = { q: q, results: results, shown: 3, tokens: tokens }; // 全量 8 条进上下文，首答只展前 3
+      renderAnswer(results.slice(0, 3), q, tokens);
     }).catch(function () {
       if (typing.parentNode) typing.remove();
       var err = document.createElement('div');
@@ -696,6 +759,9 @@
     });
     inputEl.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') ask(inputEl.value);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && panelEl && !panelEl.hidden) close();
     });
     panelEl.querySelector('.chat-send').addEventListener('click', function () {
       ask(inputEl.value);

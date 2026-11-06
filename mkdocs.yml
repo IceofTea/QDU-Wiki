@@ -155,7 +155,7 @@ extra_javascript:
   - javascripts/stats-modal.js
   - javascripts/visit-counter.js
   - javascripts/chat-widget.js
-  - javascripts/comments.js
+  # comments.js 已从全站加载摘除（省 56.7KB/页）：COMMENTS_UI=false 时 mount() 即退。恢复评论需两步——本行加回 + comments.js 内 COMMENTS_UI 置 true
   - javascripts/giscus.js
   - javascripts/fix-board.js
   - javascripts/reading.js

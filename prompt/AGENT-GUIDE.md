@@ -270,6 +270,14 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-11-05：全站脚本减负——comments.js 从 extra_javascript 摘除
+
+- **任务**：comments.js（约 56.7KB）此前挂在 extra_javascript 全站加载，但评论 UI 已于上个迭代用 COMMENTS_UI = false 关闭（mount() 直接 return），每一页都白付这份流量。
+- **改动**：mkdocs.yml（extra_javascript 中 javascripts/comments.js 行替换为注释说明）；prompt/AGENT-GUIDE.md（本条记录）。
+- **说明**：代码本体保留在 docs/javascripts/comments.js 未删——恢复评论需两步：把该行加回 extra_javascript 并把文件内 COMMENTS_UI 置 	rue。已验证该文件为零导出全局的 IIFE，无其它脚本依赖；mkdocs build --strict 通过。
+
+---
+
 ### 2026-07-11：规则文档更名 + 新增「未完成维护学院」占位规则
 
 - **任务**：将维护说明由中文名改为英文名（`面向Agent的维护说明.md` → `AGENT-GUIDE.md`），更规范简洁；同时把「未完成维护的学院页」处理方式固化为规则。

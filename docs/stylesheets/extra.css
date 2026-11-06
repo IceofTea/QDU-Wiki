@@ -2320,3 +2320,22 @@ tr.qdu-row-hidden { display: none; }
 .kg-iso a{display:inline-block;margin:0 8px 4px 0;font-size:12px}
 .kg-loading,.kg-empty{padding:30px;text-align:center;color:#999}
 #kgRoot{position:relative}
+
+
+/* ── 阅读进度条（reading-progress.js）── */
+.read-progress {
+  position: fixed; top: 0; left: 0; z-index: 30;
+  height: 3px; width: 0; opacity: 0;
+  background: linear-gradient(90deg, #2563eb, #60a5fa);
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+[data-md-color-scheme="slate"] .read-progress {
+  background: linear-gradient(90deg, #60a5fa, #93c5fd);
+}
+
+/* ── 外链标记 ── */
+a.ext-link::after {
+  content: "\2197";            /* ↗ */
+  font-size: 0.72em; margin-left: 0.15em; opacity: 0.55;
+}

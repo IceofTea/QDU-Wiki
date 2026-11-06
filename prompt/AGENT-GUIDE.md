@@ -972,3 +972,4 @@ python -m mkdocs build --strict
 | `python -m mkdocs serve` | 本地预览（http://127.0.0.1:8000） |
 | `python -m mkdocs build --strict` | 严格构建验证（Agent 每次必用） |
 | `git status` / `git diff` | 复查改动 |
+| 2026-11-06 | 阅读体验 | 新增 `docs/javascripts/reading-progress.js`：顶部 3px 品牌蓝阅读进度条（rAF 节流、instant nav 自动重算、aria-hidden 不扰读屏）+ 站外链接自动 `target=_blank rel=noopener` 与 ↗ 标记（5 处已生效）；`extra.css` 配套样式含 slate 深色配色。mkdocs build --strict 通过。 |

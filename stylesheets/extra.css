@@ -409,9 +409,10 @@ strong {
   vertical-align: -0.15em;
   margin-left: 2px;
   border-radius: 1px;
-  background: linear-gradient(180deg, #ffd9a0, rgba(255, 217, 160, 0.45));
+  /* caret 跟随正文色（白），不再用琥珀渐变——此前在深色 hero 图上表现为不明橙色闪烁 */
+  background: currentColor;
+  opacity: 0.85;
   animation: blink 1.4s ease-in-out infinite;
-  opacity: 1;
   transition: opacity 0.2s;
 }
 @keyframes blink {

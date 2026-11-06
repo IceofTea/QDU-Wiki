@@ -54,7 +54,7 @@ The content of this Wiki is jointly created by the Qingdao University Tieba admi
 
 ## Statement
 
-This wiki has borrowed to some extent from the "Shanghai Jiao Tong University Survival Manual" and many other university students' self-maintained wiki websites, such as QFNU, FJNU, XUPT, USTC. One of the developers fantasized in 2024 about integrating the materials at hand into a wiki format, but due to multiple reasons, even the project initiation was not achieved. Not long after, in 2026, thanks to the development of large models and the application of Agents, this wiki (or rather, this old information integration platform that the developer gave birth to but didn't nurture) came into being.
+This wiki has borrowed to some extent from the "Shanghai Jiao Tong University Survival Manual" and many other university students' self-maintained wiki websites, such as QFNU, FJNU, XUPT, USTC, HNU, NJU, SCUT, HIT. One of the developers fantasized in 2024 about integrating the materials at hand into a wiki format, but due to multiple reasons, even the project initiation was not achieved. Not long after, in 2026, thanks to the development of large models and the application of Agents, this wiki (or rather, this old information integration platform that the developer gave birth to but didn't nurture) came into being.
 
 ## Afterword
 

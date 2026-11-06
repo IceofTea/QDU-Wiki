@@ -270,6 +270,14 @@ python -m mkdocs build --strict
 
 ---
 
+### 2026-11-05（其二）：hero 打字机橙色闪烁修复 + 姊妹校标识词深度清理
+
+- **任务**：首页大卡片打字机光标呈不明橙色闪烁；同时按「除借鉴声明外全站零 FJNU 字样」要求做深度排查。
+- **改动**：docs/stylesheets/extra.css（.hero-type .cursor 背景由 #ffd9a0 琥珀渐变改 currentColor，深色 hero 图上不再闪现橙色块）；docs/about/index.md + docs/en/about/index.md + docs/i18n/en.json（借鉴声明学校简称扩列至 QFNU/FJNU/XUPT/USTC/HNU/NJU/SCUT/HIT）；docs/assets/kb.json（vocab 死词 FJNU 移除——该文件 gitignore 不入仓，清理仅为本机一致性）；prompt/AGENT-GUIDE.md（本条）。
+- **说明**：闪烁根因 = 琥珀色 caret + blink 动画在深色背景上对比突兀，随正文色后即为常规终端光标。全仓扫描（fjnu/福建师范/福star/旗山/仓山/师大/icyteacn，不区分大小写）最终仅剩借鉴声明两处允许命中；mkdocs build --strict 通过。
+
+---
+
 ### 2026-11-05：全站脚本减负——comments.js 从 extra_javascript 摘除
 
 - **任务**：comments.js（约 56.7KB）此前挂在 extra_javascript 全站加载，但评论 UI 已于上个迭代用 COMMENTS_UI = false 关闭（mount() 直接 return），每一页都白付这份流量。

@@ -1,0 +1,44 @@
+<!-- 文件路径: /qdu-wiki/mp-weixin/pages/index/index.wxml -->
+<view class="page safe-bottom">
+  <view class="hero">
+    <view class="hero-title">青大百科</view>
+    <view class="hero-sub">青岛大学 Wiki · {{total}} 篇词条</view>
+    <view class="search-box">
+      <input class="search" value="{{kw}}" bindinput="onKw" placeholder="搜索词条（课程/复试/食堂/办事…）" confirm-type="search" bindconfirm="doSearch" />
+      <text class="search-btn" bindtap="doSearch">搜</text>
+    </view>
+  </view>
+
+  <view wx:if="{{kw && searched}}" class="card">
+    <view class="g-title between">
+      <text>搜索「{{kw}}」（{{results.length}}）</text>
+      <text class="mut" bindtap="clearSearch">✕ 清除</text>
+    </view>
+    <view wx:if="{{!results.length}}" class="mut">没有匹配的词条</view>
+    <view wx:for="{{results}}" wx:key="loc" class="item" data-p="{{item}}" bindtap="open">
+      <view class="i-body">
+        <text class="i-title">{{item.title}}</text>
+        <text class="i-text">{{item.text}}</text>
+        <text class="i-sec">{{item.sectionName || item.section}}</text>
+      </view>
+      <text class="arrow">›</text>
+    </view>
+  </view>
+
+  <block wx:if="{{!kw}}">
+    <view wx:for="{{sections}}" wx:key="key" class="card">
+      <view class="g-title between" data-k="{{item.key}}" bindtap="toggle">
+        <text>{{item.name}} <text class="mut">（{{item.pages.length}}）</text></text>
+        <text class="mut">{{collapsed[item.key] ? '▸' : '▾'}}</text>
+      </view>
+      <view wx:if="{{!collapsed[item.key]}}">
+        <view wx:for="{{item.pages}}" wx:for-item="p" wx:key="loc" class="item" data-p="{{p}}" bindtap="open">
+          <view class="i-body"><text class="i-title">{{p.title}}</text></view>
+          <text class="arrow">›</text>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <view wx:if="{{loading}}" class="empty"><text>加载词条索引…</text></view>
+</view>

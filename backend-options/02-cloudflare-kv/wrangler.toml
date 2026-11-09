@@ -1,0 +1,11 @@
+# 文件路径: /qdu-wiki/backend-options/02-cloudflare-kv/wrangler.toml
+name = "qdu-wiki-docs"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+# npx wrangler kv namespace create WIKI_DOCS → 填 id
+[[kv_namespaces]]
+binding = "WIKI_DOCS"
+id = "<KV_NAMESPACE_ID>"
+
+# 口令：npx wrangler secret put WRITE_TOKEN / READ_TOKEN

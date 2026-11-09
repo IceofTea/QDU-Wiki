@@ -1,0 +1,8 @@
+/* 文件路径: /qdu-wiki/mp-weixin/pages/about/about.wxss */
+.center { display: flex; flex-direction: column; align-items: center; padding: 40rpx 0; }
+.logo { font-size: 72rpx; }
+.name { font-size: 34rpx; font-weight: 700; margin-top: 12rpx; }
+.row-item { display: flex; align-items: center; justify-content: space-between; padding: 26rpx 0; border-bottom: 1rpx solid #f0f1f5; }
+.row-item:last-child { border-bottom: none; }
+.sec-title { font-weight: 600; margin-bottom: 12rpx; }
+.li { line-height: 1.8; }

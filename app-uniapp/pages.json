@@ -1,0 +1,23 @@
+{
+  "pages": [
+    { "path": "pages/index/index", "style": { "navigationBarTitleText": "青大百科" } },
+    { "path": "pages/detail/detail", "style": { "navigationBarTitleText": "词条" } },
+    { "path": "pages/about/about", "style": { "navigationBarTitleText": "我的" } }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "青大百科",
+    "navigationBarBackgroundColor": "#7c3aed",
+    "backgroundColor": "#f5f6fa"
+  },
+  "tabBar": {
+    "color": "#8a8f99",
+    "selectedColor": "#7c3aed",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "百科" },
+      { "pagePath": "pages/about/about", "text": "我的" }
+    ]
+  }
+}

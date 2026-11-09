@@ -1,0 +1,9 @@
+{
+  "description": "青大百科 微信小程序原生端",
+  "appid": "touristappid",
+  "compileType": "miniprogram",
+  "libVersion": "3.5.0",
+  "projectname": "qdu-wiki-mp",
+  "setting": { "es6": true, "enhance": true, "minified": true, "urlCheck": false, "postcss": true },
+  "condition": {}
+}

@@ -1,0 +1,32 @@
+{
+  "name": "青大百科",
+  "appid": "",
+  "description": "青岛大学 Wiki · 课程笔记/考研复试/经验文档随身查",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "app-plus": {
+    "usingComponents": true,
+    "nvueStyleCompiler": "uni-app",
+    "compilerVersion": 3,
+    "safearea": { "bottom": { "offset": "auto" } },
+    "splashscreen": { "alwaysShowBeforeRender": true, "waiting": true, "autoclose": true, "delay": 0 },
+    "modules": {},
+    "distribute": {
+      "apple": { "appid": "", "mobileprovision": "", "p12": "", "password": "" },
+      "icons": {
+        "ios": {
+          "appstore": "static/icon.png",
+          "iphone": {
+            "app_60pt": "static/icon.png", "app_76pt": "static/icon.png",
+            "app_83_5pt": "static/icon.png", "spotlight_40pt": "static/icon.png",
+            "spotlight_29pt": "static/icon.png", "notification_20pt": "static/icon.png"
+          }
+        }
+      }
+    }
+  },
+  "quickapp": {},
+  "mp-weixin": { "appid": "", "setting": { "urlCheck": false, "es6": true, "minified": true } },
+  "h5": { "title": "青大百科" }
+}

@@ -1,0 +1,3 @@
+/* 文件路径: /qdu-wiki/mp-weixin/pages/detail/detail.wxss */
+.fallback { position: fixed; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,.96); padding: 20rpx 24rpx calc(20rpx + env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: center; border-top: 1rpx solid #eee; }
+.btn { margin-top: 14rpx; background: #7c3aed; color: #fff; padding: 14rpx 40rpx; border-radius: 999rpx; font-size: 26rpx; }

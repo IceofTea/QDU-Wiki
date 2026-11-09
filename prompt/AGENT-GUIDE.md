@@ -1,4 +1,4 @@
-# Agent 维护指南（AGENT-GUIDE）
+﻿# Agent 维护指南（AGENT-GUIDE）
 
 > **写给每一位将要维护本站的 AI Agent：**
 > 在动手修改任何文件之前，请**完整阅读本说明**。本文件描述了本站的「目的」「架构」「逻辑」「维护方法」以及「Agent 维护工作流」，是你在本站工作的总纲。
@@ -954,6 +954,15 @@ python -m mkdocs build --strict
 ---
 
 ## 八、写给 Agent 的话
+
+### 2026-11-09 · 客户端基建：app-uniapp + mp-weixin + backend-options（站点未动）
+
+- **新增 `app-uniapp/`**（uni-app，HBuilderX 云打包 iOS）：词条索引页（复用 `site/search/search_index.json`，页面级去重+按章节分栏+全文搜索）、词条详情页（web-view 直开官网，失败复制链接兜底）、我的页；索引三源容错（站点/CDN/raw）+本地缓存，iOS 安全区适配。
+- **新增 `mp-weixin/`**（微信原生，与 uni-app 零耦合）：同款三页；词条详情 web-view 需配业务域名 `iceoftea.github.io`（校验文件随 mkdocs 发布），未配时自动提供复制链接兜底；全页分享卡片+下拉刷新；`package.json` 标 commonjs。
+- **新增 `backend-options/`**：GitHub仓内JSON / Cloudflare Workers+KV（worker.js 区分读写口令，`contributions` 投稿收件箱私有读+`POST /contribute` 公开追加）/ LeanCloud / PocketBase 四套备选——**全部默认关闭**，Wiki 正文仍走 git 流程，后端只做「收件箱」；shared/cloud-sync.js（ESM）+ .mp.js（CJS）双适配器。
+- **验证**：全量 node --check + JSON 校验 + import/require/导出审计 0 错误；search_index.json 1.1MB 端点实测 200。
+- **待办（需人工）**：manifest 填 appid+iOS 证书打包；开发者工具换小程序 AppID；request 域名与业务域名配置见 `mp-weixin/README.md`。
+
 
 本站不是冷冰冰的文档仓库，它承载着学长学姐对学弟学妹的关照。请带着「我是在帮一个新生解决实际困惑」的心态来工作：
 

@@ -3,6 +3,7 @@ const { fetchIndex, cacheTime, SITE_URL } = require('../../utils/api.js');
 
 Page({
   data: { refreshText: '点击同步' },
+  onShareAppMessage() { return { title: '青大百科 · 青岛大学 Wiki 随身查', path: '/pages/index/index' }; },
   onShow() {
     const t = cacheTime();
     if (t) this.setData({ refreshText: `上次 ${t}` });

@@ -8,7 +8,9 @@
     "navigationBarBackgroundColor": "#7c3aed",
     "navigationBarTitleText": "青大百科",
     "navigationBarTextStyle": "white",
-    "backgroundColor": "#f5f6fa"
+    "backgroundColor": "#f5f6fa",
+    "enablePullDownRefresh": true,
+    "backgroundTextStyle": "dark"
   },
   "tabBar": {
     "color": "#8a8f99",

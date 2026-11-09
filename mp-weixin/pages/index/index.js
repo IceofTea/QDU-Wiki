@@ -10,6 +10,9 @@ Page({
     loading: true, total: 0,
   },
   onShow() { this.load(); },
+  onPullDownRefresh() { this.load(true).finally(() => wx.stopPullDownRefresh()); },
+  onShareAppMessage() { return { title: '青大百科 · 青岛大学 Wiki 随身查', path: '/pages/index/index' }; },
+  onShareTimeline() { return { title: '青大百科 · 青岛大学 Wiki 随身查' }; },
   async load(force) {
     this.setData({ loading: true });
     const { data } = await fetchIndex(force);

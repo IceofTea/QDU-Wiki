@@ -3,6 +3,7 @@ const { pageUrl } = require('../../utils/api.js');
 
 Page({
   data: { url: '', showFallback: false },
+  onShareAppMessage() { return { title: '青大百科词条', path: '/pages/index/index' }; },
   onLoad(q) {
     const loc = decodeURIComponent(q.loc || '');
     this.setData({ url: pageUrl(loc) });

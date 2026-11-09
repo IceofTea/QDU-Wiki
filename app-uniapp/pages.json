@@ -1,6 +1,6 @@
 {
   "pages": [
-    { "path": "pages/index/index", "style": { "navigationBarTitleText": "青大百科" } },
+    { "path": "pages/index/index", "style": { "navigationBarTitleText": "青大百科", "enablePullDownRefresh": true } },
     { "path": "pages/detail/detail", "style": { "navigationBarTitleText": "词条" } },
     { "path": "pages/about/about", "style": { "navigationBarTitleText": "我的" } }
   ],

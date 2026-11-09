@@ -47,7 +47,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { onShow } from '@dcloudio/uni-app';
+import { onShow, onPullDownRefresh } from '@dcloudio/uni-app';
 import { fetchIndex, indexData, search, SECTIONS } from '../../utils/api.js';
 
 const kw = ref('');
@@ -80,6 +80,10 @@ onShow(async () => {
   loading.value = true;
   await fetchIndex();
   loading.value = false;
+});
+onPullDownRefresh(async () => {
+  await fetchIndex(true);
+  uni.stopPullDownRefresh();
 });
 </script>
 

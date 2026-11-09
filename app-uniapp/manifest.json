@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "青大百科",
   "appid": "",
   "description": "青岛大学 Wiki · 课程笔记/考研复试/经验文档随身查",
@@ -27,6 +27,6 @@
     }
   },
   "quickapp": {},
-  "mp-weixin": { "appid": "", "setting": { "urlCheck": false, "es6": true, "minified": true } },
-  "h5": { "title": "青大百科" }
+  "mp-weixin": { "appid": "wx313c28f3fdf79289", "setting": { "urlCheck": false, "es6": true, "minified": true } },
+  "h5": { "title": "青大百科", "router": { "mode": "hash" }, "publicPath": "./" }
 }

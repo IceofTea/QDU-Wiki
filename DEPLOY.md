@@ -1,10 +1,10 @@
-# 客户端上架部署清单 · QDU-Wiki
+﻿# 客户端上架部署清单 · QDU-Wiki
 
 > 双端源码已就绪（`app-uniapp/` iOS、`mp-weixin/` 微信小程序）。数据拉 `site/search/search_index.json`。
 
 ## 一、微信小程序（约 15 分钟 + 1 处文件）
 
-1. mp.weixin.qq.com 注册小程序 → 拿 **AppID** → 填入 `mp-weixin/project.config.json` → 开发者工具导入。
+1. mp.weixin.qq.com 注册小程序 → 拿 **AppID** → AppID 已填 `wx313c28f3fdf79289` → 开发者工具直接导入。
 2. **request 合法域名**：
    - `https://iceoftea.github.io`
    - `https://cdn.jsdelivr.net`

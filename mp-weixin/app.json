@@ -1,26 +1,36 @@
-{
-  "pages": [
-    "pages/index/index",
-    "pages/detail/detail",
-    "pages/about/about"
-  ],
-  "window": {
-    "navigationBarBackgroundColor": "#7c3aed",
-    "navigationBarTitleText": "青大百科",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#f5f6fa",
-    "enablePullDownRefresh": true,
-    "backgroundTextStyle": "dark"
-  },
-  "tabBar": {
-    "color": "#8a8f99",
-    "selectedColor": "#7c3aed",
-    "backgroundColor": "#ffffff",
-    "list": [
-      { "pagePath": "pages/index/index", "text": "百科" },
-      { "pagePath": "pages/about/about", "text": "我的" }
-    ]
-  },
-  "sitemapLocation": "sitemap.json",
-  "style": "v2"
+﻿{
+    "pages":  [
+                  "pages/index/index",
+                  "pages/detail/detail",
+                  "pages/about/about"
+              ],
+    "window":  {
+                   "navigationBarBackgroundColor":  "#7c3aed",
+                   "navigationBarTitleText":  "青大百科",
+                   "navigationBarTextStyle":  "white",
+                   "backgroundColor":  "#f5f6fa",
+                   "enablePullDownRefresh":  true,
+                   "backgroundTextStyle":  "dark"
+               },
+    "tabBar":  {
+                   "color":  "#8a8f99",
+                   "selectedColor":  "#7c3aed",
+                   "backgroundColor":  "#ffffff",
+                   "list":  [
+                                {
+                                    "pagePath":  "pages/index/index",
+                                    "text":  "百科",
+                                    "iconPath":  "images/tab-index.png",
+                                    "selectedIconPath":  "images/tab-index-active.png"
+                                },
+                                {
+                                    "pagePath":  "pages/about/about",
+                                    "text":  "我的",
+                                    "iconPath":  "images/tab-about.png",
+                                    "selectedIconPath":  "images/tab-about-active.png"
+                                }
+                            ]
+               },
+    "sitemapLocation":  "sitemap.json",
+    "style":  "v2"
 }

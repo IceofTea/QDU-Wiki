@@ -1,1 +1,1 @@
-﻿{ "type": "commonjs", "private": true, "description": "WeChat miniprogram source (CJS runtime; this file only marks module type for tooling)" }
+{ "type": "commonjs", "private": true, "description": "WeChat miniprogram source (CJS runtime; this file only marks module type for tooling)" }

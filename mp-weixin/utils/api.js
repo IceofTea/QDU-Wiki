@@ -1,4 +1,4 @@
-﻿// 文件路径: /qdu-wiki/mp-weixin/utils/api.js
+// 文件路径: /qdu-wiki/mp-weixin/utils/api.js
 // 词条索引：复用网站 search/search_index.json，多源容错
 const SITE_URL = 'https://iceoftea.github.io/QDU-Wiki';
 const INDEX_URLS = [

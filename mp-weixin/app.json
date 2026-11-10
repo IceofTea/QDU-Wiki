@@ -1,11 +1,11 @@
-﻿{
+{
     "pages":  [
                   "pages/index/index",
                   "pages/detail/detail",
                   "pages/about/about"
               ],
     "window":  {
-                   "navigationBarBackgroundColor":  "#7c3aed",
+                   "navigationBarBackgroundColor":  "#3F337B",
                    "navigationBarTitleText":  "青大百科",
                    "navigationBarTextStyle":  "white",
                    "backgroundColor":  "#f5f6fa",
@@ -14,7 +14,7 @@
                },
     "tabBar":  {
                    "color":  "#8a8f99",
-                   "selectedColor":  "#7c3aed",
+                   "selectedColor":  "#3F337B",
                    "backgroundColor":  "#ffffff",
                    "list":  [
                                 {

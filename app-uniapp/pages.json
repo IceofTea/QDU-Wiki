@@ -1,4 +1,4 @@
-﻿{
+{
     "pages":  [
                   {
                       "path":  "pages/index/index",
@@ -23,12 +23,12 @@
     "globalStyle":  {
                         "navigationBarTextStyle":  "white",
                         "navigationBarTitleText":  "青大百科",
-                        "navigationBarBackgroundColor":  "#7c3aed",
+                        "navigationBarBackgroundColor":  "#3F337B",
                         "backgroundColor":  "#f5f6fa"
                     },
     "tabBar":  {
                    "color":  "#8a8f99",
-                   "selectedColor":  "#7c3aed",
+                   "selectedColor":  "#3F337B",
                    "backgroundColor":  "#ffffff",
                    "borderStyle":  "black",
                    "list":  [

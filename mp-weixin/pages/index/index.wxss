@@ -1,16 +1,16 @@
 /* 文件路径: /qdu-wiki/mp-weixin/pages/index/index.wxss */
-.hero { background: linear-gradient(135deg, #7c3aed, #8b5cf6); color: #fff; padding: 44rpx 32rpx 32rpx; }
+.hero { background: linear-gradient(135deg, #3F337B, #6B5F9E); color: #fff; padding: 44rpx 32rpx 32rpx; }
 .hero-title { font-size: 44rpx; font-weight: 700; }
 .hero-sub { opacity: .85; margin-top: 8rpx; font-size: 26rpx; }
 .search-box { margin-top: 24rpx; display: flex; background: #fff; border-radius: 999rpx; overflow: hidden; }
 .search { flex: 1; padding: 18rpx 28rpx; font-size: 26rpx; color: #1f2329; }
-.search-btn { padding: 18rpx 32rpx; color: #7c3aed; font-weight: 700; font-size: 26rpx; }
+.search-btn { padding: 18rpx 32rpx; color: #3F337B; font-weight: 700; font-size: 26rpx; }
 .g-title { font-size: 30rpx; font-weight: 600; margin-bottom: 8rpx; }
 .between { display: flex; align-items: center; justify-content: space-between; }
 .item { display: flex; align-items: center; padding: 18rpx 0; border-top: 1rpx solid #f0f1f5; }
 .i-body { flex: 1; }
 .i-title { font-size: 28rpx; font-weight: 500; }
 .i-text { display: block; font-size: 20rpx; color: #8a8f99; margin-top: 4rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 560rpx; }
-.i-sec { display: inline-block; font-size: 18rpx; color: #7c3aed; background: #ede9fe; border-radius: 999rpx; padding: 2rpx 14rpx; margin-top: 6rpx; }
+.i-sec { display: inline-block; font-size: 18rpx; color: #3F337B; background: #ede9fe; border-radius: 999rpx; padding: 2rpx 14rpx; margin-top: 6rpx; }
 .arrow { color: #c0c4cc; font-size: 36rpx; }
 .empty { display: flex; align-items: center; justify-content: center; padding: 80rpx 0; color: #8a8f99; }

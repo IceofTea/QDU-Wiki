@@ -1,18 +1,19 @@
-// 文件路径: /qdu-wiki/app-uniapp/utils/api.js
+﻿// 文件路径: /qdu-wiki/app-uniapp/utils/api.js
 // 词条索引：复用网站 search/search_index.json（mkdocs 生成的全站索引），多源容错
 import { ref } from 'vue';
 
 export const SITE_URL = 'https://iceoftea.github.io/QDU-Wiki';
 const INDEX_URLS = [
   `${SITE_URL}/search/search_index.json`,
-  'https://cdn.jsdelivr.net/gh/IceofTea/QDU-Wiki@main/site/search/search_index.json',
-  'https://raw.githubusercontent.com/IceofTea/QDU-Wiki/main/site/search/search_index.json',
+  'https://cdn.jsdelivr.net/gh/IceofTea/QDU-Wiki@gh-pages/search/search_index.json',
+  'https://raw.githubusercontent.com/IceofTea/QDU-Wiki/gh-pages/search/search_index.json',
 ];
 const CACHE_KEY = 'qdu_wiki_index_v1';
 const CACHE_T = 'qdu_wiki_index_time';
 
 export const indexData = ref(null);   // {pages:[{loc,title,text,section}]}
 export const indexSource = ref('');
+let _raw = null;
 
 export const SECTIONS = {
   new: '新生指南', study: '学习资料', live: '校园生活', college: '学院专业',
@@ -65,6 +66,7 @@ export async function fetchIndex(force = false) {
       if (norm.pages.length) {
         indexData.value = norm;
         indexSource.value = 'live';
+        _raw = j;
         uni.setStorageSync(CACHE_KEY, norm);
         uni.setStorageSync(CACHE_T, Date.now());
         return norm;
@@ -86,6 +88,28 @@ export function search(kw) {
 }
 
 export function pageUrl(loc) { return SITE_URL + '/' + loc; }
+
+/** 词条正文：合并同一页面（location 基串相同）的全部小节文档 */
+export async function fetchDetail(loc) {
+  loc = (loc || '').split('#')[0];
+  let j = _raw;
+  if (!j) {
+    for (const url of INDEX_URLS) {
+      try { j = await req(url + '?t=' + Date.now()); _raw = j; break; } catch (e) { /* 下一源 */ }
+    }
+  }
+  const segs = [];
+  let title = '';
+  for (const d of ((j && j.docs) || [])) {
+    const dl = (d.location || '');
+    if (dl.split('#')[0] !== loc) continue;
+    const dt = (d.title || '').replace(/​/g, '').trim();
+    if (!title && !dl.includes('#')) title = dt;
+    const text = (d.text || '').replace(/​/g, '').replace(/\s+/g, ' ').trim();
+    if (text) segs.push({ h: dl.includes('#') ? dt : '', text });
+  }
+  return { title, segs, url: pageUrl(loc) };
+}
 
 export function cacheTime() {
   const t = uni.getStorageSync(CACHE_T);

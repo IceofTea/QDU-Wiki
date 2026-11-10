@@ -1,8 +1,17 @@
 <!-- 文件路径: /qdu-wiki/mp-weixin/pages/detail/detail.wxml -->
-<!-- web-view 需在 mp 后台配置业务域名 iceoftea.github.io 并上传校验文件；
-     未配置时提示复制链接（见 README） -->
-<web-view wx:if="{{url && !showFallback}}" src="{{url}}"></web-view>
-<view class="fallback">
-  <text class="mut">若页面未加载：需在小程序后台配置业务域名</text>
-  <view class="btn" bindtap="copy">复制链接去浏览器打开</view>
-</view>
+<!-- 个人主体小程序无 web-view 业务域名权限：详情改本地渲染 search_index.json 正文 -->
+<scroll-view scroll-y class="page">
+  <view class="title">{{title}}</view>
+  <view wx:if="{{loading}}" class="mut center">加载中…</view>
+  <view wx:elif="{{empty}}" class="mut center">
+    该词条暂无缓存正文
+    <view class="btn" bindtap="copy">复制链接去浏览器看原文</view>
+  </view>
+  <block wx:else>
+    <view class="seg" wx:for="{{segs}}" wx:key="index">
+      <view wx:if="{{item.h}}" class="seg-h">{{item.h}}</view>
+      <text class="seg-t" selectable>{{item.text}}</text>
+    </view>
+    <view class="src" bindtap="copy">查看官网原文（复制链接）</view>
+  </block>
+</scroll-view>

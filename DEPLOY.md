@@ -9,9 +9,7 @@
    - `https://iceoftea.github.io`
    - `https://cdn.jsdelivr.net`
    - `https://raw.githubusercontent.com`
-3. **业务域名**（词条详情页 web-view 用，否则自动降级为「复制链接」提示，不影响其他功能）：
-   - mp 后台 → 开发设置 → 业务域名 → 添加 `https://iceoftea.github.io`
-   - 下载其提供的**校验文件**（形如 `MP_verify_xxxx.txt`），放入本仓 **`docs/` 目录**（mkdocs 会原样发布到站点根）→ push 部署 → 回后台点「保存并验证」。
+3. **业务域名**：~~需配 `iceoftea.github.io`~~ **已不需要**——详情页已改为本地渲染 `search_index.json` 正文（个人主体小程序后台本来就没有业务域名配置项，无需再找）。若日后用企业主体账号想开 web-view 原文，再配业务域名、校验文件放 `docs/`。
 4. 上传 → 提审，类目建议「教育 > 教育信息服务」。
 
 ## 二、iOS App（uni-app）

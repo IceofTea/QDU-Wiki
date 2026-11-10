@@ -12,9 +12,13 @@
 3. **业务域名**：~~需配 `iceoftea.github.io`~~ **已不需要**——详情页已改为本地渲染 `search_index.json` 正文（个人主体小程序后台本来就没有业务域名配置项，无需再找）。若日后用企业主体账号想开 web-view 原文，再配业务域名、校验文件放 `docs/`。
 4. 上传 → 提审，类目建议「教育 > 教育信息服务」。
 
-## 二、iOS App（uni-app）
+## 二、iOS App —— 已完成（H5 免费路线）
 
-同姊妹仓：H5+主屏幕零成本路线，或 Apple 开发者 $99/年走云打包 ipa（`manifest.json` 填 DCloud appid + 证书）。详情见 FJNU-Nav 仓 `DEPLOY.md`。
+**H5 产物已构建并铺进 `docs/app/`**，随 mkdocs 部署自动上线：
+
+- iOS 使用：Safari 打开 **https://iceoftea.github.io/QDU-Wiki/app/** → 分享 →「添加到主屏幕」。
+- 重新构建：`cd app-uniapp && npm install && npm run build:h5`；本地预览 `npm run dev:h5`。
+- 正式 ipa（App Store）才需 Apple 开发者 $99/年，暂不启用。
 
 ## 三、后端（可选，默认关闭）
 

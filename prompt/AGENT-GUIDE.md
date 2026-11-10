@@ -961,6 +961,7 @@ python -m mkdocs build --strict
 - **新增 `mp-weixin/`**（微信原生，与 uni-app 零耦合）：同款三页；索引备用源已修正为 gh-pages 分支（site/ 构建产物不在 main 分支）；全页分享卡片+下拉刷新；`package.json` 标 commonjs。
 - **新增 `backend-options/`**：GitHub仓内JSON / Cloudflare Workers+KV（worker.js 区分读写口令，`contributions` 投稿收件箱私有读+`POST /contribute` 公开追加）/ LeanCloud / PocketBase 四套备选——**全部默认关闭**，Wiki 正文仍走 git 流程，后端只做「收件箱」；shared/cloud-sync.js（ESM）+ .mp.js（CJS）双适配器。
 - **验证**：全量 node --check + JSON 校验 + import/require/导出审计 0 错误；search_index.json 1.1MB 端点实测 200。
+- **续2**：iOS 免费路线落地——uni-app CLI 构建体系补齐（`npm run build:h5`），H5 产物铺 `docs/app/` → `/QDU-Wiki/app/` 随 mkdocs 上线；词条详情页已改本地渲染索引正文（个人主体无业务域名，web-view 弃用）。
 - **续**：tabBar 图标（book/person 灰+主题紫双态）落地双端；仓根新增 `DEPLOY.md` 汇总 AppID/域名/业务域名校验文件（放 `docs/`）/iOS 两路线人工步骤。
 - **待办（需人工）**：manifest 填 appid+iOS 证书打包；开发者工具换小程序 AppID；request 域名与业务域名配置见 `mp-weixin/README.md`。
 

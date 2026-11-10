@@ -12,3 +12,8 @@
 | [`prompt/prompt.md`](prompt/prompt.md) | 社区「提示词工程」提交模板 |
 
 更多细节请阅读 [`prompt/AGENT-GUIDE.md`](prompt/AGENT-GUIDE.md)。
+
+## CI 红线（2026-11 踩坑补记）
+
+- CI 跑 `mkdocs build --strict`：`docs/**/*.md` 内**禁止指向非文档路径的相对链接**（如 `app/`、本地资源目录）——`validation.links.not_found: warn` 会被 --strict 放大为 fatal，deploy 直接挂。指向站内非文档资源一律写完整 URL（`https://iceoftea.github.io/QDU-Wiki/app/`）。
+- 改动 md 后本地可跑 `py -3.13 -m mkdocs build --strict` 预检（本机已装 mkdocs 1.6.1）；Material 团队的版本横幅警告不影响结果。

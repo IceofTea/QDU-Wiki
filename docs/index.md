@@ -1,4 +1,4 @@
-﻿<div class="hero">
+<div class="hero">
 
 <div class="hero-bg" data-seasonal role="img" aria-label="校园四季"></div>
 
@@ -209,3 +209,12 @@
 
 !!! quote ""
     **"明德、博学、守正、出奇"** —— 青岛大学校训
+---
+
+## 📱 多端使用
+
+| 平台 | 入口 |
+| --- | --- |
+| 手机 App 版（iPhone/安卓通用） | 打开 [本站 App 版](app/) → iPhone 可「分享 → 添加到主屏幕」全屏使用 |
+| 微信小程序 | 微信内搜「青大百科」或从导航站跳转（词条随身查，与 Wiki 实时同步） |
+| 青大导航站 | [QDU-Nav](https://iceoftea.github.io/QDU-Nav/) — 课表/空教室/食堂/校历等 36 个校园应用 |
